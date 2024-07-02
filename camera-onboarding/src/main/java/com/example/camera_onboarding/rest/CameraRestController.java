@@ -1,7 +1,6 @@
 package com.example.camera_onboarding.rest;
 
 import com.example.camera_onboarding.entity.Camera;
-import com.example.camera_onboarding.service.CameraService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
