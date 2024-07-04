@@ -1,4 +1,4 @@
-package com.example.camera_onboarding;
+package com.onboarding.camera.cameraonboarding;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
