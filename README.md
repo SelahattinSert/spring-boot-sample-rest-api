@@ -15,15 +15,18 @@ Maven
 - Log4j2
 
 ## Installation Instructions
+clone the project:
 ```sh
 git clone https://github.com/SelahattinSert/demo.git
 cd demo
 ```
 
+build the project with maven:
 ```sh
 mvn clean install
 ```
 
+run the project with maven:
 ```sh
 mvn spring-boot:run
 ```
