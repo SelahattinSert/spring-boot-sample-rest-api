@@ -5,12 +5,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Data
 @Entity
-@Table(name = "CameraMetadata")
+@Table(name = "camera_metadata")
 public class Camera {
 
     @Id
@@ -45,91 +47,4 @@ public class Camera {
 
     @Column(name = "initialized_at")
     private LocalDateTime initializedAt;
-
-    public UUID getCamId() {
-        return camId;
-    }
-
-    public void setCamId(UUID camId) {
-        this.camId = camId;
-    }
-
-    public UUID getImageId() {
-        return imageId;
-    }
-
-    public void setImageId(UUID imageId) {
-        this.imageId = imageId;
-    }
-
-    public String getCameraName() {
-        return cameraName;
-    }
-
-    public void setCameraName(String cameraName) {
-        this.cameraName = cameraName;
-    }
-
-    public String getFirmwareVersion() {
-        return firmwareVersion;
-    }
-
-    public void setFirmwareVersion(String firmwareVersion) {
-        this.firmwareVersion = firmwareVersion;
-    }
-
-    public String getContainerName() {
-        return containerName;
-    }
-
-    public void setContainerName(String containerName) {
-        this.containerName = containerName;
-    }
-
-    public String getNameOfStoredPicture() {
-        return nameOfStoredPicture;
-    }
-
-    public void setNameOfStoredPicture(String nameOfStoredPicture) {
-        this.nameOfStoredPicture = nameOfStoredPicture;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getOnboardedAt() {
-        return onboardedAt;
-    }
-
-    public void setOnboardedAt(LocalDateTime onboardedAt) {
-        this.onboardedAt = onboardedAt;
-    }
-
-    public LocalDateTime getInitializedAt() {
-        return initializedAt;
-    }
-
-    public void setInitializedAt(LocalDateTime initializedAt) {
-        this.initializedAt = initializedAt;
-    }
-
-    @Override
-    public String toString() {
-        return "Camera{" +
-                "camId=" + camId +
-                ", imageId=" + imageId +
-                ", cameraName='" + cameraName + '\'' +
-                ", firmwareVersion='" + firmwareVersion + '\'' +
-                ", containerName='" + containerName + '\'' +
-                ", nameOfStoredPicture='" + nameOfStoredPicture + '\'' +
-                ", createdAt=" + createdAt +
-                ", onboardedAt=" + onboardedAt +
-                ", initializedAt=" + initializedAt +
-                '}';
-    }
 }
