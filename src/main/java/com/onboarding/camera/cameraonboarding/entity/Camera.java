@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -16,11 +16,8 @@ import java.util.UUID;
 public class Camera {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+    @GeneratedValue
+    @UuidGenerator
     @Column(name = "cam_id")
     private UUID camId;
 
