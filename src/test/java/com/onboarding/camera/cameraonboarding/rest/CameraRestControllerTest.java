@@ -45,19 +45,53 @@ class CameraRestControllerTest {
     }
 
     @Test
-    public void saveCameraTest() throws Exception {
+    public void expect_handleSaveCamera_withValidCameraDto_returnCreated() throws Exception {
+
+        // arrange
         Camera camera = new Camera();
         camera.setCameraName(cameraDto.getCameraName());
         camera.setFirmwareVersion(cameraDto.getFirmwareVersion());
 
-        given(cameraService.saveCamera(ArgumentMatchers.any(Camera.class))).willReturn(camera);
+        // act
+        given(cameraService.handleSaveCamera(ArgumentMatchers.any(Camera.class))).willReturn(camera);
 
         ResultActions response = mockMvc.perform(post("/api/v1/onboard")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(cameraDto)));
 
-        response.andExpect(MockMvcResultMatchers.status().isOk())
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().is(201))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.cameraName", CoreMatchers.is(cameraDto.getCameraName())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.firmwareVersion", CoreMatchers.is(cameraDto.getFirmwareVersion())));
+    }
+
+    @Test
+    public void expect_handleSaveCamera_withNullCameraName_returnBadRequest() throws Exception {
+
+        // arrange
+        cameraDto.setCameraName(null);
+
+        // act
+        ResultActions response = mockMvc.perform(post("/api/v1/onboard")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(cameraDto)));
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void expect_handleSaveCamera_withNullFirmwareVersion_returnBadRequest() throws Exception {
+
+        // arrange
+        cameraDto.setFirmwareVersion(null);
+
+        // act
+        ResultActions response = mockMvc.perform(post("/api/v1/onboard")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(cameraDto)));
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 }
