@@ -1,16 +1,15 @@
 package com.onboarding.camera.cameraonboarding.service;
 
 import com.onboarding.camera.cameraonboarding.entity.Camera;
-import java.util.List;
-import java.util.UUID;
 
 public interface CameraService {
 
-    List<Camera> getAllCameras();
+    /**
+     * this method is used for saving camera_metadata
+     *
+     * @param camera Metadata
+     * @return persistedCameraMetadata
+     */
 
-    Camera getCameraById(UUID cameraId);
-
-    Camera saveCamera(Camera camera);
-
-    void deleteCameraById(UUID cameraId);
+    Camera handleSaveCamera(Camera camera);
 }
