@@ -2,16 +2,19 @@ package com.onboarding.camera.cameraonboarding.service;
 
 import com.onboarding.camera.cameraonboarding.dao.CameraRepository;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
+import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
+import com.onboarding.camera.cameraonboarding.rest.CameraRestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class CameraServiceImpl implements CameraService {
 
-    private CameraRepository cameraRepository;
+    private final CameraRepository cameraRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(CameraRestController.class);
 
     @Autowired
     public CameraServiceImpl(CameraRepository cameraRepository) {
@@ -19,34 +22,16 @@ public class CameraServiceImpl implements CameraService {
     }
 
     @Override
-    public List<Camera> getAllCameras() {
-        return cameraRepository.findAll();
-    }
+    public Camera handleSaveCamera(Camera camera) {
 
-    @Override
-    public Camera getCameraById(UUID cameraId) {
-
-        Optional<Camera> result = cameraRepository.findById(cameraId);
-
-        Camera camera = null;
-
-        if (result.isPresent()) {
-            camera = result.get();
+        try {
+            Camera savedCamera = cameraRepository.save(camera);
+            logger.info("Saved camera with ID: {}", savedCamera.getCamId());
+            return savedCamera;
+        } catch (Exception ex) {
+            logger.error("Exception occurred while saving camera: {}", ex.getMessage());
+            throw new CameraNotFoundException("Error occurred while saving camera: " + ex.getMessage());
         }
-        else {
-            throw new RuntimeException("Camera not found with id: " + cameraId);
-        }
-
-        return camera;
     }
 
-    @Override
-    public Camera saveCamera(Camera camera) {
-        return cameraRepository.save(camera);
-    }
-
-    @Override
-    public void deleteCameraById(UUID cameraId) {
-        cameraRepository.deleteById(cameraId);
-    }
 }
