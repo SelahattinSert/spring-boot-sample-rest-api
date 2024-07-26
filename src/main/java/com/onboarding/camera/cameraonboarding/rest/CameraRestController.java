@@ -5,6 +5,7 @@ import com.onboarding.camera.cameraonboarding.dto.CameraDto;
 import com.onboarding.camera.cameraonboarding.dto.CameraResponse;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class CameraRestController {
     }
 
     @PostMapping("/onboard")
-    public ResponseEntity<CameraResponse> saveCamera(@RequestBody CameraDto cameraDto) {
+    public ResponseEntity<CameraResponse> saveCamera(@Valid @RequestBody CameraDto cameraDto) {
 
         Camera camera = cameraDtoConverter.toEntity(cameraDto);
         Camera savedCamera = cameraService.handleSaveCamera(camera);
