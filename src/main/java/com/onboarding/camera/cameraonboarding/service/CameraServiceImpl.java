@@ -2,11 +2,10 @@ package com.onboarding.camera.cameraonboarding.service;
 
 import com.onboarding.camera.cameraonboarding.dao.CameraRepository;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
-import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
+import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedException;
 import com.onboarding.camera.cameraonboarding.rest.CameraRestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,7 +15,6 @@ public class CameraServiceImpl implements CameraService {
 
     private static final Logger logger = LoggerFactory.getLogger(CameraRestController.class);
 
-    @Autowired
     public CameraServiceImpl(CameraRepository cameraRepository) {
         this.cameraRepository = cameraRepository;
     }
@@ -30,7 +28,7 @@ public class CameraServiceImpl implements CameraService {
             return savedCamera;
         } catch (Exception ex) {
             logger.error("Exception occurred while saving camera: {}", ex.getMessage());
-            throw new CameraNotFoundException("Error occurred while saving camera: " + ex.getMessage());
+            throw new CameraNotCreatedException("Error occurred while saving camera: " + ex.getMessage());
         }
     }
 
