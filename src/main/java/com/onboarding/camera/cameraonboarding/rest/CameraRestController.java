@@ -6,7 +6,6 @@ import com.onboarding.camera.cameraonboarding.dto.CameraResponse;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +21,6 @@ public class CameraRestController {
 
     private final CameraDtoConverter cameraDtoConverter;
 
-    @Autowired
     public CameraRestController(CameraService cameraService, CameraDtoConverter cameraDtoConverter) {
         this.cameraService = cameraService;
         this.cameraDtoConverter = cameraDtoConverter;
