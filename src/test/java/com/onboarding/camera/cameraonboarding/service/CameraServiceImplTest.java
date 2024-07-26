@@ -66,7 +66,7 @@ class CameraServiceImplTest {
                 .isInstanceOf(CameraNotCreatedException.class);
 
         // verify
-        verify(cameraRepository, never()).save(Mockito.any(Camera.class));
+        verify(cameraRepository, never()).save(camera);
     }
 
     @Test
@@ -81,6 +81,6 @@ class CameraServiceImplTest {
                 .isInstanceOf(CameraNotCreatedException.class);
 
         // verify
-        verify(cameraRepository, never()).save(Mockito.any(Camera.class));
+        verify(cameraRepository, never()).save(camera);
     }
 }
