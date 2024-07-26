@@ -19,11 +19,14 @@ class CameraRepositoryTest {
 
     private Camera camera;
 
+    private final String CAMERA_NAME = "Camera 1";
+    private final String FIRMWARE_VERSION = "v1.0";
+
     @BeforeEach
     void setUp() {
         camera = new Camera();
-        camera.setCameraName("Camera 1");
-        camera.setFirmwareVersion("v1.0");
+        camera.setCameraName(CAMERA_NAME);
+        camera.setFirmwareVersion(FIRMWARE_VERSION);
     }
 
     @Test
@@ -34,8 +37,8 @@ class CameraRepositoryTest {
 
         // assert
         Assertions.assertThat(savedCamera).isNotNull();
-        Assertions.assertThat(savedCamera.getCameraName()).isEqualTo("Camera 1");
-        Assertions.assertThat(savedCamera.getFirmwareVersion()).isEqualTo("v1.0");
+        Assertions.assertThat(savedCamera.getCameraName()).isEqualTo(CAMERA_NAME);
+        Assertions.assertThat(savedCamera.getFirmwareVersion()).isEqualTo(FIRMWARE_VERSION);
     }
 
     @Test

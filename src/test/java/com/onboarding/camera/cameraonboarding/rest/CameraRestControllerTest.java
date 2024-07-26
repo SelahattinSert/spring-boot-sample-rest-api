@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @WebMvcTest(controllers = CameraRestController.class)
@@ -37,11 +39,14 @@ class CameraRestControllerTest {
 
     private CameraDto cameraDto;
 
+    private final String CAMERA_NAME = "Camera 1";
+    private final String FIRMWARE_VERSION = "v1.0";
+
     @BeforeEach
     void setUp() {
         cameraDto = new CameraDto();
-        cameraDto.setCameraName("Camera 1");
-        cameraDto.setFirmwareVersion("v1.0");
+        cameraDto.setCameraName(CAMERA_NAME);
+        cameraDto.setFirmwareVersion(FIRMWARE_VERSION);
     }
 
     @Test
@@ -49,8 +54,8 @@ class CameraRestControllerTest {
 
         // arrange
         Camera camera = new Camera();
-        camera.setCameraName(cameraDto.getCameraName());
-        camera.setFirmwareVersion(cameraDto.getFirmwareVersion());
+        camera.setCameraName(CAMERA_NAME);
+        camera.setFirmwareVersion(FIRMWARE_VERSION);
 
         // act
         given(cameraService.handleSaveCamera(ArgumentMatchers.any(Camera.class))).willReturn(camera);
@@ -61,8 +66,11 @@ class CameraRestControllerTest {
 
         // assert
         response.andExpect(MockMvcResultMatchers.status().is(201))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.cameraName", CoreMatchers.is(cameraDto.getCameraName())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.firmwareVersion", CoreMatchers.is(cameraDto.getFirmwareVersion())));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.cameraName", CoreMatchers.is(CAMERA_NAME)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.firmwareVersion", CoreMatchers.is(FIRMWARE_VERSION)));
+
+        // verify
+        verify(cameraService).handleSaveCamera(ArgumentMatchers.any(Camera.class));
     }
 
     @Test
@@ -78,6 +86,9 @@ class CameraRestControllerTest {
 
         // assert
         response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        //verify
+        verify(cameraService, never()).handleSaveCamera(ArgumentMatchers.any(Camera.class));
     }
 
     @Test
@@ -93,5 +104,8 @@ class CameraRestControllerTest {
 
         // assert
         response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        //verify
+        verify(cameraService, never()).handleSaveCamera(ArgumentMatchers.any(Camera.class));
     }
 }
