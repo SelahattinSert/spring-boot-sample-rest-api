@@ -1,8 +1,8 @@
 package com.onboarding.camera.cameraonboarding.exception;
 
-public class CameraNotFoundException extends RuntimeException {
+public class CameraNotCreatedException extends RuntimeException {
 
-    public CameraNotFoundException(String message) {
+    public CameraNotCreatedException(String message) {
         super(message);
     }
 }

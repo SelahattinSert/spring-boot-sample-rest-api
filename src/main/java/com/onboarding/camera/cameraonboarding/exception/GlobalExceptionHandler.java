@@ -12,17 +12,17 @@ import java.util.Date;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CameraNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(CameraNotCreatedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleCameraNotFoundException(CameraNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleCameraNotFoundException(CameraNotCreatedException ex) {
         ErrorResponse errorResponse = new ErrorResponse();
 
-        errorResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
+        errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.setMessage(ex.getMessage());
         errorResponse.setTimestamp(new Date());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler
