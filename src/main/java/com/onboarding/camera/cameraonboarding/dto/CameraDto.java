@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CameraDto {
+
     @NotBlank(message = "Camera name cannot be blank")
     @Size(min = 2, max = 100, message = "Camera name should be up to 100 characters")
     private String cameraName;
