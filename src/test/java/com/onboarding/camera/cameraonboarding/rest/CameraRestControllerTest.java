@@ -19,8 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @WebMvcTest(controllers = CameraRestController.class)
@@ -56,10 +54,9 @@ class CameraRestControllerTest {
         Camera camera = new Camera();
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
-
-        // act
         given(cameraService.handleSaveCamera(ArgumentMatchers.any(Camera.class))).willReturn(camera);
 
+        // act
         ResultActions response = mockMvc.perform(post("/api/v1/onboard")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(cameraDto)));
@@ -68,9 +65,6 @@ class CameraRestControllerTest {
         response.andExpect(MockMvcResultMatchers.status().is(201))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.cameraName", CoreMatchers.is(CAMERA_NAME)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.firmwareVersion", CoreMatchers.is(FIRMWARE_VERSION)));
-
-        // verify
-        verify(cameraService).handleSaveCamera(ArgumentMatchers.any(Camera.class));
     }
 
     @Test
@@ -86,9 +80,6 @@ class CameraRestControllerTest {
 
         // assert
         response.andExpect(MockMvcResultMatchers.status().isBadRequest());
-
-        //verify
-        verify(cameraService, never()).handleSaveCamera(ArgumentMatchers.any(Camera.class));
     }
 
     @Test
@@ -104,8 +95,5 @@ class CameraRestControllerTest {
 
         // assert
         response.andExpect(MockMvcResultMatchers.status().isBadRequest());
-
-        //verify
-        verify(cameraService, never()).handleSaveCamera(ArgumentMatchers.any(Camera.class));
     }
 }

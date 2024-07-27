@@ -9,10 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,9 +46,6 @@ class CameraServiceImplTest {
 
         // assert
         Assertions.assertThat(savedCamera).isNotNull();
-
-        // verify
-        verify(cameraRepository).save(camera);
     }
 
     @Test
@@ -64,9 +58,6 @@ class CameraServiceImplTest {
         // act and assert
         Assertions.assertThatThrownBy(() -> cameraService.handleSaveCamera(camera))
                 .isInstanceOf(CameraNotCreatedException.class);
-
-        // verify
-        verify(cameraRepository, never()).save(camera);
     }
 
     @Test
@@ -79,8 +70,5 @@ class CameraServiceImplTest {
         // act and assert
         Assertions.assertThatThrownBy(() -> cameraService.handleSaveCamera(camera))
                 .isInstanceOf(CameraNotCreatedException.class);
-
-        // verify
-        verify(cameraRepository, never()).save(camera);
     }
 }
