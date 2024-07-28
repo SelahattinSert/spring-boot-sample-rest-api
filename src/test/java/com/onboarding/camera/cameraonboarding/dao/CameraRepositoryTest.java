@@ -2,16 +2,16 @@ package com.onboarding.camera.cameraonboarding.dao;
 
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import org.assertj.core.api.Assertions;
-import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @DataJpaTest
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.NONE)
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 class CameraRepositoryTest {
 
     @Autowired
@@ -48,8 +48,10 @@ class CameraRepositoryTest {
         camera.setCameraName(null);
 
         // act and assert
-        Assertions.assertThatThrownBy(() -> cameraRepository.save(camera))
-                .isInstanceOf(ConstraintViolationException.class);
+        Assertions.assertThatThrownBy(() -> {
+            cameraRepository.save(camera);
+            cameraRepository.flush();
+        }).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
@@ -59,7 +61,9 @@ class CameraRepositoryTest {
         camera.setFirmwareVersion(null);
 
         // act and assert
-        Assertions.assertThatThrownBy(() -> cameraRepository.save(camera))
-                .isInstanceOf(ConstraintViolationException.class);
+        Assertions.assertThatThrownBy(() -> {
+            cameraRepository.save(camera);
+            cameraRepository.flush();
+        }).isInstanceOf(DataIntegrityViolationException.class);
     }
 }

@@ -3,6 +3,7 @@ package com.onboarding.camera.cameraonboarding.service;
 import com.onboarding.camera.cameraonboarding.dao.CameraRepository;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedException;
+import com.onboarding.camera.cameraonboarding.service.impl.CameraServiceImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,6 +47,7 @@ class CameraServiceImplTest {
 
         // assert
         Assertions.assertThat(savedCamera).isNotNull();
+        Assertions.assertThat(savedCamera.getCreatedAt()).isNotNull();
     }
 
     @Test
