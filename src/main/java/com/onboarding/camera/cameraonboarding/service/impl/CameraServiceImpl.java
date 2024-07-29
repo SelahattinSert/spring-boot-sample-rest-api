@@ -8,7 +8,6 @@ import com.onboarding.camera.cameraonboarding.service.CameraService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
 
 @Service
 public class CameraServiceImpl implements CameraService {
@@ -17,15 +16,18 @@ public class CameraServiceImpl implements CameraService {
 
     private static final Logger logger = LoggerFactory.getLogger(CameraRestController.class);
 
-    public CameraServiceImpl(CameraRepository cameraRepository) {
+    private final DateTimeFactoryImpl dateTimeFactoryImpl;
+
+    public CameraServiceImpl(CameraRepository cameraRepository, DateTimeFactoryImpl dateTimeFactoryImpl) {
         this.cameraRepository = cameraRepository;
+        this.dateTimeFactoryImpl = dateTimeFactoryImpl;
     }
 
     @Override
     public Camera handleSaveCamera(Camera camera) {
 
         try {
-            camera.setCreatedAt(LocalDateTime.now());
+            camera.setCreatedAt(dateTimeFactoryImpl.now());
             Camera savedCamera = cameraRepository.save(camera);
             logger.info("Saved camera with ID: {}", savedCamera.getCamId());
             return savedCamera;
