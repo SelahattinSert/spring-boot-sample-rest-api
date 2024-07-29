@@ -4,7 +4,6 @@ import com.onboarding.camera.cameraonboarding.dao.CameraRepository;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedException;
 import com.onboarding.camera.cameraonboarding.service.impl.CameraServiceImpl;
-import com.onboarding.camera.cameraonboarding.service.impl.DateTimeFactoryImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,7 +22,7 @@ class CameraServiceImplTest {
     private CameraRepository cameraRepository;
 
     @Mock
-    private DateTimeFactoryImpl dateTimeFactory;
+    private DateTimeFactory dateTimeFactory;
 
     @InjectMocks
     private CameraServiceImpl cameraService;
@@ -35,7 +35,6 @@ class CameraServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        when(dateTimeFactory.now()).thenReturn(CREATED_AT);
         camera = new Camera();
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
@@ -62,6 +61,9 @@ class CameraServiceImplTest {
         Assertions.assertThat(savedCamera.getCameraName()).isEqualTo(CAMERA_NAME);
         Assertions.assertThat(savedCamera.getFirmwareVersion()).isNotNull();
         Assertions.assertThat(savedCamera.getFirmwareVersion()).isEqualTo(FIRMWARE_VERSION);
+
+        verify(dateTimeFactory).now();
+        verify(cameraRepository).save(camera);
     }
 
     @Test
@@ -99,5 +101,7 @@ class CameraServiceImplTest {
         // act and assert
         Assertions.assertThatThrownBy(() -> cameraService.handleSaveCamera(camera))
                 .isInstanceOf(CameraNotCreatedException.class);
+
+        verify(dateTimeFactory).now();
     }
 }
