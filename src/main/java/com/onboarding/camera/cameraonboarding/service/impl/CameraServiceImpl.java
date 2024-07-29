@@ -16,18 +16,18 @@ public class CameraServiceImpl implements CameraService {
 
     private static final Logger logger = LoggerFactory.getLogger(CameraRestController.class);
 
-    private final DateTimeFactoryImpl dateTimeFactoryImpl;
+    private final DateTimeFactoryImpl dateTimeFactory;
 
     public CameraServiceImpl(CameraRepository cameraRepository, DateTimeFactoryImpl dateTimeFactoryImpl) {
         this.cameraRepository = cameraRepository;
-        this.dateTimeFactoryImpl = dateTimeFactoryImpl;
+        this.dateTimeFactory = dateTimeFactoryImpl;
     }
 
     @Override
     public Camera handleSaveCamera(Camera camera) {
 
         try {
-            camera.setCreatedAt(dateTimeFactoryImpl.now());
+            camera.setCreatedAt(dateTimeFactory.now());
             Camera savedCamera = cameraRepository.save(camera);
             logger.info("Saved camera with ID: {}", savedCamera.getCamId());
             return savedCamera;
