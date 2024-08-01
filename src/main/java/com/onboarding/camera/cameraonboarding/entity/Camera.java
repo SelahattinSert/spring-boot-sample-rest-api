@@ -26,10 +26,10 @@ public class Camera {
     @Column(name = "image_id")
     private  UUID imageId;
 
-    @Column(name = "camera_name")
+    @Column(name = "camera_name", nullable = false)
     private String cameraName;
 
-    @Column(name = "firmware_version")
+    @Column(name = "firmware_version", nullable = false)
     private String firmwareVersion;
 
     @Column(name = "container_name")
