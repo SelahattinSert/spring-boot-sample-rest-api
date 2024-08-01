@@ -1,6 +1,6 @@
 package com.onboarding.camera.cameraonboarding.service.impl;
 
-import com.onboarding.camera.cameraonboarding.dao.CameraRepository;
+import com.onboarding.camera.cameraonboarding.repository.CameraRepository;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedException;
 import com.onboarding.camera.cameraonboarding.rest.CameraRestController;
