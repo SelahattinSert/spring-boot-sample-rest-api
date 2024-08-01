@@ -37,5 +37,18 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(CameraNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleCameraNotFoundException(CameraNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
+
+        errorResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
+        errorResponse.setMessage(ex.getMessage());
+        errorResponse.setTimestamp(new Date());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
 }
 
