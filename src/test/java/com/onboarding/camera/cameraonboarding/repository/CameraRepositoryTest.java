@@ -24,7 +24,7 @@ class CameraRepositoryTest {
     @Autowired
     private PlatformTransactionManager transactionManager;
 
-    TransactionTemplate transactionTemplate;
+    private TransactionTemplate transactionTemplate;
 
     private Camera camera;
 

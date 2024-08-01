@@ -21,17 +21,18 @@ class DateTimeFactoryImplTest {
     @InjectMocks
     private DateTimeFactoryImpl dateTimeFactory;
 
+    private final String actualTime = dateTimeFactory.now().toString();
+    private final String TEST_TIME_INSTANT = "2024-07-29T10:00:00Z";
+    private final String TEST_ZONE_ID = "UCT";
+
     @Test
     public void expect_now_withValidClock_returnsLocalDateTime() {
 
         // arrange
-        given(clock.instant()).willReturn(Instant.parse("2024-07-29T10:00:00Z"));
-        given(clock.getZone()).willReturn(ZoneId.of("UCT"));
-
-        // act
-        String actualTime = dateTimeFactory.now().toString();
+        given(clock.instant()).willReturn(Instant.parse(TEST_TIME_INSTANT));
+        given(clock.getZone()).willReturn(ZoneId.of(TEST_ZONE_ID));
 
         // assert
-        assertThat(actualTime).isEqualTo("2024-07-29T10:00");
+        assertThat(actualTime).isEqualTo(TEST_TIME_INSTANT);
     }
 }
