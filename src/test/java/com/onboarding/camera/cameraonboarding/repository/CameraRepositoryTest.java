@@ -1,4 +1,4 @@
-package com.onboarding.camera.cameraonboarding.dao;
+package com.onboarding.camera.cameraonboarding.repository;
 
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import org.assertj.core.api.Assertions;
@@ -9,6 +9,7 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import java.time.LocalDateTime;
@@ -21,7 +22,9 @@ class CameraRepositoryTest {
     private CameraRepository cameraRepository;
 
     @Autowired
-    private TransactionTemplate transactionTemplate;
+    private PlatformTransactionManager transactionManager;
+
+    TransactionTemplate transactionTemplate;
 
     private Camera camera;
 
@@ -35,6 +38,7 @@ class CameraRepositoryTest {
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
         camera.setCreatedAt(CREATED_AT);
+        transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
     @Test
@@ -55,8 +59,8 @@ class CameraRepositoryTest {
         Assertions.assertThat(savedCamera.getCamId()).isNotNull();
     }
 
-    @Transactional
     @Test
+    @Transactional
     public void expect_save_cameraWithNullName_throwsException() {
 
         // arrange
@@ -65,14 +69,14 @@ class CameraRepositoryTest {
         // act and assert
         Assertions.assertThatThrownBy(() ->
                 transactionTemplate.execute(status -> {
-                    cameraRepository.save(camera);
+                    cameraRepository.saveAndFlush(camera);
                     return null;
                 })
         ).isInstanceOf(DataIntegrityViolationException.class);
     }
 
-    @Transactional
     @Test
+    @Transactional
     public void expect_save_cameraWithNullFirmwareVersion_throwsException() {
 
         // arrange
@@ -81,7 +85,7 @@ class CameraRepositoryTest {
         // act and assert
         Assertions.assertThatThrownBy(() ->
                 transactionTemplate.execute(status -> {
-                    cameraRepository.save(camera);
+                    cameraRepository.saveAndFlush(camera);
                     return null;
                 })
         ).isInstanceOf(DataIntegrityViolationException.class);
