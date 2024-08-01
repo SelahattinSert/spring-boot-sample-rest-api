@@ -1,28 +1,27 @@
 package com.onboarding.camera.cameraonboarding.dao;
 
 import com.onboarding.camera.cameraonboarding.entity.Camera;
-import com.onboarding.camera.cameraonboarding.service.impl.DateTimeFactoryImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import java.time.LocalDateTime;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 class CameraRepositoryTest {
 
-    @Mock
-    private DateTimeFactoryImpl dateTimeFactory;
-
     @Autowired
     private CameraRepository cameraRepository;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     private Camera camera;
 
@@ -32,8 +31,6 @@ class CameraRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        Mockito.when(dateTimeFactory.now()).thenReturn(CREATED_AT);
-
         camera = new Camera();
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
@@ -41,6 +38,7 @@ class CameraRepositoryTest {
     }
 
     @Test
+    @Transactional
     public void expect_save_cameraRepository_saveAll_returnsSavedCamera() {
 
         // act
@@ -48,11 +46,16 @@ class CameraRepositoryTest {
 
         // assert
         Assertions.assertThat(savedCamera).isNotNull();
+        Assertions.assertThat(savedCamera.getCameraName()).isNotNull();
         Assertions.assertThat(savedCamera.getCameraName()).isEqualTo(CAMERA_NAME);
+        Assertions.assertThat(savedCamera.getFirmwareVersion()).isNotNull();
         Assertions.assertThat(savedCamera.getFirmwareVersion()).isEqualTo(FIRMWARE_VERSION);
+        Assertions.assertThat(savedCamera.getCreatedAt()).isNotNull();
         Assertions.assertThat(savedCamera.getCreatedAt()).isEqualTo(CREATED_AT);
+        Assertions.assertThat(savedCamera.getCamId()).isNotNull();
     }
 
+    @Transactional
     @Test
     public void expect_save_cameraWithNullName_throwsException() {
 
@@ -60,12 +63,15 @@ class CameraRepositoryTest {
         camera.setCameraName(null);
 
         // act and assert
-        Assertions.assertThatThrownBy(() -> {
-            cameraRepository.save(camera);
-            cameraRepository.flush();
-        }).isInstanceOf(DataIntegrityViolationException.class);
+        Assertions.assertThatThrownBy(() ->
+                transactionTemplate.execute(status -> {
+                    cameraRepository.save(camera);
+                    return null;
+                })
+        ).isInstanceOf(DataIntegrityViolationException.class);
     }
 
+    @Transactional
     @Test
     public void expect_save_cameraWithNullFirmwareVersion_throwsException() {
 
@@ -73,9 +79,11 @@ class CameraRepositoryTest {
         camera.setFirmwareVersion(null);
 
         // act and assert
-        Assertions.assertThatThrownBy(() -> {
-            cameraRepository.save(camera);
-            cameraRepository.flush();
-        }).isInstanceOf(DataIntegrityViolationException.class);
+        Assertions.assertThatThrownBy(() ->
+                transactionTemplate.execute(status -> {
+                    cameraRepository.save(camera);
+                    return null;
+                })
+        ).isInstanceOf(DataIntegrityViolationException.class);
     }
 }
