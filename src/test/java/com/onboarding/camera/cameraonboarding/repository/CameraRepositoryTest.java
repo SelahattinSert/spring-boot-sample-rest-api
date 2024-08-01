@@ -1,6 +1,7 @@
 package com.onboarding.camera.cameraonboarding.repository;
 
 import com.onboarding.camera.cameraonboarding.entity.Camera;
+import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,10 +10,13 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
@@ -31,6 +35,7 @@ class CameraRepositoryTest {
     private final String CAMERA_NAME = "Camera 1";
     private final String FIRMWARE_VERSION = "v1.0";
     private final LocalDateTime CREATED_AT = LocalDateTime.of(2024, 7, 29, 10, 0);
+    private final UUID NON_EXISTING_UUID = UUID.fromString("ef556dc0-0ddc-4f39-a96d-6886a54eee54");
 
     @BeforeEach
     void setUp() {
@@ -89,5 +94,52 @@ class CameraRepositoryTest {
                     return null;
                 })
         ).isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    public void expect_findById_cameraRepository_returnsCamera() {
+
+        // arrange
+        transactionTemplate.execute(status -> {
+            cameraRepository.save(camera);
+            return null;
+        });
+
+        // act
+        Optional<Camera> foundCamera = cameraRepository.findById(camera.getCamId());
+
+        // act and assert
+        Assertions.assertThat(foundCamera).isPresent();
+        Assertions.assertThat(foundCamera.get().getCamId()).isEqualTo(camera.getCamId());
+    }
+
+    @Test
+    public void expect_findById_cameraWithNullCamId_throwsException() {
+
+        // arrange
+        camera.setCamId(null);
+
+        // act and assert
+        Assertions.assertThatThrownBy(() ->
+                cameraRepository.findById(camera.getCamId())
+        ).isInstanceOf(InvalidDataAccessApiUsageException.class);
+    }
+
+    @Test
+    public void expect_findById_cameraWithNotExistingCamId_throwsException() {
+
+        // arrange
+        camera.setCamId(NON_EXISTING_UUID);
+
+        // act
+        Optional<Camera> foundCamera = cameraRepository.findById(NON_EXISTING_UUID);
+
+        // assert
+        Assertions.assertThatThrownBy(() -> {
+                    if (foundCamera.isEmpty()) {
+                        throw new CameraNotFoundException("Camera not found with ID: " + NON_EXISTING_UUID);
+                    }
+                }
+        ).isInstanceOf(CameraNotFoundException.class);
     }
 }

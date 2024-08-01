@@ -1,5 +1,6 @@
 package com.onboarding.camera.cameraonboarding.service;
 
+import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.repository.CameraRepository;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedException;
@@ -12,6 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +34,9 @@ class CameraServiceImplTest {
 
     private final String CAMERA_NAME = "Camera 1";
     private final String FIRMWARE_VERSION = "v1.0";
+    private final UUID CAMERA_ID = UUID.randomUUID();
+    private final UUID NON_EXISTING_UUID = UUID.fromString("ef556dc0-0ddc-4f39-a96d-6886a54eee54");
+    private final LocalDateTime NOW = LocalDateTime.now();
     private final LocalDateTime CREATED_AT = LocalDateTime.of(2024, 7, 29, 10, 0);
 
     @BeforeEach
@@ -103,5 +109,39 @@ class CameraServiceImplTest {
                 .isInstanceOf(CameraNotCreatedException.class);
 
         verify(dateTimeFactory).now();
+    }
+
+    @Test
+    void expect_handleInitializeCamera_withValidCamera_returnVoid() {
+
+        // arrange
+        camera.setCamId(CAMERA_ID);
+        when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
+        when(dateTimeFactory.now()).thenReturn(NOW);
+        when(cameraRepository.save(camera)).thenReturn(camera);
+
+        // act
+        cameraService.handleInitializeCamera(CAMERA_ID);
+
+        // assert
+        Assertions.assertThat(camera.getInitializedAt()).isNotNull();
+        Assertions.assertThat(dateTimeFactory.now()).isEqualTo(camera.getInitializedAt());
+
+        verify(cameraRepository).findById(CAMERA_ID);
+        verify(cameraRepository).save(camera);
+    }
+
+    @Test
+    void expect_handleInitializeCamera_withNonExistingCamId_throwsException() {
+
+        // arrange
+        camera.setCamId(NON_EXISTING_UUID);
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> cameraService.handleInitializeCamera(CAMERA_ID))
+                .isInstanceOf(CameraNotFoundException.class)
+                .hasMessageContaining("Camera not found with id: " + CAMERA_ID);
+
+        verify(cameraRepository).findById(CAMERA_ID);
     }
 }

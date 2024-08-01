@@ -20,8 +20,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import java.util.UUID;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = CameraRestController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -40,14 +43,18 @@ class CameraRestControllerTest {
 
     private CameraDto cameraDto;
 
+    private Camera camera;
+
     private final String CAMERA_NAME = "Camera 1";
     private final String FIRMWARE_VERSION = "v1.0";
+    private final UUID CAMERA_ID = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
         cameraDto = new CameraDto();
         cameraDto.setCameraName(CAMERA_NAME);
         cameraDto.setFirmwareVersion(FIRMWARE_VERSION);
+        camera = new Camera();
     }
 
     @Test
@@ -65,7 +72,7 @@ class CameraRestControllerTest {
                 .content(objectMapper.writeValueAsString(cameraDto)));
 
         // assert
-        response.andExpect(MockMvcResultMatchers.status().is(201))
+        response.andExpect(status().is(201))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.cameraName", CoreMatchers.is(CAMERA_NAME)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.firmwareVersion", CoreMatchers.is(FIRMWARE_VERSION)));
     }
@@ -82,7 +89,7 @@ class CameraRestControllerTest {
                 .content(objectMapper.writeValueAsString(cameraDto)));
 
         // assert
-        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+        response.andExpect(status().isBadRequest());
     }
 
     @Test
@@ -97,6 +104,34 @@ class CameraRestControllerTest {
                 .content(objectMapper.writeValueAsString(cameraDto)));
 
         // assert
-        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+        response.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void expect_handleInitializeCamera_withValidCamera_returnOk() throws Exception {
+
+        // arrange
+        camera.setCamId(CAMERA_ID);
+
+        // act
+        ResultActions response = mockMvc.perform(patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // assert
+        response.andExpect(status().isOk());
+    }
+
+    @Test
+    public void expect_handleInitializeCamera_withNullUUID_returnBadRequest() throws Exception {
+
+        // arrange
+        camera.setCamId(null);
+
+        // act
+        ResultActions response = mockMvc.perform(patch("/api/v1/{camera_id}/initialize", camera.getCamId()))
+                .andExpect(status().is4xxClientError());
+
+        // assert
+        response.andExpect(status().is4xxClientError());
     }
 }
