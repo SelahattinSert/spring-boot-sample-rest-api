@@ -6,8 +6,11 @@ import com.onboarding.camera.cameraonboarding.dto.CameraResponse;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,5 +37,13 @@ public class CameraRestController {
         CameraResponse cameraResponse = cameraDtoConverter.toCameraResponse(savedCamera);
 
         return new ResponseEntity<>(cameraResponse, HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/{camera_id}/initialize")
+    public ResponseEntity<Void> initializeCamera(@PathVariable UUID camera_id) {
+
+        cameraService.handleInitializeCamera(camera_id);
+
+        return ResponseEntity.ok().build();
     }
 }
