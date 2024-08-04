@@ -9,6 +9,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,6 +31,9 @@ class CameraServiceImplTest {
 
     @InjectMocks
     private CameraServiceImpl cameraService;
+
+    @Captor
+    ArgumentCaptor<Camera> cameraArgumentCaptor;
 
     private Camera camera;
 
@@ -124,24 +129,26 @@ class CameraServiceImplTest {
         cameraService.handleInitializeCamera(CAMERA_ID);
 
         // assert
-        Assertions.assertThat(camera.getInitializedAt()).isNotNull();
-        Assertions.assertThat(dateTimeFactory.now()).isEqualTo(camera.getInitializedAt());
+        verify(cameraRepository).save(cameraArgumentCaptor.capture());
+        Camera capturedCamera = cameraArgumentCaptor.getValue();
+
+        Assertions.assertThat(capturedCamera.getInitializedAt()).isNotNull();
+        Assertions.assertThat(capturedCamera.getInitializedAt()).isEqualTo(NOW);
 
         verify(cameraRepository).findById(CAMERA_ID);
-        verify(cameraRepository).save(camera);
     }
 
     @Test
     void expect_handleInitializeCamera_withNonExistingCamId_throwsException() {
 
         // arrange
-        camera.setCamId(NON_EXISTING_UUID);
+        when(cameraRepository.findById(NON_EXISTING_UUID)).thenReturn(Optional.empty());
 
         // act and assert
-        Assertions.assertThatThrownBy(() -> cameraService.handleInitializeCamera(CAMERA_ID))
+        Assertions.assertThatThrownBy(() -> cameraService.handleInitializeCamera(NON_EXISTING_UUID))
                 .isInstanceOf(CameraNotFoundException.class)
-                .hasMessageContaining("Camera not found with id: " + CAMERA_ID);
+                .hasMessageContaining("Camera not found with id: " + NON_EXISTING_UUID);
 
-        verify(cameraRepository).findById(CAMERA_ID);
+        verify(cameraRepository).findById(NON_EXISTING_UUID);
     }
 }

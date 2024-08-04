@@ -1,7 +1,6 @@
 package com.onboarding.camera.cameraonboarding.repository;
 
 import com.onboarding.camera.cameraonboarding.entity.Camera;
-import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -135,11 +134,6 @@ class CameraRepositoryTest {
         Optional<Camera> foundCamera = cameraRepository.findById(NON_EXISTING_UUID);
 
         // assert
-        Assertions.assertThatThrownBy(() -> {
-                    if (foundCamera.isEmpty()) {
-                        throw new CameraNotFoundException("Camera not found with ID: " + NON_EXISTING_UUID);
-                    }
-                }
-        ).isInstanceOf(CameraNotFoundException.class);
+        Assertions.assertThat(foundCamera).isEmpty();
     }
 }

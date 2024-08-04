@@ -6,10 +6,12 @@ import com.onboarding.camera.cameraonboarding.dto.CameraDto;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
 import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,6 +24,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.UUID;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,6 +51,7 @@ class CameraRestControllerTest {
     private final String CAMERA_NAME = "Camera 1";
     private final String FIRMWARE_VERSION = "v1.0";
     private final UUID CAMERA_ID = UUID.randomUUID();
+    private final String INVALID_UUID = "invalid-uuid";
 
     @BeforeEach
     void setUp() {
@@ -62,6 +66,7 @@ class CameraRestControllerTest {
 
         // arrange
         Camera camera = new Camera();
+        camera.setCamId(CAMERA_ID);
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
         given(cameraService.handleSaveCamera(ArgumentMatchers.any(Camera.class))).willReturn(camera);
@@ -73,6 +78,7 @@ class CameraRestControllerTest {
 
         // assert
         response.andExpect(status().is(201))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.cameraId", CoreMatchers.is(CAMERA_ID.toString())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.cameraName", CoreMatchers.is(CAMERA_NAME)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.firmwareVersion", CoreMatchers.is(FIRMWARE_VERSION)));
     }
@@ -112,6 +118,7 @@ class CameraRestControllerTest {
 
         // arrange
         camera.setCamId(CAMERA_ID);
+        Mockito.doNothing().when(cameraService).handleInitializeCamera(CAMERA_ID);
 
         // act
         ResultActions response = mockMvc.perform(patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
@@ -119,6 +126,8 @@ class CameraRestControllerTest {
 
         // assert
         response.andExpect(status().isOk());
+
+        verify(cameraService).handleInitializeCamera(CAMERA_ID);
     }
 
     @Test
@@ -130,6 +139,22 @@ class CameraRestControllerTest {
         // act
         ResultActions response = mockMvc.perform(patch("/api/v1/{camera_id}/initialize", camera.getCamId()))
                 .andExpect(status().is4xxClientError());
+
+        // assert
+        response.andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void expect_handleInitializeCamera_withInvalidUUID_returnBadRequest() throws Exception {
+        // Arrange
+        String invalidCameraId = "123";
+
+        // act
+        ResultActions response = mockMvc.perform(patch("/api/v1/{camera_id}/initialize", invalidCameraId))
+                        .andExpect(status().is4xxClientError());
+
+        Assertions.assertEquals(UUID.fromString(CAMERA_ID.toString()), CAMERA_ID);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> UUID.fromString(INVALID_UUID));
 
         // assert
         response.andExpect(status().is4xxClientError());
