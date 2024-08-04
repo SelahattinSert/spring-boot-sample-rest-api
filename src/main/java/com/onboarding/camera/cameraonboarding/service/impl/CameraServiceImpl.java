@@ -43,9 +43,11 @@ public class CameraServiceImpl implements CameraService {
 
     @Override
     public void handleInitializeCamera(UUID cameraId) {
-
         try {
-            Camera camera = findCameraById(cameraId);
+            Camera camera = getCameraById(cameraId);
+            if (camera.getInitializedAt() != null  && !camera.getInitializedAt().toString().isBlank()) {
+                throw new RuntimeException("Camera already initialized");
+            }
             camera.setInitializedAt(dateTimeFactory.now());
             cameraRepository.save(camera);
             logger.info("Initialized camera with ID: {}", cameraId);
@@ -58,8 +60,7 @@ public class CameraServiceImpl implements CameraService {
         }
     }
 
-    @Override
-    public Camera findCameraById(UUID cameraId) {
+    public Camera getCameraById(UUID cameraId) {
 
         if (cameraId == null) {
             throw new IllegalArgumentException("Camera ID cannot be null");
