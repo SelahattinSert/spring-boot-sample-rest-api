@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onboarding.camera.cameraonboarding.converter.CameraDtoConverter;
 import com.onboarding.camera.cameraonboarding.dto.CameraDto;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
+import com.onboarding.camera.cameraonboarding.exception.CameraAlreadyInitializedException;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Assertions;
@@ -22,8 +23,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -52,6 +55,7 @@ class CameraRestControllerTest {
     private final String FIRMWARE_VERSION = "v1.0";
     private final UUID CAMERA_ID = UUID.randomUUID();
     private final String INVALID_UUID = "invalid-uuid";
+    private final LocalDateTime INITIALIZED_AT = LocalDateTime.of(2024, 8, 7, 10, 0);
 
     @BeforeEach
     void setUp() {
@@ -158,5 +162,22 @@ class CameraRestControllerTest {
 
         // assert
         response.andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void expect_handleInitializeCamera_withAlreadyInitializedCamera_returnConflict() throws Exception {
+
+        // arrange
+        doThrow(new CameraAlreadyInitializedException("Camera already initialized"))
+                .when(cameraService).handleInitializeCamera(CAMERA_ID);
+
+        // act
+        ResultActions response = mockMvc.perform(patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // assert
+        response.andExpect(status().isConflict());
+
+        verify(cameraService).handleInitializeCamera(CAMERA_ID);
     }
 }

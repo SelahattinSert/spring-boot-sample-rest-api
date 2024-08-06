@@ -1,5 +1,6 @@
 package com.onboarding.camera.cameraonboarding.service;
 
+import com.onboarding.camera.cameraonboarding.exception.CameraAlreadyInitializedException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.repository.CameraRepository;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
@@ -43,10 +44,12 @@ class CameraServiceImplTest {
     private final UUID NON_EXISTING_UUID = UUID.fromString("ef556dc0-0ddc-4f39-a96d-6886a54eee54");
     private final LocalDateTime NOW = LocalDateTime.now();
     private final LocalDateTime CREATED_AT = LocalDateTime.of(2024, 7, 29, 10, 0);
+    private final LocalDateTime INITIALIZED_AT = LocalDateTime.of(2024, 8, 7, 10, 0);
 
     @BeforeEach
     void setUp() {
         camera = new Camera();
+        camera.setCamId(CAMERA_ID);
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
         camera.setCreatedAt(CREATED_AT);
@@ -150,5 +153,20 @@ class CameraServiceImplTest {
                 .hasMessageContaining("Camera not found with id: " + NON_EXISTING_UUID);
 
         verify(cameraRepository).findById(NON_EXISTING_UUID);
+    }
+
+    @Test
+    void expect_handleInitializeCamera_withAlreadyInitializedCamera_throwsException() {
+
+        // arrange
+        camera.setInitializedAt(INITIALIZED_AT);
+        when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> cameraService.handleInitializeCamera(CAMERA_ID))
+                .isInstanceOf(CameraAlreadyInitializedException.class)
+                .hasMessageContaining("Camera already initialized");
+
+        verify(cameraRepository).findById(CAMERA_ID);
     }
 }
