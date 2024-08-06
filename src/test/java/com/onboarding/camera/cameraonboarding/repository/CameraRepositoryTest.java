@@ -127,9 +127,6 @@ class CameraRepositoryTest {
     @Test
     public void expect_findById_cameraWithNotExistingCamId_throwsException() {
 
-        // arrange
-        camera.setCamId(NON_EXISTING_UUID);
-
         // act
         Optional<Camera> foundCamera = cameraRepository.findById(NON_EXISTING_UUID);
 
