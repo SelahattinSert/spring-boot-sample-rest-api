@@ -23,7 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -55,7 +54,6 @@ class CameraRestControllerTest {
     private final String FIRMWARE_VERSION = "v1.0";
     private final UUID CAMERA_ID = UUID.randomUUID();
     private final String INVALID_UUID = "invalid-uuid";
-    private final LocalDateTime INITIALIZED_AT = LocalDateTime.of(2024, 8, 7, 10, 0);
 
     @BeforeEach
     void setUp() {
