@@ -178,7 +178,7 @@ class CameraServiceImplTest {
         // arrange
         when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
 
-        Mockito.doThrow(new CameraNotInitializedException("Error occurred while initializing camera"))
+        Mockito.doThrow(new RuntimeException("Error occurred while initializing camera"))
                 .when(cameraRepository).save(camera);
 
         // act and assert

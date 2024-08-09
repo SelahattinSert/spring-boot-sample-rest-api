@@ -52,9 +52,12 @@ public class CameraServiceImpl implements CameraService {
         } catch (CameraNotFoundException ex) {
             log.error("Camera not found with ID: {}", cameraId, ex);
             throw ex;
-        } catch (CameraNotInitializedException ex) {
+        } catch (Exception ex) {
             log.error("Exception occurred while initializing camera with ID: {}", cameraId, ex);
-            throw new CameraNotInitializedException("Error occurred while initializing camera: " + ex.getMessage());
+            if (ex instanceof CameraAlreadyInitializedException) { throw (CameraAlreadyInitializedException) ex; }
+            else {
+                throw new CameraNotInitializedException("Error occurred while initializing camera: " + ex.getMessage());
+            }
         }
     }
 
