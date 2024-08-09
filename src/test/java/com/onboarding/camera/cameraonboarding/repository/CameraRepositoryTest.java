@@ -5,32 +5,26 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 
 @DataJpaTest
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 class CameraRepositoryTest {
 
     @Autowired
     private CameraRepository cameraRepository;
-
-    @Autowired
-    private PlatformTransactionManager transactionManager;
-
-    private TransactionTemplate transactionTemplate;
 
     private Camera camera;
 
     private final String CAMERA_NAME = "Camera 1";
     private final String FIRMWARE_VERSION = "v1.0";
     private final LocalDateTime CREATED_AT = LocalDateTime.of(2024, 7, 29, 10, 0);
+    private final UUID NON_EXISTING_UUID = UUID.fromString("ef556dc0-0ddc-4f39-a96d-6886a54eee54");
 
     @BeforeEach
     void setUp() {
@@ -38,7 +32,6 @@ class CameraRepositoryTest {
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
         camera.setCreatedAt(CREATED_AT);
-        transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
     @Test
@@ -68,10 +61,7 @@ class CameraRepositoryTest {
 
         // act and assert
         Assertions.assertThatThrownBy(() ->
-                transactionTemplate.execute(status -> {
-                    cameraRepository.saveAndFlush(camera);
-                    return null;
-                })
+                cameraRepository.saveAndFlush(camera)
         ).isInstanceOf(DataIntegrityViolationException.class);
     }
 
@@ -84,10 +74,43 @@ class CameraRepositoryTest {
 
         // act and assert
         Assertions.assertThatThrownBy(() ->
-                transactionTemplate.execute(status -> {
-                    cameraRepository.saveAndFlush(camera);
-                    return null;
-                })
+                cameraRepository.saveAndFlush(camera)
         ).isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    public void expect_findById_cameraRepository_returnsCamera() {
+
+        // arrange
+        cameraRepository.save(camera);
+
+        // act
+        Optional<Camera> foundCamera = cameraRepository.findById(camera.getCamId());
+
+        //assert
+        Assertions.assertThat(foundCamera).isPresent();
+        Assertions.assertThat(foundCamera.get().getCamId()).isEqualTo(camera.getCamId());
+    }
+
+    @Test
+    public void expect_findById_cameraWithNullCamId_throwsException() {
+
+        // arrange
+        camera.setCamId(null);
+
+        // act and assert
+        Assertions.assertThatThrownBy(() ->
+                cameraRepository.findById(camera.getCamId())
+        ).isInstanceOf(InvalidDataAccessApiUsageException.class);
+    }
+
+    @Test
+    public void expect_findById_cameraWithNotExistingCamId_throwsException() {
+
+        // act
+        Optional<Camera> foundCamera = cameraRepository.findById(NON_EXISTING_UUID);
+
+        // assert
+        Assertions.assertThat(foundCamera).isEmpty();
     }
 }
