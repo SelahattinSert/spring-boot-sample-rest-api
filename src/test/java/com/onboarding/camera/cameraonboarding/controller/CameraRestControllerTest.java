@@ -1,10 +1,11 @@
-package com.onboarding.camera.cameraonboarding.rest;
+package com.onboarding.camera.cameraonboarding.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onboarding.camera.cameraonboarding.converter.CameraDtoConverter;
 import com.onboarding.camera.cameraonboarding.dto.CameraDto;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.exception.CameraAlreadyInitializedException;
+import com.onboarding.camera.cameraonboarding.exception.CameraNotInitializedException;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Assertions;
@@ -67,7 +68,6 @@ class CameraRestControllerTest {
     public void expect_handleSaveCamera_withValidCameraDto_returnCreated() throws Exception {
 
         // arrange
-        Camera camera = new Camera();
         camera.setCamId(CAMERA_ID);
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
@@ -177,5 +177,19 @@ class CameraRestControllerTest {
         response.andExpect(status().isConflict());
 
         verify(cameraService).handleInitializeCamera(CAMERA_ID);
+    }
+
+    @Test
+    public void expect_handleInitializeCamera_withNotInitializedCamera_returnInternalServerError() throws Exception {
+        // arrange
+        Mockito.doThrow(new CameraNotInitializedException("Error occurred while initializing camera"))
+                .when(cameraService).handleInitializeCamera(CAMERA_ID);
+
+        // act
+        ResultActions response = mockMvc.perform(patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // assert
+        response.andExpect(status().isInternalServerError());
     }
 }

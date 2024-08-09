@@ -2,6 +2,7 @@ package com.onboarding.camera.cameraonboarding.service;
 
 import com.onboarding.camera.cameraonboarding.exception.CameraAlreadyInitializedException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
+import com.onboarding.camera.cameraonboarding.exception.CameraNotInitializedException;
 import com.onboarding.camera.cameraonboarding.repository.CameraRepository;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedException;
@@ -14,6 +15,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -166,6 +168,22 @@ class CameraServiceImplTest {
         Assertions.assertThatThrownBy(() -> cameraService.handleInitializeCamera(CAMERA_ID))
                 .isInstanceOf(CameraAlreadyInitializedException.class)
                 .hasMessageContaining("Camera already initialized");
+
+        verify(cameraRepository).findById(CAMERA_ID);
+    }
+
+    @Test
+    void expect_handleInitializeCamera_withNotInitializedCamera_throwsException() {
+
+        // arrange
+        when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
+
+        Mockito.doThrow(new CameraNotInitializedException("Error occurred while initializing camera"))
+                .when(cameraRepository).save(camera);
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> cameraService.handleInitializeCamera(CAMERA_ID))
+                .isInstanceOf(CameraNotInitializedException.class);
 
         verify(cameraRepository).findById(CAMERA_ID);
     }

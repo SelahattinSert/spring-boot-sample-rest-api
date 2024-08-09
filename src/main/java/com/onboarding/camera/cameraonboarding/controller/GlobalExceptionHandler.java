@@ -1,5 +1,6 @@
 package com.onboarding.camera.cameraonboarding.exception;
 
+import com.onboarding.camera.cameraonboarding.service.DateTimeFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -7,10 +8,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import java.util.Date;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private final DateTimeFactory dateTimeFactory;
+    
+    public GlobalExceptionHandler(DateTimeFactory dateTimeFactory) {
+        this.dateTimeFactory = dateTimeFactory;
+    }
 
     @ExceptionHandler(CameraNotCreatedException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -20,7 +26,7 @@ public class GlobalExceptionHandler {
 
         errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.setMessage(ex.getMessage());
-        errorResponse.setTimestamp(new Date());
+        errorResponse.setTimestamp(dateTimeFactory.dateNow());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -33,7 +39,7 @@ public class GlobalExceptionHandler {
 
         errorResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
         errorResponse.setMessage(ex.getMessage());
-        errorResponse.setTimestamp(new Date());
+        errorResponse.setTimestamp(dateTimeFactory.dateNow());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
@@ -46,7 +52,7 @@ public class GlobalExceptionHandler {
 
         errorResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
         errorResponse.setMessage(ex.getMessage());
-        errorResponse.setTimestamp(new Date());
+        errorResponse.setTimestamp(dateTimeFactory.dateNow());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
@@ -59,7 +65,7 @@ public class GlobalExceptionHandler {
 
         errorResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
         errorResponse.setMessage(ex.getMessage());
-        errorResponse.setTimestamp(new Date());
+        errorResponse.setTimestamp(dateTimeFactory.dateNow());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
@@ -72,22 +78,22 @@ public class GlobalExceptionHandler {
 
         errorResponse.setStatusCode(HttpStatus.CONFLICT.value());
         errorResponse.setMessage(ex.getMessage());
-        errorResponse.setTimestamp(new Date());
+        errorResponse.setTimestamp(dateTimeFactory.dateNow());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(CameraNotInitializedException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleCameraNotInitializedException(CameraNotInitializedException ex) {
         ErrorResponse errorResponse = new ErrorResponse();
 
-        errorResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.setMessage(ex.getMessage());
-        errorResponse.setTimestamp(new Date());
+        errorResponse.setTimestamp(dateTimeFactory.dateNow());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
 
