@@ -1,4 +1,4 @@
-package com.onboarding.camera.cameraonboarding.rest;
+package com.onboarding.camera.cameraonboarding.controller;
 
 import com.onboarding.camera.cameraonboarding.converter.CameraDtoConverter;
 import com.onboarding.camera.cameraonboarding.dto.CameraDto;
@@ -40,7 +40,7 @@ public class CameraRestController {
     }
 
     @PatchMapping("/{camera_id}/initialize")
-    public ResponseEntity<Void> initializeCamera(@PathVariable UUID camera_id) {
+    public ResponseEntity<Void> initializeCamera(@Valid @PathVariable UUID camera_id) {
 
         cameraService.handleInitializeCamera(camera_id);
 
