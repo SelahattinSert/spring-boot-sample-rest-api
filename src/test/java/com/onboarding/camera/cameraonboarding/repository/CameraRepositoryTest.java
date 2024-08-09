@@ -5,29 +5,20 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 @DataJpaTest
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 class CameraRepositoryTest {
 
     @Autowired
     private CameraRepository cameraRepository;
-
-    @Autowired
-    private PlatformTransactionManager transactionManager;
-
-    private TransactionTemplate transactionTemplate;
 
     private Camera camera;
 
@@ -42,7 +33,6 @@ class CameraRepositoryTest {
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
         camera.setCreatedAt(CREATED_AT);
-        transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
     @Test
@@ -72,10 +62,7 @@ class CameraRepositoryTest {
 
         // act and assert
         Assertions.assertThatThrownBy(() ->
-                transactionTemplate.execute(status -> {
-                    cameraRepository.saveAndFlush(camera);
-                    return null;
-                })
+                cameraRepository.saveAndFlush(camera)
         ).isInstanceOf(DataIntegrityViolationException.class);
     }
 
@@ -88,10 +75,7 @@ class CameraRepositoryTest {
 
         // act and assert
         Assertions.assertThatThrownBy(() ->
-                transactionTemplate.execute(status -> {
-                    cameraRepository.saveAndFlush(camera);
-                    return null;
-                })
+                cameraRepository.saveAndFlush(camera)
         ).isInstanceOf(DataIntegrityViolationException.class);
     }
 
@@ -99,15 +83,12 @@ class CameraRepositoryTest {
     public void expect_findById_cameraRepository_returnsCamera() {
 
         // arrange
-        transactionTemplate.execute(status -> {
-            cameraRepository.save(camera);
-            return null;
-        });
+        cameraRepository.save(camera);
 
         // act
         Optional<Camera> foundCamera = cameraRepository.findById(camera.getCamId());
 
-        // act and assert
+        //assert
         Assertions.assertThat(foundCamera).isPresent();
         Assertions.assertThat(foundCamera.get().getCamId()).isEqualTo(camera.getCamId());
     }

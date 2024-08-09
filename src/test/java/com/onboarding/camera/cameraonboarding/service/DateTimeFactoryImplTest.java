@@ -6,10 +6,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -21,9 +24,9 @@ class DateTimeFactoryImplTest {
     @InjectMocks
     private DateTimeFactoryImpl dateTimeFactory;
 
-    private final String actualTime = dateTimeFactory.now().toString();
     private final String TEST_TIME_INSTANT = "2024-07-29T10:00:00Z";
-    private final String TEST_ZONE_ID = "UCT";
+    private final String EXPECTED_TIME_INSTANT = "2024-07-29T10:00";
+    private final String TEST_ZONE_ID = "UTC";
 
     @Test
     public void expect_now_withValidClock_returnsLocalDateTime() {
@@ -32,7 +35,10 @@ class DateTimeFactoryImplTest {
         given(clock.instant()).willReturn(Instant.parse(TEST_TIME_INSTANT));
         given(clock.getZone()).willReturn(ZoneId.of(TEST_ZONE_ID));
 
+        // act
+        LocalDateTime now = dateTimeFactory.now();
+
         // assert
-        assertThat(actualTime).isEqualTo(TEST_TIME_INSTANT);
+        assertThat(now).isEqualTo(EXPECTED_TIME_INSTANT);
     }
 }

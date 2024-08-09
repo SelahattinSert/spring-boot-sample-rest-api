@@ -10,6 +10,7 @@ import com.onboarding.camera.cameraonboarding.service.CameraService;
 import com.onboarding.camera.cameraonboarding.service.DateTimeFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
 import java.util.UUID;
 
 @Slf4j
@@ -41,26 +42,23 @@ public class CameraServiceImpl implements CameraService {
 
     @Override
     public void handleInitializeCamera(UUID cameraId) {
-        try {
             Camera camera = getCameraById(cameraId);
-            if (camera.getInitializedAt() != null  && !camera.getInitializedAt().toString().isBlank()) {
+            if (camera.getInitializedAt() != null && !camera.getInitializedAt().toString().isBlank()) {
                 throw new CameraAlreadyInitializedException("Camera already initialized");
             }
+
+        try {
             camera.setInitializedAt(dateTimeFactory.now());
             cameraRepository.save(camera);
             log.info("Initialized camera with ID: {}", cameraId);
-        } catch (CameraNotFoundException ex) {
-            log.error("Camera not found with ID: {}", cameraId, ex);
-            throw ex;
         } catch (Exception ex) {
             log.error("Exception occurred while initializing camera with ID: {}", cameraId, ex);
-            if (ex instanceof CameraAlreadyInitializedException) { throw (CameraAlreadyInitializedException) ex; }
-            else {
-                throw new CameraNotInitializedException("Error occurred while initializing camera: " + ex.getMessage());
-            }
+            // if any exception throws while saving camera then throws CameraNotInitializedException
+            throw new CameraNotInitializedException("Error occurred while initializing camera: " + ex.getMessage());
         }
     }
 
+    // if this method public you should also need to write unit tests for this.
     public Camera getCameraById(UUID cameraId) {
 
         if (cameraId == null) {
