@@ -10,7 +10,6 @@ import com.onboarding.camera.cameraonboarding.service.CameraService;
 import com.onboarding.camera.cameraonboarding.service.DateTimeFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.util.UUID;
 
 @Slf4j
@@ -53,12 +52,10 @@ public class CameraServiceImpl implements CameraService {
             log.info("Initialized camera with ID: {}", cameraId);
         } catch (Exception ex) {
             log.error("Exception occurred while initializing camera with ID: {}", cameraId, ex);
-            // if any exception throws while saving camera then throws CameraNotInitializedException
             throw new CameraNotInitializedException("Error occurred while initializing camera: " + ex.getMessage());
         }
     }
-
-    // if this method public you should also need to write unit tests for this.
+    
     public Camera getCameraById(UUID cameraId) {
 
         if (cameraId == null) {

@@ -17,11 +17,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -175,7 +173,6 @@ class CameraServiceImplTest {
                 .hasMessageContaining("Camera already initialized");
 
         verify(cameraRepository).findById(CAMERA_ID);
-        // you need to verify the save method never called
         verify(cameraRepository, never()).save(any(Camera.class));
     }
 
