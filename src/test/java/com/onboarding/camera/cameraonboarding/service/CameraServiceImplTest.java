@@ -52,7 +52,6 @@ class CameraServiceImplTest {
     private final LocalDateTime NOW = LocalDateTime.now();
     private final LocalDateTime CREATED_AT = LocalDateTime.of(2024, 7, 29, 10, 0);
     private final LocalDateTime INITIALIZED_AT = LocalDateTime.of(2024, 8, 7, 10, 0);
-    private final String TEST_ZONE_ID = "UTC";
 
     @BeforeEach
     void setUp() {
