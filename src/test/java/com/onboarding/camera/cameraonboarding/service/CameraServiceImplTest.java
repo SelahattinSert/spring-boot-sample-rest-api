@@ -18,10 +18,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CameraServiceImplTest {
@@ -47,6 +50,7 @@ class CameraServiceImplTest {
     private final LocalDateTime NOW = LocalDateTime.now();
     private final LocalDateTime CREATED_AT = LocalDateTime.of(2024, 7, 29, 10, 0);
     private final LocalDateTime INITIALIZED_AT = LocalDateTime.of(2024, 8, 7, 10, 0);
+    private final String TEST_ZONE_ID = "UTC";
 
     @BeforeEach
     void setUp() {
@@ -70,13 +74,13 @@ class CameraServiceImplTest {
         Camera savedCamera = cameraService.handleSaveCamera(camera);
 
         // assert
-        Assertions.assertThat(savedCamera).isNotNull();
-        Assertions.assertThat(savedCamera.getCreatedAt()).isNotNull();
-        Assertions.assertThat(savedCamera.getCreatedAt()).isEqualTo(CREATED_AT);
-        Assertions.assertThat(savedCamera.getCameraName()).isNotNull();
-        Assertions.assertThat(savedCamera.getCameraName()).isEqualTo(CAMERA_NAME);
-        Assertions.assertThat(savedCamera.getFirmwareVersion()).isNotNull();
-        Assertions.assertThat(savedCamera.getFirmwareVersion()).isEqualTo(FIRMWARE_VERSION);
+        assertThat(savedCamera).isNotNull();
+        assertThat(savedCamera.getCreatedAt()).isNotNull();
+        assertThat(savedCamera.getCreatedAt()).isEqualTo(CREATED_AT);
+        assertThat(savedCamera.getCameraName()).isNotNull();
+        assertThat(savedCamera.getCameraName()).isEqualTo(CAMERA_NAME);
+        assertThat(savedCamera.getFirmwareVersion()).isNotNull();
+        assertThat(savedCamera.getFirmwareVersion()).isEqualTo(FIRMWARE_VERSION);
 
         verify(dateTimeFactory).now();
         verify(cameraRepository).save(camera);
@@ -137,8 +141,8 @@ class CameraServiceImplTest {
         verify(cameraRepository).save(cameraArgumentCaptor.capture());
         Camera capturedCamera = cameraArgumentCaptor.getValue();
 
-        Assertions.assertThat(capturedCamera.getInitializedAt()).isNotNull();
-        Assertions.assertThat(capturedCamera.getInitializedAt()).isEqualTo(NOW);
+        assertThat(capturedCamera.getInitializedAt()).isNotNull();
+        assertThat(capturedCamera.getInitializedAt()).isEqualTo(NOW);
 
         verify(cameraRepository).findById(CAMERA_ID);
     }
@@ -170,6 +174,8 @@ class CameraServiceImplTest {
                 .hasMessageContaining("Camera already initialized");
 
         verify(cameraRepository).findById(CAMERA_ID);
+        // you need to verify the save method never called
+        verify(cameraRepository, never()).save(any(Camera.class));
     }
 
     @Test
@@ -186,5 +192,28 @@ class CameraServiceImplTest {
                 .isInstanceOf(CameraNotInitializedException.class);
 
         verify(cameraRepository).findById(CAMERA_ID);
+    }
+
+    @Test
+    void expect_getCameraById_toGetCamera() {
+        // arrange
+        when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
+
+        // act
+        Camera actualCamera = cameraService.getCameraById(CAMERA_ID);
+
+        // assert
+        verify(cameraRepository).findById(CAMERA_ID);
+        assertThat(actualCamera).isEqualTo(camera);
+    }
+
+    @Test
+    void expect_getCameraById_withNullCameraId_toThrowIllegalArgumentException() {
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> cameraService.getCameraById(null))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(cameraRepository, never()).findById(CAMERA_ID);
     }
 }
