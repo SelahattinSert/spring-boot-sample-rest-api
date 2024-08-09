@@ -99,7 +99,7 @@ class CameraRepositoryTest {
         // arrange
         camera.setCamId(null);
 
-        //assert
+        // act and assert
         Assertions.assertThatThrownBy(() ->
                 cameraRepository.findById(camera.getCamId())
         ).isInstanceOf(InvalidDataAccessApiUsageException.class);
