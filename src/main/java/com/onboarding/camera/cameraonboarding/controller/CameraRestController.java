@@ -4,11 +4,13 @@ import com.onboarding.camera.cameraonboarding.converter.CameraDtoConverter;
 import com.onboarding.camera.cameraonboarding.dto.CameraDto;
 import com.onboarding.camera.cameraonboarding.dto.CameraResponse;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
+import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,5 +47,19 @@ public class CameraRestController {
         cameraService.handleInitializeCamera(camera_id);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/camera/{camera_id}")
+    public ResponseEntity<CameraResponse> getCameraMetadata(@Valid @PathVariable UUID camera_id) {
+
+        Camera camera = cameraService.getCameraById(camera_id);
+
+        if (camera.getOnboardedAt() == null || camera.getOnboardedAt().toString().isBlank()){
+            throw new CameraNotFoundException("Camera is not onboarded yet: " + camera_id);
+        }
+
+        CameraResponse cameraResponse = cameraDtoConverter.toCameraResponse(camera);
+
+        return new ResponseEntity<>(cameraResponse, HttpStatus.OK);
     }
 }
