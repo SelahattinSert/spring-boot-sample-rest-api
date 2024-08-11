@@ -5,6 +5,7 @@ import com.onboarding.camera.cameraonboarding.converter.CameraDtoConverter;
 import com.onboarding.camera.cameraonboarding.dto.CameraDto;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.exception.CameraAlreadyInitializedException;
+import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotInitializedException;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
 import org.hamcrest.CoreMatchers;
@@ -24,10 +25,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,6 +58,7 @@ class CameraRestControllerTest {
     private final String FIRMWARE_VERSION = "v1.0";
     private final UUID CAMERA_ID = UUID.randomUUID();
     private final String INVALID_UUID = "invalid-uuid";
+    private final LocalDateTime ONBOARDED_AT = LocalDateTime.of(2024, 7, 29, 10, 0);
 
     @BeforeEach
     void setUp() {
@@ -191,5 +195,56 @@ class CameraRestControllerTest {
 
         // assert
         response.andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void expect_getCameraMetadata_withValidCameraId_returnOk() throws Exception {
+
+        // arrange
+        camera.setCamId(CAMERA_ID);
+        camera.setOnboardedAt(ONBOARDED_AT);
+        given(cameraService.getCameraById(CAMERA_ID)).willReturn(camera);
+
+        // act
+        ResultActions response = mockMvc.perform(get("/api/v1/camera/{camera_id}", CAMERA_ID)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // assert
+        response.andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.cameraId", CoreMatchers.is(CAMERA_ID.toString())));
+    }
+
+    @Test
+    void expect_getCameraMetadata_withNotOnboardedCamera_returnNotFound() throws Exception {
+
+        // arrange
+        camera.setOnboardedAt(null);
+        given(cameraService.getCameraById(CAMERA_ID)).willReturn(camera);
+
+        // act
+        ResultActions response = mockMvc.perform(get("/api/v1/camera/{camera_id}", CAMERA_ID)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // assert
+        response.andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers
+                .jsonPath("$.message", CoreMatchers.containsString("Camera is not onboarded yet: " + CAMERA_ID)));
+    }
+
+    @Test
+    void expect_getCameraMetadata_withCameraNotFound_returnNotFound() throws Exception {
+
+        // arrange
+        given(cameraService.getCameraById(CAMERA_ID))
+                .willThrow(new CameraNotFoundException("Camera not found with id: " + CAMERA_ID));
+
+        // act
+        ResultActions response = mockMvc.perform(get("/api/v1/camera/{camera_id}", CAMERA_ID)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // assert
+        response.andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers
+                .jsonPath("$.message", CoreMatchers.is("Camera not found with id: " + CAMERA_ID)));
     }
 }
