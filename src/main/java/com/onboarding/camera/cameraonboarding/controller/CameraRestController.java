@@ -4,7 +4,6 @@ import com.onboarding.camera.cameraonboarding.converter.CameraDtoConverter;
 import com.onboarding.camera.cameraonboarding.dto.CameraDto;
 import com.onboarding.camera.cameraonboarding.dto.CameraResponse;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
-import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -53,11 +52,6 @@ public class CameraRestController {
     public ResponseEntity<CameraResponse> getCameraMetadata(@Valid @PathVariable UUID camera_id) {
 
         Camera camera = cameraService.getCameraById(camera_id);
-
-        if (camera.getOnboardedAt() == null || camera.getOnboardedAt().toString().isBlank()){
-            throw new CameraNotFoundException("Camera is not onboarded yet: " + camera_id);
-        }
-
         CameraResponse cameraResponse = cameraDtoConverter.toCameraResponse(camera);
 
         return new ResponseEntity<>(cameraResponse, HttpStatus.OK);
