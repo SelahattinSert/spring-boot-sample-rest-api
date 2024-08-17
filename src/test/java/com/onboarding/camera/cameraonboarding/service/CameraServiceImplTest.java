@@ -7,6 +7,7 @@ import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotInitializedException;
 import com.onboarding.camera.cameraonboarding.repository.CameraRepository;
 import com.onboarding.camera.cameraonboarding.service.impl.CameraServiceImpl;
+import com.onboarding.camera.cameraonboarding.util.DateTimeFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -81,7 +83,7 @@ class CameraServiceImplTest {
         assertThat(savedCamera.getFirmwareVersion()).isNotNull();
         assertThat(savedCamera.getFirmwareVersion()).isEqualTo(FIRMWARE_VERSION);
 
-        verify(dateTimeFactory).now();
+        verify(dateTimeFactory, times(2)).now();
         verify(cameraRepository).save(camera);
     }
 
@@ -95,6 +97,8 @@ class CameraServiceImplTest {
         // act and assert
         Assertions.assertThatThrownBy(() -> cameraService.handleSaveCamera(camera))
                 .isInstanceOf(CameraNotCreatedException.class);
+
+        verify(cameraRepository).save(camera);
     }
 
     @Test
@@ -107,6 +111,8 @@ class CameraServiceImplTest {
         // act and assert
         Assertions.assertThatThrownBy(() -> cameraService.handleSaveCamera(camera))
                 .isInstanceOf(CameraNotCreatedException.class);
+
+        verify(cameraRepository).save(camera);
     }
 
     @Test
@@ -121,7 +127,7 @@ class CameraServiceImplTest {
         Assertions.assertThatThrownBy(() -> cameraService.handleSaveCamera(camera))
                 .isInstanceOf(CameraNotCreatedException.class);
 
-        verify(dateTimeFactory).now();
+        verify(dateTimeFactory, times(2)).now();
     }
 
     @Test
