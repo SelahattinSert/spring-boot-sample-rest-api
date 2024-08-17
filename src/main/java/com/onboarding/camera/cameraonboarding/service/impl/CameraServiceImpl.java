@@ -7,7 +7,7 @@ import com.onboarding.camera.cameraonboarding.repository.CameraRepository;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedException;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
-import com.onboarding.camera.cameraonboarding.service.DateTimeFactory;
+import com.onboarding.camera.cameraonboarding.util.DateTimeFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.UUID;

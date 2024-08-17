@@ -1,4 +1,4 @@
-package com.onboarding.camera.cameraonboarding.service;
+package com.onboarding.camera.cameraonboarding.util;
 
 import java.time.LocalDateTime;
 

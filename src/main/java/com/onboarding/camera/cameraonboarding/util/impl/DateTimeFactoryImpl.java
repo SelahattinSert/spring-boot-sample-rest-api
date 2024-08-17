@@ -1,6 +1,6 @@
-package com.onboarding.camera.cameraonboarding.service.impl;
+package com.onboarding.camera.cameraonboarding.util.impl;
 
-import com.onboarding.camera.cameraonboarding.service.DateTimeFactory;
+import com.onboarding.camera.cameraonboarding.util.DateTimeFactory;
 import org.springframework.stereotype.Service;
 import java.time.Clock;
 import java.time.LocalDateTime;
