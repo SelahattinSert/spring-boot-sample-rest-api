@@ -1,6 +1,6 @@
 package com.onboarding.camera.cameraonboarding.service;
 
-import com.onboarding.camera.cameraonboarding.service.impl.DateTimeFactoryImpl;
+import com.onboarding.camera.cameraonboarding.util.impl.DateTimeFactoryImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class DateTimeFactoryImplTest {
@@ -38,5 +39,8 @@ class DateTimeFactoryImplTest {
 
         // assert
         assertThat(now).isEqualTo(EXPECTED_TIME_INSTANT);
+
+        verify(clock).instant();
+        verify(clock).getZone();
     }
 }

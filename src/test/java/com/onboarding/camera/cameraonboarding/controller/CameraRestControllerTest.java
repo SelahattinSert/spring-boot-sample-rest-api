@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.UUID;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -83,6 +84,8 @@ class CameraRestControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.cameraId", CoreMatchers.is(CAMERA_ID.toString())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.cameraName", CoreMatchers.is(CAMERA_NAME)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.firmwareVersion", CoreMatchers.is(FIRMWARE_VERSION)));
+
+        verify(cameraService).handleSaveCamera(ArgumentMatchers.any(Camera.class));
     }
 
     @Test
@@ -98,6 +101,8 @@ class CameraRestControllerTest {
 
         // assert
         response.andExpect(status().isBadRequest());
+
+        verify(cameraService, never()).handleSaveCamera(ArgumentMatchers.any(Camera.class));
     }
 
     @Test
@@ -113,6 +118,8 @@ class CameraRestControllerTest {
 
         // assert
         response.andExpect(status().isBadRequest());
+
+        verify(cameraService, never()).handleSaveCamera(ArgumentMatchers.any(Camera.class));
     }
 
     @Test
@@ -144,6 +151,8 @@ class CameraRestControllerTest {
 
         // assert
         response.andExpect(status().is4xxClientError());
+
+        verify(cameraService, never()).handleInitializeCamera(CAMERA_ID);
     }
 
     @Test
@@ -160,6 +169,8 @@ class CameraRestControllerTest {
 
         // assert
         response.andExpect(status().is4xxClientError());
+
+        verify(cameraService, never()).handleInitializeCamera(CAMERA_ID);
     }
 
     @Test
@@ -191,5 +202,7 @@ class CameraRestControllerTest {
 
         // assert
         response.andExpect(status().isInternalServerError());
+
+        verify(cameraService).handleInitializeCamera(CAMERA_ID);
     }
 }

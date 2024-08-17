@@ -7,7 +7,7 @@ import com.onboarding.camera.cameraonboarding.repository.CameraRepository;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedException;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
-import com.onboarding.camera.cameraonboarding.service.DateTimeFactory;
+import com.onboarding.camera.cameraonboarding.util.DateTimeFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.UUID;
@@ -30,8 +30,9 @@ public class CameraServiceImpl implements CameraService {
 
         try {
             camera.setCreatedAt(dateTimeFactory.now());
+            camera.setOnboardedAt(dateTimeFactory.now());
             Camera savedCamera = cameraRepository.save(camera);
-            log.info("Saved camera with ID: {}", savedCamera.getCamId());
+            log.info("Camera saved with ID: {}", savedCamera.getCamId());
             return savedCamera;
         } catch (Exception ex) {
             log.error("Exception occurred while saving camera: {}", ex.getMessage());
@@ -49,7 +50,7 @@ public class CameraServiceImpl implements CameraService {
         try {
             camera.setInitializedAt(dateTimeFactory.now());
             cameraRepository.save(camera);
-            log.info("Initialized camera with ID: {}", cameraId);
+            log.info("Camera initialized with ID: {}", cameraId);
         } catch (Exception ex) {
             log.error("Exception occurred while initializing camera with ID: {}", cameraId, ex);
             throw new CameraNotInitializedException("Error occurred while initializing camera: " + ex.getMessage());
@@ -65,5 +66,4 @@ public class CameraServiceImpl implements CameraService {
         return cameraRepository.findById(cameraId)
                 .orElseThrow(() -> new CameraNotFoundException("Camera not found with id: " + cameraId));
     }
-
 }

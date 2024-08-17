@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CameraNotCreatedException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleCameraNotFoundException(CameraNotCreatedException ex) {
+    public ResponseEntity<ErrorResponse> handleCameraNotCreatedException(CameraNotCreatedException ex) {
         ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
