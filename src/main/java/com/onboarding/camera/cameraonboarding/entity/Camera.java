@@ -8,6 +8,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -24,7 +25,7 @@ public class Camera {
     private UUID camId;
 
     @Column(name = "image_id")
-    private  UUID imageId;
+    private UUID imageId;
 
     @Column(name = "camera_name", nullable = false)
     private String cameraName;
