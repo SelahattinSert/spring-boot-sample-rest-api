@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +24,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
 import java.util.UUID;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = CameraRestController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -72,20 +68,20 @@ class CameraRestControllerTest {
         camera.setCamId(CAMERA_ID);
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
-        given(cameraService.handleSaveCamera(ArgumentMatchers.any(Camera.class))).willReturn(camera);
+        BDDMockito.given(cameraService.handleSaveCamera(ArgumentMatchers.any(Camera.class))).willReturn(camera);
 
         // act
-        ResultActions response = mockMvc.perform(post("/api/v1/onboard")
+        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/onboard")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(cameraDto)));
 
         // assert
-        response.andExpect(status().is(201))
+        response.andExpect(MockMvcResultMatchers.status().is(201))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.cameraId", CoreMatchers.is(CAMERA_ID.toString())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.cameraName", CoreMatchers.is(CAMERA_NAME)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.firmwareVersion", CoreMatchers.is(FIRMWARE_VERSION)));
 
-        verify(cameraService).handleSaveCamera(ArgumentMatchers.any(Camera.class));
+        Mockito.verify(cameraService).handleSaveCamera(ArgumentMatchers.any(Camera.class));
     }
 
     @Test
@@ -95,14 +91,14 @@ class CameraRestControllerTest {
         cameraDto.setCameraName(null);
 
         // act
-        ResultActions response = mockMvc.perform(post("/api/v1/onboard")
+        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/onboard")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(cameraDto)));
 
         // assert
-        response.andExpect(status().isBadRequest());
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
 
-        verify(cameraService, never()).handleSaveCamera(ArgumentMatchers.any(Camera.class));
+        Mockito.verify(cameraService, Mockito.never()).handleSaveCamera(ArgumentMatchers.any(Camera.class));
     }
 
     @Test
@@ -112,14 +108,14 @@ class CameraRestControllerTest {
         cameraDto.setFirmwareVersion(null);
 
         // act
-        ResultActions response = mockMvc.perform(post("/api/v1/onboard")
+        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/onboard")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(cameraDto)));
 
         // assert
-        response.andExpect(status().isBadRequest());
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
 
-        verify(cameraService, never()).handleSaveCamera(ArgumentMatchers.any(Camera.class));
+        Mockito.verify(cameraService, Mockito.never()).handleSaveCamera(ArgumentMatchers.any(Camera.class));
     }
 
     @Test
@@ -130,13 +126,13 @@ class CameraRestControllerTest {
         Mockito.doNothing().when(cameraService).handleInitializeCamera(CAMERA_ID);
 
         // act
-        ResultActions response = mockMvc.perform(patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
+        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
                 .contentType(MediaType.APPLICATION_JSON));
 
         // assert
-        response.andExpect(status().isOk());
+        response.andExpect(MockMvcResultMatchers.status().isOk());
 
-        verify(cameraService).handleInitializeCamera(CAMERA_ID);
+        Mockito.verify(cameraService).handleInitializeCamera(CAMERA_ID);
     }
 
     @Test
@@ -146,48 +142,48 @@ class CameraRestControllerTest {
         camera.setCamId(null);
 
         // act
-        ResultActions response = mockMvc.perform(patch("/api/v1/{camera_id}/initialize", camera.getCamId()))
-                .andExpect(status().is4xxClientError());
+        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/{camera_id}/initialize", camera.getCamId()))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
         // assert
-        response.andExpect(status().is4xxClientError());
+        response.andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
-        verify(cameraService, never()).handleInitializeCamera(CAMERA_ID);
+        Mockito.verify(cameraService, Mockito.never()).handleInitializeCamera(CAMERA_ID);
     }
 
     @Test
     void expect_handleInitializeCamera_withInvalidUUID_returnBadRequest() throws Exception {
         // Arrange
-        String invalidCameraId = "123";
+        final String invalidCameraId = "123";
 
         // act
-        ResultActions response = mockMvc.perform(patch("/api/v1/{camera_id}/initialize", invalidCameraId))
-                        .andExpect(status().is4xxClientError());
+        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/{camera_id}/initialize", invalidCameraId))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
         Assertions.assertEquals(UUID.fromString(CAMERA_ID.toString()), CAMERA_ID);
         Assertions.assertThrows(IllegalArgumentException.class, () -> UUID.fromString(INVALID_UUID));
 
         // assert
-        response.andExpect(status().is4xxClientError());
+        response.andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
-        verify(cameraService, never()).handleInitializeCamera(CAMERA_ID);
+        Mockito.verify(cameraService, Mockito.never()).handleInitializeCamera(CAMERA_ID);
     }
 
     @Test
     void expect_handleInitializeCamera_withAlreadyInitializedCamera_returnConflict() throws Exception {
 
         // arrange
-        doThrow(new CameraAlreadyInitializedException("Camera already initialized"))
+        Mockito.doThrow(new CameraAlreadyInitializedException("Camera already initialized"))
                 .when(cameraService).handleInitializeCamera(CAMERA_ID);
 
         // act
-        ResultActions response = mockMvc.perform(patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
+        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
                 .contentType(MediaType.APPLICATION_JSON));
 
         // assert
-        response.andExpect(status().isConflict());
+        response.andExpect(MockMvcResultMatchers.status().isConflict());
 
-        verify(cameraService).handleInitializeCamera(CAMERA_ID);
+        Mockito.verify(cameraService).handleInitializeCamera(CAMERA_ID);
     }
 
     @Test
@@ -197,12 +193,12 @@ class CameraRestControllerTest {
                 .when(cameraService).handleInitializeCamera(CAMERA_ID);
 
         // act
-        ResultActions response = mockMvc.perform(patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
+        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
                 .contentType(MediaType.APPLICATION_JSON));
 
         // assert
-        response.andExpect(status().isInternalServerError());
+        response.andExpect(MockMvcResultMatchers.status().isInternalServerError());
 
-        verify(cameraService).handleInitializeCamera(CAMERA_ID);
+        Mockito.verify(cameraService).handleInitializeCamera(CAMERA_ID);
     }
 }
