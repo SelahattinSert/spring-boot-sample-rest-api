@@ -13,20 +13,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CameraServiceImplTest {
@@ -68,23 +64,23 @@ class CameraServiceImplTest {
         // arrange
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
-        when(dateTimeFactory.now()).thenReturn(CREATED_AT);
-        when(cameraRepository.save(camera)).thenReturn(camera);
+        Mockito.when(dateTimeFactory.now()).thenReturn(CREATED_AT);
+        Mockito.when(cameraRepository.save(camera)).thenReturn(camera);
 
         // act
-        Camera savedCamera = cameraService.handleSaveCamera(camera);
+        final Camera savedCamera = cameraService.handleSaveCamera(camera);
 
         // assert
-        assertThat(savedCamera).isNotNull();
-        assertThat(savedCamera.getCreatedAt()).isNotNull();
-        assertThat(savedCamera.getCreatedAt()).isEqualTo(CREATED_AT);
-        assertThat(savedCamera.getCameraName()).isNotNull();
-        assertThat(savedCamera.getCameraName()).isEqualTo(CAMERA_NAME);
-        assertThat(savedCamera.getFirmwareVersion()).isNotNull();
-        assertThat(savedCamera.getFirmwareVersion()).isEqualTo(FIRMWARE_VERSION);
+        Assertions.assertThat(savedCamera).isNotNull();
+        Assertions.assertThat(savedCamera.getCreatedAt()).isNotNull();
+        Assertions.assertThat(savedCamera.getCreatedAt()).isEqualTo(CREATED_AT);
+        Assertions.assertThat(savedCamera.getCameraName()).isNotNull();
+        Assertions.assertThat(savedCamera.getCameraName()).isEqualTo(CAMERA_NAME);
+        Assertions.assertThat(savedCamera.getFirmwareVersion()).isNotNull();
+        Assertions.assertThat(savedCamera.getFirmwareVersion()).isEqualTo(FIRMWARE_VERSION);
 
-        verify(dateTimeFactory, times(2)).now();
-        verify(cameraRepository).save(camera);
+        Mockito.verify(dateTimeFactory, Mockito.times(2)).now();
+        Mockito.verify(cameraRepository).save(camera);
     }
 
     @Test
@@ -92,13 +88,13 @@ class CameraServiceImplTest {
 
         // arrange
         camera.setCameraName(null);
-        when(cameraRepository.save(camera)).thenThrow(new CameraNotCreatedException("Camera name cannot be null"));
+        Mockito.when(cameraRepository.save(camera)).thenThrow(new CameraNotCreatedException("Camera name cannot be null"));
 
         // act and assert
         Assertions.assertThatThrownBy(() -> cameraService.handleSaveCamera(camera))
                 .isInstanceOf(CameraNotCreatedException.class);
 
-        verify(cameraRepository).save(camera);
+        Mockito.verify(cameraRepository).save(camera);
     }
 
     @Test
@@ -106,13 +102,13 @@ class CameraServiceImplTest {
 
         // arrange
         camera.setFirmwareVersion(null);
-        when(cameraRepository.save(camera)).thenThrow(new CameraNotCreatedException("Firmware version cannot be null"));
+        Mockito.when(cameraRepository.save(camera)).thenThrow(new CameraNotCreatedException("Firmware version cannot be null"));
 
         // act and assert
         Assertions.assertThatThrownBy(() -> cameraService.handleSaveCamera(camera))
                 .isInstanceOf(CameraNotCreatedException.class);
 
-        verify(cameraRepository).save(camera);
+        Mockito.verify(cameraRepository).save(camera);
     }
 
     @Test
@@ -120,14 +116,14 @@ class CameraServiceImplTest {
 
         // arrange
         camera.setCreatedAt(null);
-        when(cameraRepository.save(camera))
+        Mockito.when(cameraRepository.save(camera))
                 .thenThrow(new CameraNotCreatedException("An error occurred while creating camera"));
 
         // act and assert
         Assertions.assertThatThrownBy(() -> cameraService.handleSaveCamera(camera))
                 .isInstanceOf(CameraNotCreatedException.class);
 
-        verify(dateTimeFactory, times(2)).now();
+        Mockito.verify(dateTimeFactory, Mockito.times(2)).now();
     }
 
     @Test
@@ -135,35 +131,35 @@ class CameraServiceImplTest {
 
         // arrange
         camera.setCamId(CAMERA_ID);
-        when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
-        when(dateTimeFactory.now()).thenReturn(NOW);
-        when(cameraRepository.save(camera)).thenReturn(camera);
+        Mockito.when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
+        Mockito.when(dateTimeFactory.now()).thenReturn(NOW);
+        Mockito.when(cameraRepository.save(camera)).thenReturn(camera);
 
         // act
         cameraService.handleInitializeCamera(CAMERA_ID);
 
         // assert
-        verify(cameraRepository).save(cameraArgumentCaptor.capture());
-        Camera capturedCamera = cameraArgumentCaptor.getValue();
+        Mockito.verify(cameraRepository).save(cameraArgumentCaptor.capture());
+        final Camera capturedCamera = cameraArgumentCaptor.getValue();
 
-        assertThat(capturedCamera.getInitializedAt()).isNotNull();
-        assertThat(capturedCamera.getInitializedAt()).isEqualTo(NOW);
+        Assertions.assertThat(capturedCamera.getInitializedAt()).isNotNull();
+        Assertions.assertThat(capturedCamera.getInitializedAt()).isEqualTo(NOW);
 
-        verify(cameraRepository).findById(CAMERA_ID);
+        Mockito.verify(cameraRepository).findById(CAMERA_ID);
     }
 
     @Test
     void expect_handleInitializeCamera_withNonExistingCamId_throwsException() {
 
         // arrange
-        when(cameraRepository.findById(NON_EXISTING_UUID)).thenReturn(Optional.empty());
+        Mockito.when(cameraRepository.findById(NON_EXISTING_UUID)).thenReturn(Optional.empty());
 
         // act and assert
         Assertions.assertThatThrownBy(() -> cameraService.handleInitializeCamera(NON_EXISTING_UUID))
                 .isInstanceOf(CameraNotFoundException.class)
                 .hasMessageContaining("Camera not found with id: " + NON_EXISTING_UUID);
 
-        verify(cameraRepository).findById(NON_EXISTING_UUID);
+        Mockito.verify(cameraRepository).findById(NON_EXISTING_UUID);
     }
 
     @Test
@@ -171,22 +167,22 @@ class CameraServiceImplTest {
 
         // arrange
         camera.setInitializedAt(INITIALIZED_AT);
-        when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
+        Mockito.when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
 
         // act and assert
         Assertions.assertThatThrownBy(() -> cameraService.handleInitializeCamera(CAMERA_ID))
                 .isInstanceOf(CameraAlreadyInitializedException.class)
                 .hasMessageContaining("Camera already initialized");
 
-        verify(cameraRepository).findById(CAMERA_ID);
-        verify(cameraRepository, never()).save(any(Camera.class));
+        Mockito.verify(cameraRepository).findById(CAMERA_ID);
+        Mockito.verify(cameraRepository, Mockito.never()).save(ArgumentMatchers.any(Camera.class));
     }
 
     @Test
     void expect_handleInitializeCamera_withNotInitializedCamera_throwsException() {
 
         // arrange
-        when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
+        Mockito.when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
 
         Mockito.doThrow(new RuntimeException("Error occurred while initializing camera"))
                 .when(cameraRepository).save(camera);
@@ -195,20 +191,20 @@ class CameraServiceImplTest {
         Assertions.assertThatThrownBy(() -> cameraService.handleInitializeCamera(CAMERA_ID))
                 .isInstanceOf(CameraNotInitializedException.class);
 
-        verify(cameraRepository).findById(CAMERA_ID);
+        Mockito.verify(cameraRepository).findById(CAMERA_ID);
     }
 
     @Test
     void expect_getCameraById_toGetCamera() {
         // arrange
-        when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
+        Mockito.when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
 
         // act
-        Camera actualCamera = cameraService.getCameraById(CAMERA_ID);
+        final Camera actualCamera = cameraService.getCameraById(CAMERA_ID);
 
         // assert
-        verify(cameraRepository).findById(CAMERA_ID);
-        assertThat(actualCamera).isEqualTo(camera);
+        Mockito.verify(cameraRepository).findById(CAMERA_ID);
+        Assertions.assertThat(actualCamera).isEqualTo(camera);
     }
 
     @Test
@@ -218,6 +214,6 @@ class CameraServiceImplTest {
         Assertions.assertThatThrownBy(() -> cameraService.getCameraById(null))
                 .isInstanceOf(IllegalArgumentException.class);
 
-        verify(cameraRepository, never()).findById(CAMERA_ID);
+        Mockito.verify(cameraRepository, Mockito.never()).findById(CAMERA_ID);
     }
 }

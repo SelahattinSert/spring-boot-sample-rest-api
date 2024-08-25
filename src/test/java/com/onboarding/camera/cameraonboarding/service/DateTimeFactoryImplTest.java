@@ -1,18 +1,19 @@
 package com.onboarding.camera.cameraonboarding.service;
 
 import com.onboarding.camera.cameraonboarding.util.impl.DateTimeFactoryImpl;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class DateTimeFactoryImplTest {
@@ -31,16 +32,16 @@ class DateTimeFactoryImplTest {
     public void expect_now_withValidClock_returnsLocalDateTime() {
 
         // arrange
-        given(clock.instant()).willReturn(Instant.parse(TEST_TIME_INSTANT));
-        given(clock.getZone()).willReturn(ZoneId.of(TEST_ZONE_ID));
+        BDDMockito.given(clock.instant()).willReturn(Instant.parse(TEST_TIME_INSTANT));
+        BDDMockito.given(clock.getZone()).willReturn(ZoneId.of(TEST_ZONE_ID));
 
         // act
-        LocalDateTime now = dateTimeFactory.now();
+        final LocalDateTime now = dateTimeFactory.now();
 
         // assert
-        assertThat(now).isEqualTo(EXPECTED_TIME_INSTANT);
+        Assertions.assertThat(now).isEqualTo(EXPECTED_TIME_INSTANT);
 
-        verify(clock).instant();
-        verify(clock).getZone();
+        Mockito.verify(clock).instant();
+        Mockito.verify(clock).getZone();
     }
 }
