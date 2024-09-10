@@ -5,13 +5,17 @@ import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedExceptio
 import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotInitializedException;
 import com.onboarding.camera.cameraonboarding.exception.ErrorResponse;
+import com.onboarding.camera.cameraonboarding.exception.ImageAlreadyUploadedException;
+import com.onboarding.camera.cameraonboarding.exception.ImageNotUploadedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.io.IOException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -19,8 +23,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CameraNotCreatedException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleCameraNotCreatedException(CameraNotCreatedException ex) {
-        ErrorResponse errorResponse = new ErrorResponse();
+    public ResponseEntity<ErrorResponse> handleCameraNotCreatedException(final CameraNotCreatedException ex) {
+        final ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.setMessage(ex.getMessage());
@@ -31,8 +35,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        ErrorResponse errorResponse = new ErrorResponse();
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(final MethodArgumentNotValidException ex) {
+        final ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
         errorResponse.setMessage(ex.getMessage());
@@ -43,8 +47,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CameraNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleCameraNotFoundException(CameraNotFoundException ex) {
-        ErrorResponse errorResponse = new ErrorResponse();
+    public ResponseEntity<ErrorResponse> handleCameraNotFoundException(final CameraNotFoundException ex) {
+        final ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
         errorResponse.setMessage(ex.getMessage());
@@ -55,8 +59,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
-        ErrorResponse errorResponse = new ErrorResponse();
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(final IllegalArgumentException ex) {
+        final ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
         errorResponse.setMessage(ex.getMessage());
@@ -67,8 +71,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CameraAlreadyInitializedException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleCameraAlreadyInitializedException(CameraAlreadyInitializedException ex) {
-        ErrorResponse errorResponse = new ErrorResponse();
+    public ResponseEntity<ErrorResponse> handleCameraAlreadyInitializedException(final CameraAlreadyInitializedException ex) {
+        final ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.CONFLICT.value());
         errorResponse.setMessage(ex.getMessage());
@@ -79,13 +83,49 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CameraNotInitializedException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleCameraNotInitializedException(CameraNotInitializedException ex) {
-        ErrorResponse errorResponse = new ErrorResponse();
+    public ResponseEntity<ErrorResponse> handleCameraNotInitializedException(final CameraNotInitializedException ex) {
+        final ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.setMessage(ex.getMessage());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(IOException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleIOException(final IOException ex) {
+        final ErrorResponse errorResponse = new ErrorResponse();
+
+        errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorResponse.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ImageNotUploadedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleImageNotUploadedException(final ImageNotUploadedException ex) {
+        final ErrorResponse errorResponse = new ErrorResponse();
+
+        errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorResponse.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ImageAlreadyUploadedException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleImageAlreadyUploadedException(final ImageAlreadyUploadedException ex) {
+        final ErrorResponse errorResponse = new ErrorResponse();
+
+        errorResponse.setStatusCode(HttpStatus.CONFLICT.value());
+        errorResponse.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 }
 
