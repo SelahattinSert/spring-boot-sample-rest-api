@@ -52,7 +52,7 @@ public class BlobStorageConfiguration {
         return new ParallelTransferOptions()
                 .setBlockSizeLong(blockSize)
                 .setMaxConcurrency(5)
-                .setProgressReceiver(
+                .setProgressListener(
                         bytesTransferred -> log.info("Uploading bytes:{}", bytesTransferred));
     }
 }
