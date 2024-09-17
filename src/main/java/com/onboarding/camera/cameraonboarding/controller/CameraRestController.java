@@ -3,10 +3,10 @@ package com.onboarding.camera.cameraonboarding.controller;
 import com.onboarding.camera.cameraonboarding.converter.CameraDtoConverter;
 import com.onboarding.camera.cameraonboarding.dto.CameraDto;
 import com.onboarding.camera.cameraonboarding.dto.CameraResponse;
-import com.onboarding.camera.cameraonboarding.dto.UploadImageDto;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("${api.version}")
 public class CameraRestController {
 
@@ -30,13 +30,8 @@ public class CameraRestController {
 
     private final CameraDtoConverter cameraDtoConverter;
 
-    public CameraRestController(final CameraService cameraService, final CameraDtoConverter cameraDtoConverter) {
-        this.cameraService = cameraService;
-        this.cameraDtoConverter = cameraDtoConverter;
-    }
-
     @PostMapping("/onboard")
-    public ResponseEntity<CameraResponse> saveCamera(@Valid @RequestBody final CameraDto cameraDto) {
+    public ResponseEntity<CameraResponse> saveCamera(@Valid @RequestBody CameraDto cameraDto) {
 
         final Camera camera = cameraDtoConverter.toEntity(cameraDto);
         final Camera savedCamera = cameraService.handleSaveCamera(camera);
@@ -46,7 +41,7 @@ public class CameraRestController {
     }
 
     @PatchMapping("/{camera_id}/initialize")
-    public ResponseEntity<Void> initializeCamera(@Valid @PathVariable final UUID camera_id) {
+    public ResponseEntity<Void> initializeCamera(@Valid @PathVariable UUID camera_id) {
 
         cameraService.handleInitializeCamera(camera_id);
 
@@ -54,22 +49,20 @@ public class CameraRestController {
     }
 
     @GetMapping("/camera/{camera_id}")
-    public ResponseEntity<CameraResponse> getCameraMetadata(@Valid @PathVariable final UUID camera_id) {
+    public ResponseEntity<CameraResponse> getCameraMetadata(@Valid @PathVariable UUID camera_id) {
 
-        final Camera camera = cameraService.getCameraById(camera_id);
-        final CameraResponse cameraResponse = cameraDtoConverter.toCameraResponse(camera);
+        Camera camera = cameraService.getCameraById(camera_id);
+        CameraResponse cameraResponse = cameraDtoConverter.toCameraResponse(camera);
 
         return new ResponseEntity<>(cameraResponse, HttpStatus.OK);
     }
 
     @PostMapping(value = "/camera/{camera_id}/upload_image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> uploadImage(@PathVariable final UUID camera_id,
-                                              @RequestParam("imageId") final UUID imageId,
-                                              @RequestParam("file") final MultipartFile file) {
+    public ResponseEntity<String> uploadImage(@PathVariable UUID camera_id,
+                                              @RequestParam("imageId") UUID imageId,
+                                              @RequestParam("data") byte[] imageData) {
 
-        final UploadImageDto uploadImageDto = new UploadImageDto(imageId, file);
-
-        cameraService.handleUploadImage(camera_id, uploadImageDto);
+        cameraService.handleUploadImage(camera_id, imageId, imageData);
 
         return ResponseEntity.ok().body("Uploaded");
     }
