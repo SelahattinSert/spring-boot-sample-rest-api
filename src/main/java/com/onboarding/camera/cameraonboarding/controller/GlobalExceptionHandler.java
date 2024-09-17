@@ -23,8 +23,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CameraNotCreatedException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleCameraNotCreatedException(final CameraNotCreatedException ex) {
-        final ErrorResponse errorResponse = new ErrorResponse();
+    public ResponseEntity<ErrorResponse> handleCameraNotCreatedException(CameraNotCreatedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.setMessage(ex.getMessage());
@@ -35,8 +35,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(final MethodArgumentNotValidException ex) {
-        final ErrorResponse errorResponse = new ErrorResponse();
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
         errorResponse.setMessage(ex.getMessage());
@@ -47,8 +47,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CameraNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleCameraNotFoundException(final CameraNotFoundException ex) {
-        final ErrorResponse errorResponse = new ErrorResponse();
+    public ResponseEntity<ErrorResponse> handleCameraNotFoundException(CameraNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
         errorResponse.setMessage(ex.getMessage());
@@ -59,8 +59,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(final IllegalArgumentException ex) {
-        final ErrorResponse errorResponse = new ErrorResponse();
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
         errorResponse.setMessage(ex.getMessage());
@@ -71,8 +71,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CameraAlreadyInitializedException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleCameraAlreadyInitializedException(final CameraAlreadyInitializedException ex) {
-        final ErrorResponse errorResponse = new ErrorResponse();
+    public ResponseEntity<ErrorResponse> handleCameraAlreadyInitializedException(CameraAlreadyInitializedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.CONFLICT.value());
         errorResponse.setMessage(ex.getMessage());
@@ -83,8 +83,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CameraNotInitializedException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleCameraNotInitializedException(final CameraNotInitializedException ex) {
-        final ErrorResponse errorResponse = new ErrorResponse();
+    public ResponseEntity<ErrorResponse> handleCameraNotInitializedException(CameraNotInitializedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.setMessage(ex.getMessage());
@@ -95,8 +95,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IOException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleIOException(final IOException ex) {
-        final ErrorResponse errorResponse = new ErrorResponse();
+    public ResponseEntity<ErrorResponse> handleIOException(IOException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.setMessage(ex.getMessage());
@@ -107,8 +107,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ImageNotUploadedException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleImageNotUploadedException(final ImageNotUploadedException ex) {
-        final ErrorResponse errorResponse = new ErrorResponse();
+    public ResponseEntity<ErrorResponse> handleImageNotUploadedException(ImageNotUploadedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.setMessage(ex.getMessage());
@@ -119,8 +119,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ImageAlreadyUploadedException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public ResponseEntity<ErrorResponse> handleImageAlreadyUploadedException(final ImageAlreadyUploadedException ex) {
-        final ErrorResponse errorResponse = new ErrorResponse();
+    public ResponseEntity<ErrorResponse> handleImageAlreadyUploadedException(ImageAlreadyUploadedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.CONFLICT.value());
         errorResponse.setMessage(ex.getMessage());
