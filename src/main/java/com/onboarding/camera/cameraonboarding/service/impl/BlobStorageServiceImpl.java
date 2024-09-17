@@ -59,12 +59,12 @@ public class BlobStorageServiceImpl implements BlobStorageService {
     /**
      * Returns transfer options for uploading files to blob storage.
      *
-     * @param blockSize the block size for the transfer
+     * @param transferBlockSize the block size for the transfer
      * @return configured ParallelTransferOptions
      */
-    private ParallelTransferOptions getTransferOptions(long blockSize) {
+    private ParallelTransferOptions getTransferOptions(long transferBlockSize) {
         return new ParallelTransferOptions()
-                .setBlockSizeLong(blockSize)
+                .setBlockSizeLong(transferBlockSize)
                 .setMaxConcurrency(5)
                 .setProgressListener(
                         bytesTransferred -> log.info("Uploading bytes:{}", bytesTransferred));
