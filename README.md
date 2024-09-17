@@ -19,6 +19,7 @@ Maven
 - Log4j2
 - PostgreSQL
 - Liquibase
+- Azure Blob Storage
 
 ## Installation Instructions
 
