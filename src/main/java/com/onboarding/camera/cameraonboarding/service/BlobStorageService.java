@@ -9,7 +9,7 @@ public interface BlobStorageService {
      * @param blobName  the blob name
      * @param data      the data
      */
-    void uploadFile(final String container, final String blobName, final byte[] data);
+    void uploadFile(String container, String blobName, byte[] data);
 
     /**
      * this method is used get container name

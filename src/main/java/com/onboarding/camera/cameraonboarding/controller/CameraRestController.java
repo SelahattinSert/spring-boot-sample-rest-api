@@ -33,9 +33,9 @@ public class CameraRestController {
     @PostMapping("/onboard")
     public ResponseEntity<CameraResponse> saveCamera(@Valid @RequestBody CameraDto cameraDto) {
 
-        final Camera camera = cameraDtoConverter.toEntity(cameraDto);
-        final Camera savedCamera = cameraService.handleSaveCamera(camera);
-        final CameraResponse cameraResponse = cameraDtoConverter.toCameraResponse(savedCamera);
+        Camera camera = cameraDtoConverter.toEntity(cameraDto);
+        Camera savedCamera = cameraService.handleSaveCamera(camera);
+        CameraResponse cameraResponse = cameraDtoConverter.toCameraResponse(savedCamera);
 
         return new ResponseEntity<>(cameraResponse, HttpStatus.CREATED);
     }
