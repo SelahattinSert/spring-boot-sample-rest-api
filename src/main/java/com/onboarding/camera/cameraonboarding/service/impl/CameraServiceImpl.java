@@ -81,9 +81,9 @@ public class CameraServiceImpl implements CameraService {
                 throw new ImageAlreadyUploadedException("Camera already have image with id: " + camera.getImageId());
             }
             camera.setImageId(imageId);
-            cameraRepository.save(camera);
             log.info("Uploading image with ID: {}", imageId);
             blobStorageService.uploadFile(blobStorageService.getContainerName(), imageId.toString(), imageData);
+            cameraRepository.save(camera);
         } catch (ImageAlreadyUploadedException ex) {
             log.error("Exception occurred while uploading image");
             throw new ImageAlreadyUploadedException("Camera already have image with id: " + camera.getImageId());

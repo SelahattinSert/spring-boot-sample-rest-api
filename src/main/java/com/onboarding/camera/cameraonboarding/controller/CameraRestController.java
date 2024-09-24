@@ -57,10 +57,10 @@ public class CameraRestController {
         return new ResponseEntity<>(cameraResponse, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/camera/{camera_id}/upload_image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/camera/{camera_id}/upload_image", consumes = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
     public ResponseEntity<String> uploadImage(@PathVariable UUID camera_id,
                                               @RequestParam("imageId") UUID imageId,
-                                              @RequestParam("data") byte[] imageData) {
+                                              @RequestBody byte[] imageData) {
 
         cameraService.handleUploadImage(camera_id, imageId, imageData);
 
