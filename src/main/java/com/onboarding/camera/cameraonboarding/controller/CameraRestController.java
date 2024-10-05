@@ -8,7 +8,6 @@ import com.onboarding.camera.cameraonboarding.service.CameraService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Base64;
 import java.util.UUID;
 
 @RestController
@@ -57,12 +57,12 @@ public class CameraRestController {
         return new ResponseEntity<>(cameraResponse, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/camera/{camera_id}/upload_image", consumes = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
+    @PostMapping(value = "/camera/{camera_id}/upload_image")
     public ResponseEntity<String> uploadImage(@PathVariable UUID camera_id,
                                               @RequestParam("imageId") UUID imageId,
-                                              @RequestBody byte[] imageData) {
+                                              @RequestParam("data") String imageData) {
 
-        cameraService.handleUploadImage(camera_id, imageId, imageData);
+        cameraService.handleUploadImage(camera_id, imageId, Base64.getDecoder().decode(imageData));
 
         return ResponseEntity.ok().body("Uploaded");
     }
