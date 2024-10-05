@@ -7,6 +7,7 @@ import com.azure.storage.blob.models.ParallelTransferOptions;
 import com.onboarding.camera.cameraonboarding.service.BlobStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -18,6 +19,9 @@ import java.nio.ByteBuffer;
 public class BlobStorageServiceImpl implements BlobStorageService {
 
     final long blockSize = 2L * 1024L * 1024L; // 2MB block size
+
+    @Value("${spring.cloud.azure.storage.blob.container-name}")
+    public String azureStorageContainerName;
 
     private final BlobServiceAsyncClient blobServiceAsyncClient;
 
@@ -43,7 +47,7 @@ public class BlobStorageServiceImpl implements BlobStorageService {
 
     @Override
     public String getContainerName() {
-        return blobServiceAsyncClient.getAccountName();
+        return azureStorageContainerName;
     }
 
     /**
