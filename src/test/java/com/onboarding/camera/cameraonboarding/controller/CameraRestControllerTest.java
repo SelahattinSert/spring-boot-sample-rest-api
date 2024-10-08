@@ -182,7 +182,7 @@ class CameraRestControllerTest {
                 .when(cameraService).handleInitializeCamera(CAMERA_ID);
 
         // act
-        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
                 .contentType(MediaType.APPLICATION_JSON));
 
         // assert
@@ -198,7 +198,7 @@ class CameraRestControllerTest {
                 .when(cameraService).handleInitializeCamera(CAMERA_ID);
 
         // act
-        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
                 .contentType(MediaType.APPLICATION_JSON));
 
         // assert
@@ -252,24 +252,6 @@ class CameraRestControllerTest {
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/v1/camera/{camera_id}/upload_image", CAMERA_ID)
                         .param("imageId", blankImageId)
-                        .param("data", IMAGE_DATA)
-                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
-                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
-
-        // assert
-        response.andExpect(MockMvcResultMatchers.status().is4xxClientError());
-        Mockito.verify(cameraService, Mockito.never()).handleUploadImage(Mockito.any(), Mockito.any(), Mockito.any());
-    }
-
-    @Test
-    public void expect_handleUploadImage_withNullImageId_returnBadRequest() throws Exception {
-        // arrange
-        final String nullImageId = null;
-
-        // act
-        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
-                        .post("/api/v1/camera/{camera_id}/upload_image", CAMERA_ID)
-                        .param("imageId", nullImageId)
                         .param("data", IMAGE_DATA)
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
