@@ -5,7 +5,9 @@ import com.onboarding.camera.cameraonboarding.converter.CameraDtoConverter;
 import com.onboarding.camera.cameraonboarding.dto.CameraDto;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.exception.CameraAlreadyInitializedException;
+import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotInitializedException;
+import com.onboarding.camera.cameraonboarding.exception.ImageAlreadyUploadedException;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Assertions;
@@ -27,6 +29,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.Base64;
 import java.util.UUID;
 
 @WebMvcTest(controllers = CameraRestController.class)
@@ -52,6 +55,8 @@ class CameraRestControllerTest {
     private final String FIRMWARE_VERSION = "v1.0";
     private final UUID CAMERA_ID = UUID.randomUUID();
     private final String INVALID_UUID = "invalid-uuid";
+    private final UUID IMAGE_ID = UUID.randomUUID();
+    private final String IMAGE_DATA = "iVBORw0KGgoAAAANSUhEUgAAAAIAAAAECAYAAACk7+45AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAXSURBVBhXY5STV/rPAARMIAIE0BkMDAAtLgFmLE0FhAAAAABJRU5ErkJggg==";
 
     @BeforeEach
     void setUp() {
@@ -71,7 +76,7 @@ class CameraRestControllerTest {
         BDDMockito.given(cameraService.handleSaveCamera(ArgumentMatchers.any(Camera.class))).willReturn(camera);
 
         // act
-        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/onboard")
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/onboard")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(cameraDto)));
 
@@ -91,7 +96,7 @@ class CameraRestControllerTest {
         cameraDto.setCameraName(null);
 
         // act
-        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/onboard")
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/onboard")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(cameraDto)));
 
@@ -108,7 +113,7 @@ class CameraRestControllerTest {
         cameraDto.setFirmwareVersion(null);
 
         // act
-        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/onboard")
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/onboard")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(cameraDto)));
 
@@ -126,7 +131,7 @@ class CameraRestControllerTest {
         Mockito.doNothing().when(cameraService).handleInitializeCamera(CAMERA_ID);
 
         // act
-        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/{camera_id}/initialize", CAMERA_ID)
                 .contentType(MediaType.APPLICATION_JSON));
 
         // assert
@@ -142,7 +147,7 @@ class CameraRestControllerTest {
         camera.setCamId(null);
 
         // act
-        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/{camera_id}/initialize", camera.getCamId()))
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/{camera_id}/initialize", camera.getCamId()))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
         // assert
@@ -157,7 +162,7 @@ class CameraRestControllerTest {
         final String invalidCameraId = "123";
 
         // act
-        final ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/{camera_id}/initialize", invalidCameraId))
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/{camera_id}/initialize", invalidCameraId))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
         Assertions.assertEquals(UUID.fromString(CAMERA_ID.toString()), CAMERA_ID);
@@ -200,5 +205,137 @@ class CameraRestControllerTest {
         response.andExpect(MockMvcResultMatchers.status().isInternalServerError());
 
         Mockito.verify(cameraService).handleInitializeCamera(CAMERA_ID);
+    }
+
+    @Test
+    public void expect_handleUploadImage_withValidImage_returnOk() throws Exception {
+        // arrange
+        camera.setCamId(CAMERA_ID);
+        Mockito.doNothing().when(cameraService).handleUploadImage(CAMERA_ID, IMAGE_ID, Base64.getDecoder().decode(IMAGE_DATA));
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/camera/{camera_id}/upload_image", CAMERA_ID)
+                .param("imageId", IMAGE_ID.toString())
+                .param("data", IMAGE_DATA)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(cameraService).handleUploadImage(CAMERA_ID, IMAGE_ID, Base64.getDecoder().decode(IMAGE_DATA));
+    }
+
+    @Test
+    public void expect_handleUploadImage_withInvalidImageId_returnBadRequest() throws Exception {
+        // arrange
+        final String invalidImageId = "invalid-uuid";
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/v1/camera/{camera_id}/upload_image", CAMERA_ID)
+                        .param("imageId", invalidImageId)
+                        .param("data", IMAGE_DATA)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().is4xxClientError());
+        Mockito.verify(cameraService, Mockito.never()).handleUploadImage(Mockito.any(), Mockito.any(), Mockito.any());
+    }
+
+    @Test
+    public void expect_handleUploadImage_withBlankImageId_returnBadRequest() throws Exception {
+        // arrange
+        final String blankImageId = "";
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/v1/camera/{camera_id}/upload_image", CAMERA_ID)
+                        .param("imageId", blankImageId)
+                        .param("data", IMAGE_DATA)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().is4xxClientError());
+        Mockito.verify(cameraService, Mockito.never()).handleUploadImage(Mockito.any(), Mockito.any(), Mockito.any());
+    }
+
+    @Test
+    public void expect_handleUploadImage_withNullImageId_returnBadRequest() throws Exception {
+        // arrange
+        final String nullImageId = null;
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/v1/camera/{camera_id}/upload_image", CAMERA_ID)
+                        .param("imageId", nullImageId)
+                        .param("data", IMAGE_DATA)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().is4xxClientError());
+        Mockito.verify(cameraService, Mockito.never()).handleUploadImage(Mockito.any(), Mockito.any(), Mockito.any());
+    }
+
+    @Test
+    public void expect_handleUploadImage_withAlreadyImageUploadedCamera_returnConflict() throws Exception {
+        // arrange
+        camera.setImageId(IMAGE_ID);
+        Mockito.doThrow(new ImageAlreadyUploadedException("Camera already have image with id: " + camera.getImageId()))
+                .when(cameraService).handleUploadImage(CAMERA_ID, IMAGE_ID, Base64.getDecoder().decode(IMAGE_DATA));
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/camera/{camera_id}/upload_image", CAMERA_ID)
+                .param("imageId", IMAGE_ID.toString())
+                .param("data", IMAGE_DATA)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE));
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().isConflict());
+
+        Mockito.verify(cameraService).handleUploadImage(CAMERA_ID, IMAGE_ID, Base64.getDecoder().decode(IMAGE_DATA));
+    }
+
+    @Test
+    public void expect_handleUploadImage_withNotInitializedCamera_returnInternalServerError() throws Exception {
+        // arrange
+        camera.setCamId(CAMERA_ID);
+        Mockito.doThrow(new CameraNotInitializedException("Camera is not initialized with id: " + camera.getCamId()))
+                .when(cameraService).handleUploadImage(CAMERA_ID, IMAGE_ID, Base64.getDecoder().decode(IMAGE_DATA));
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/camera/{camera_id}/upload_image", CAMERA_ID)
+                .param("imageId", IMAGE_ID.toString())
+                .param("data", IMAGE_DATA)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE));
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().isInternalServerError());
+
+        Mockito.verify(cameraService).handleUploadImage(CAMERA_ID, IMAGE_ID, Base64.getDecoder().decode(IMAGE_DATA));
+    }
+
+    @Test
+    public void expect_handleUploadImage_withNotOnboardedCamera_returnNotFound() throws Exception {
+        // arrange
+        camera.setCamId(CAMERA_ID);
+        Mockito.doThrow(new CameraNotFoundException("Camera is not onboarded with id: " + camera.getCamId()))
+                .when(cameraService).handleUploadImage(CAMERA_ID, IMAGE_ID, Base64.getDecoder().decode(IMAGE_DATA));
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/camera/{camera_id}/upload_image", CAMERA_ID)
+                .param("imageId", IMAGE_ID.toString())
+                .param("data", IMAGE_DATA)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE));
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().isNotFound());
+
+        Mockito.verify(cameraService).handleUploadImage(CAMERA_ID, IMAGE_ID, Base64.getDecoder().decode(IMAGE_DATA));
     }
 }
