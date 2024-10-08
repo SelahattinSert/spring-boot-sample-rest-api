@@ -25,12 +25,12 @@ class CameraDtoConverterTest {
     @Test
     void expect_convert_withValidCameraDto_returnCamera() {
         // arrange
-        final CameraDto cameraDto = new CameraDto();
+        CameraDto cameraDto = new CameraDto();
         cameraDto.setCameraName(CAMERA_NAME);
         cameraDto.setFirmwareVersion(FIRMWARE_VERSION);
 
         // act
-        final Camera camera = cameraDtoConverter.toEntity(cameraDto);
+        Camera camera = cameraDtoConverter.toEntity(cameraDto);
 
         // assert
         AssertionsForClassTypes.assertThat(camera).isNotNull();
@@ -41,13 +41,13 @@ class CameraDtoConverterTest {
     @Test
     void expect_convert_withValidCamera_returnCameraDto() {
         // arrange
-        final Camera camera = new Camera();
+        Camera camera = new Camera();
         camera.setCamId(CAMERA_ID);
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
 
         // act
-        final CameraResponse response = cameraDtoConverter.toCameraResponse(camera);
+        CameraResponse response = cameraDtoConverter.toCameraResponse(camera);
 
         // assert
         AssertionsForClassTypes.assertThat(response).isNotNull();

@@ -5,7 +5,10 @@ import com.onboarding.camera.cameraonboarding.exception.CameraAlreadyInitialized
 import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotInitializedException;
+import com.onboarding.camera.cameraonboarding.exception.ImageAlreadyUploadedException;
+import com.onboarding.camera.cameraonboarding.exception.ImageNotUploadedException;
 import com.onboarding.camera.cameraonboarding.repository.CameraRepository;
+import com.onboarding.camera.cameraonboarding.service.impl.BlobStorageServiceImpl;
 import com.onboarding.camera.cameraonboarding.service.impl.CameraServiceImpl;
 import com.onboarding.camera.cameraonboarding.util.DateTimeFactory;
 import org.assertj.core.api.Assertions;
@@ -33,6 +36,9 @@ class CameraServiceImplTest {
     @Mock
     private DateTimeFactory dateTimeFactory;
 
+    @Mock
+    private BlobStorageServiceImpl blobStorageService;
+
     @InjectMocks
     private CameraServiceImpl cameraService;
 
@@ -47,7 +53,12 @@ class CameraServiceImplTest {
     private final UUID NON_EXISTING_UUID = UUID.fromString("ef556dc0-0ddc-4f39-a96d-6886a54eee54");
     private final LocalDateTime NOW = LocalDateTime.now();
     private final LocalDateTime CREATED_AT = LocalDateTime.of(2024, 7, 29, 10, 0);
+    private final LocalDateTime ONBOARDED_AT = LocalDateTime.of(2024, 7, 29, 10, 0);
     private final LocalDateTime INITIALIZED_AT = LocalDateTime.of(2024, 8, 7, 10, 0);
+    private final byte[] IMAGE_DATA = new byte[1024 * 1024];
+    private final String CONTAINER_NAME = "test_container";
+    private final UUID IMAGE_ID = UUID.randomUUID();
+    private final UUID NULL_UUID = null;
 
     @BeforeEach
     void setUp() {
@@ -56,6 +67,7 @@ class CameraServiceImplTest {
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
         camera.setCreatedAt(CREATED_AT);
+        camera.setOnboardedAt(ONBOARDED_AT);
     }
 
     @Test
@@ -215,5 +227,93 @@ class CameraServiceImplTest {
                 .isInstanceOf(IllegalArgumentException.class);
 
         Mockito.verify(cameraRepository, Mockito.never()).findById(CAMERA_ID);
+    }
+
+    @Test
+    void expect_handleUploadImage_withValidData_returnVoid() {
+        // arrange
+        camera.setInitializedAt(INITIALIZED_AT);
+        Mockito.when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
+        Mockito.when(blobStorageService.getContainerName()).thenReturn(CONTAINER_NAME);
+
+        // act
+        cameraService.handleUploadImage(CAMERA_ID, IMAGE_ID, IMAGE_DATA);
+
+        // assert
+        Mockito.verify(blobStorageService).uploadFile(CONTAINER_NAME, IMAGE_ID.toString(), IMAGE_DATA);
+        Mockito.verify(cameraRepository).save(camera);
+        Assertions.assertThat(camera.getImageId()).isEqualTo(IMAGE_ID);
+    }
+
+    @Test
+    void expect_handleUploadImage_withAlreadyUploadedImage_throwsException() {
+        // arrange
+        camera.setImageId(IMAGE_ID);
+        camera.setInitializedAt(INITIALIZED_AT);
+        Mockito.when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> cameraService.handleUploadImage(CAMERA_ID, IMAGE_ID, IMAGE_DATA))
+                .isInstanceOf(ImageAlreadyUploadedException.class)
+                .hasMessageContaining("Camera already have image with id: " + IMAGE_ID);
+
+        Mockito.verify(blobStorageService, Mockito.never()).uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any());
+    }
+
+    @Test
+    void expect_handleUploadImage_withNonExistingCamera_throwsException() {
+        // arrange
+        camera.setInitializedAt(INITIALIZED_AT);
+        Mockito.when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.empty());
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> cameraService.handleUploadImage(CAMERA_ID, IMAGE_ID, IMAGE_DATA))
+                .isInstanceOf(CameraNotFoundException.class)
+                .hasMessageContaining("Camera not found with id: " + CAMERA_ID);
+
+        Mockito.verify(blobStorageService, Mockito.never()).uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any());
+    }
+
+    @Test
+    void expect_handleUploadImage_withNotInitializedCamera_throwsException() {
+        // arrange
+        camera.setInitializedAt(null);
+        Mockito.when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> cameraService.handleUploadImage(CAMERA_ID, IMAGE_ID, IMAGE_DATA))
+                .isInstanceOf(CameraNotInitializedException.class)
+                .hasMessageContaining("Camera is not initialized with id: " + CAMERA_ID);
+
+        Mockito.verify(blobStorageService, Mockito.never()).uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any());
+    }
+
+    @Test
+    void expect_handleUploadImage_withBlobStorageError_throwsException() {
+        // arrange
+        camera.setInitializedAt(INITIALIZED_AT);
+        Mockito.when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
+        Mockito.when(blobStorageService.getContainerName()).thenReturn(CONTAINER_NAME);
+        Mockito.doThrow(new RuntimeException("Blob storage error")).when(blobStorageService).uploadFile(CONTAINER_NAME, IMAGE_ID.toString(), IMAGE_DATA);
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> cameraService.handleUploadImage(CAMERA_ID, IMAGE_ID, IMAGE_DATA))
+                .isInstanceOf(ImageNotUploadedException.class)
+                .hasMessageContaining("Error occurred while uploading image");
+
+        Mockito.verify(cameraRepository, Mockito.never()).save(camera);
+    }
+
+    @Test
+    void expect_handleUploadImage_withNullImageId_toThrowIllegalArgumentException() {
+        // arrange
+        camera.setInitializedAt(INITIALIZED_AT);
+        Mockito.when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> cameraService.handleUploadImage(CAMERA_ID, NULL_UUID, IMAGE_DATA))
+                .isInstanceOf(ImageNotUploadedException.class);
+
+        Mockito.verify(cameraRepository, Mockito.never()).save(camera);
     }
 }
