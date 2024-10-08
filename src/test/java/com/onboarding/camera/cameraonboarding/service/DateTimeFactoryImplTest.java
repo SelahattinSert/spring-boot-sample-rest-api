@@ -36,7 +36,7 @@ class DateTimeFactoryImplTest {
         BDDMockito.given(clock.getZone()).willReturn(ZoneId.of(TEST_ZONE_ID));
 
         // act
-        final LocalDateTime now = dateTimeFactory.now();
+        LocalDateTime now = dateTimeFactory.now();
 
         // assert
         Assertions.assertThat(now).isEqualTo(EXPECTED_TIME_INSTANT);
