@@ -1,6 +1,7 @@
 package com.onboarding.camera.cameraonboarding.config;
 
 import com.azure.storage.blob.BlobServiceAsyncClient;
+import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.common.policy.RequestRetryOptions;
 import com.azure.storage.common.policy.RetryPolicyType;
@@ -34,5 +35,18 @@ public class BlobStorageConfiguration {
                                 null,
                                 null,
                                 null)).buildAsyncClient();
+    }
+
+    @Bean
+    public BlobServiceClient blobServiceClient() {
+        return new BlobServiceClientBuilder().connectionString(azureStorageConnectionString)
+                .retryOptions(
+                        new RequestRetryOptions(
+                                RetryPolicyType.EXPONENTIAL,
+                                5,
+                                Duration.ofSeconds(300L),
+                                null,
+                                null,
+                                null)).buildClient();
     }
 }
