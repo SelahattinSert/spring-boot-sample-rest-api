@@ -1,5 +1,7 @@
 package com.onboarding.camera.cameraonboarding.service;
 
+import java.io.OutputStream;
+
 public interface BlobStorageService {
 
     /**
@@ -17,4 +19,13 @@ public interface BlobStorageService {
      * @return container name
      */
     String getContainerName();
+
+    /**
+     * this method is used to download blob
+     *
+     * @param outputStream the output stream
+     * @param container    the container name
+     * @param blobName     the blob name
+     */
+    void getBlob(OutputStream outputStream, String container, String blobName);
 }

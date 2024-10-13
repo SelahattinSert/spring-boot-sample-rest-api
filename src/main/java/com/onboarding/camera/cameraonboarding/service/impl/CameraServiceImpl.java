@@ -6,6 +6,8 @@ import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedExceptio
 import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotInitializedException;
 import com.onboarding.camera.cameraonboarding.exception.ImageAlreadyUploadedException;
+import com.onboarding.camera.cameraonboarding.exception.ImageNotDownloadedException;
+import com.onboarding.camera.cameraonboarding.exception.ImageNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.ImageNotUploadedException;
 import com.onboarding.camera.cameraonboarding.repository.CameraRepository;
 import com.onboarding.camera.cameraonboarding.service.BlobStorageService;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.util.UUID;
 
 @Slf4j
@@ -90,6 +93,30 @@ public class CameraServiceImpl implements CameraService {
         } catch (Exception ex) {
             log.error("Exception occurred while uploading image:{}:ex:{}", imageId, ex.getMessage());
             throw new ImageNotUploadedException("Error occurred while uploading image: " + ex.getMessage());
+        }
+    }
+
+    @Override
+    public byte[] handleDownloadImage(UUID cameraId) {
+        try {
+            Camera camera = getCameraById(cameraId);
+            validateCameraImageUpload(camera);
+
+            if (camera.getImageId() == null) {
+                throw new ImageNotFoundException("No image found for the camera with id: " + cameraId);
+            }
+
+            log.info("Downloading image with ID: {}", camera.getImageId());
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            blobStorageService.getBlob(outputStream, blobStorageService.getContainerName(), camera.getImageId().toString());
+
+            return outputStream.toByteArray();
+        } catch (ImageNotFoundException ex) {
+            log.error("Exception occurred while downloading image");
+            throw new ImageNotFoundException("No image found for the camera with id: " + cameraId);
+        } catch (Exception ex) {
+            log.error("Exception occurred while downloading image, camera:{}:ex:{}", cameraId, ex.getMessage());
+            throw new ImageNotDownloadedException("Error occurred while downloading image: " + ex.getMessage());
         }
     }
 

@@ -1,8 +1,13 @@
 package com.onboarding.camera.cameraonboarding.service.impl;
 
+import com.azure.core.util.Context;
 import com.azure.storage.blob.BlobAsyncClient;
+import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerAsyncClient;
+import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceAsyncClient;
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.models.DownloadRetryOptions;
 import com.azure.storage.blob.models.ParallelTransferOptions;
 import com.onboarding.camera.cameraonboarding.service.BlobStorageService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 @Slf4j
@@ -24,6 +30,8 @@ public class BlobStorageServiceImpl implements BlobStorageService {
     public String azureStorageContainerName;
 
     private final BlobServiceAsyncClient blobServiceAsyncClient;
+
+    private final BlobServiceClient blobServiceClient;
 
     @Override
 
@@ -48,6 +56,24 @@ public class BlobStorageServiceImpl implements BlobStorageService {
     @Override
     public String getContainerName() {
         return azureStorageContainerName;
+    }
+
+    private BlobContainerClient getBlobContainerClient(String container) {
+        return blobServiceClient.getBlobContainerClient(container);
+    }
+
+    private BlobClient getBlobClient(String container, String blobName) {
+        BlobContainerClient blobContainerClient = getBlobContainerClient(container);
+        return blobContainerClient.getBlobClient(blobName);
+    }
+
+    @Override
+    public void getBlob(OutputStream outputStream, String container, String blobName) {
+        BlobClient blobClient = getBlobClient(container, blobName);
+
+        blobClient.downloadStreamWithResponse(outputStream, null,
+                new DownloadRetryOptions().setMaxRetryRequests(5),
+                null, false, null, Context.NONE);
     }
 
     /**

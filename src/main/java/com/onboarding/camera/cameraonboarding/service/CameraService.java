@@ -5,6 +5,8 @@ import com.onboarding.camera.cameraonboarding.exception.CameraAlreadyInitialized
 import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotInitializedException;
+import com.onboarding.camera.cameraonboarding.exception.ImageNotDownloadedException;
+import com.onboarding.camera.cameraonboarding.exception.ImageNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.ImageNotUploadedException;
 
 import java.util.UUID;
@@ -55,4 +57,15 @@ public interface CameraService {
      */
 
     void handleUploadImage(UUID cameraId, UUID imageId, byte[] imageData);
+
+    /**
+     * this method is used for downloading camera image from the azure blob storage
+     *
+     * @param cameraId camera id
+     * @return byte[] image as bytes
+     * @throws ImageNotFoundException      if camera has no image
+     * @throws ImageNotDownloadedException if unexpected error occurs while downloading image
+     */
+
+    byte[] handleDownloadImage(UUID cameraId);
 }
