@@ -58,15 +58,6 @@ public class BlobStorageServiceImpl implements BlobStorageService {
         return azureStorageContainerName;
     }
 
-    private BlobContainerClient getBlobContainerClient(String container) {
-        return blobServiceClient.getBlobContainerClient(container);
-    }
-
-    private BlobClient getBlobClient(String container, String blobName) {
-        BlobContainerClient blobContainerClient = getBlobContainerClient(container);
-        return blobContainerClient.getBlobClient(blobName);
-    }
-
     @Override
     public void getBlob(OutputStream outputStream, String container, String blobName) {
         BlobClient blobClient = getBlobClient(container, blobName);
@@ -74,6 +65,15 @@ public class BlobStorageServiceImpl implements BlobStorageService {
         blobClient.downloadStreamWithResponse(outputStream, null,
                 new DownloadRetryOptions().setMaxRetryRequests(5),
                 null, false, null, Context.NONE);
+    }
+
+    private BlobContainerClient getBlobContainerClient(String container) {
+        return blobServiceClient.getBlobContainerClient(container);
+    }
+
+    private BlobClient getBlobClient(String container, String blobName) {
+        BlobContainerClient blobContainerClient = getBlobContainerClient(container);
+        return blobContainerClient.getBlobClient(blobName);
     }
 
     /**
