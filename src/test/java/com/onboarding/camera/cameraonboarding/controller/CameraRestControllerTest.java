@@ -23,6 +23,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -319,5 +320,77 @@ class CameraRestControllerTest {
         response.andExpect(MockMvcResultMatchers.status().isNotFound());
 
         Mockito.verify(cameraService).handleUploadImage(CAMERA_ID, IMAGE_ID, Base64.getDecoder().decode(IMAGE_DATA));
+    }
+
+    @Test
+    public void expect_handleDownloadImage_withValidCamera_returnOk() throws Exception {
+        // arrange
+        byte[] imageData = Base64.getDecoder().decode(IMAGE_DATA);
+        camera.setCamId(CAMERA_ID);
+        camera.setImageId(IMAGE_ID);
+        BDDMockito.given(cameraService.handleDownloadImage(CAMERA_ID)).willReturn(imageData);
+        BDDMockito.given(cameraService.getCameraById(CAMERA_ID)).willReturn(camera);
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/v1/camera/{camera_id}/download_image", CAMERA_ID)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE));
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + IMAGE_ID + ".png"))
+                .andExpect(MockMvcResultMatchers.content().bytes(imageData));
+
+        Mockito.verify(cameraService).handleDownloadImage(CAMERA_ID);
+        Mockito.verify(cameraService).getCameraById(CAMERA_ID);
+    }
+
+    @Test
+    public void expect_handleDownloadImage_withInvalidUUID_returnBadRequest() throws Exception {
+        // arrange & act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/v1/camera/{camera_id}/download_image", INVALID_UUID)
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().is4xxClientError());
+
+        Mockito.verify(cameraService, Mockito.never()).handleDownloadImage(Mockito.any());
+    }
+
+    @Test
+    public void expect_handleDownloadImage_withNotFoundCamera_returnNotFound() throws Exception {
+        // arrange
+        Mockito.doThrow(new CameraNotFoundException("Camera not found with id: " + CAMERA_ID))
+                .when(cameraService).handleDownloadImage(CAMERA_ID);
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/v1/camera/{camera_id}/download_image", CAMERA_ID)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE));
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().isNotFound());
+
+        Mockito.verify(cameraService).handleDownloadImage(CAMERA_ID);
+    }
+
+    @Test
+    public void expect_handleDownloadImage_withNotInitializedCamera_returnInternalServerError() throws Exception {
+        // arrange
+        camera.setCamId(CAMERA_ID);
+        Mockito.doThrow(new CameraNotInitializedException("Camera is not initialized with id: " + camera.getCamId()))
+                .when(cameraService).handleDownloadImage(CAMERA_ID);
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/v1/camera/{camera_id}/download_image", CAMERA_ID)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE));
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().isInternalServerError());
+
+        Mockito.verify(cameraService).handleDownloadImage(CAMERA_ID);
     }
 }
