@@ -98,10 +98,10 @@ public class CameraServiceImpl implements CameraService {
 
     @Override
     public byte[] handleDownloadImage(UUID cameraId) {
-        try {
-            Camera camera = getCameraById(cameraId);
-            validateCameraImageUpload(camera);
+        Camera camera = getCameraById(cameraId);
+        validateCameraImageUpload(camera);
 
+        try {
             if (camera.getImageId() == null) {
                 throw new ImageNotFoundException(String.format("Image is not found by given cameraId: %s", cameraId));
             }

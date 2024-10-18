@@ -63,8 +63,10 @@ public interface CameraService {
      *
      * @param cameraId camera id
      * @return byte[] image as bytes
-     * @throws ImageNotFoundException      if camera has no image
-     * @throws ImageNotDownloadedException if unexpected error occurs while downloading image
+     * @throws CameraNotFoundException       if camera is not onboarded
+     * @throws CameraNotInitializedException if camera is not initialized
+     * @throws ImageNotFoundException        if camera has no image
+     * @throws ImageNotDownloadedException   if unexpected error occurs while downloading image
      */
 
     byte[] handleDownloadImage(UUID cameraId);
