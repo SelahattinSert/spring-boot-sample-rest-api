@@ -328,8 +328,8 @@ class CameraRestControllerTest {
         byte[] imageData = Base64.getDecoder().decode(IMAGE_DATA);
         camera.setCamId(CAMERA_ID);
         camera.setImageId(IMAGE_ID);
-        BDDMockito.given(cameraService.handleDownloadImage(CAMERA_ID)).willReturn(imageData);
-        BDDMockito.given(cameraService.getCameraById(CAMERA_ID)).willReturn(camera);
+        Mockito.when(cameraService.handleDownloadImage(CAMERA_ID)).thenReturn(imageData);
+        Mockito.when(cameraService.getCameraById(CAMERA_ID)).thenReturn(camera);
 
         // act
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders

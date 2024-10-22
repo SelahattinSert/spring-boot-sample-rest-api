@@ -1,5 +1,6 @@
 package com.onboarding.camera.cameraonboarding.service.impl;
 
+import com.azure.core.util.Context;
 import com.azure.storage.blob.BlobAsyncClient;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerAsyncClient;
@@ -139,8 +140,8 @@ class BlobStorageServiceImplTest {
         // arrange
         OutputStream outputStream = Mockito.mock(OutputStream.class);
         BlobDownloadResponse mockResponse = Mockito.mock(BlobDownloadResponse.class);
-        Mockito.when(blobClient.downloadStreamWithResponse(Mockito.eq(outputStream), Mockito.any(), Mockito.any(DownloadRetryOptions.class),
-                        Mockito.any(), Mockito.eq(false), Mockito.any(), Mockito.any()))
+        Mockito.when(blobClient.downloadStreamWithResponse(outputStream, null, new DownloadRetryOptions(),
+                        null, false, null, Context.NONE))
                 .thenReturn(mockResponse);
 
         // act

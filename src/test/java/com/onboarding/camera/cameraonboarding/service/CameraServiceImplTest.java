@@ -50,7 +50,7 @@ class CameraServiceImplTest {
 
     private Camera camera;
 
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
     private final String CAMERA_NAME = "Camera 1";
     private final String FIRMWARE_VERSION = "v1.0";
@@ -330,18 +330,21 @@ class CameraServiceImplTest {
         Mockito.when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
         Mockito.when(blobStorageService.getContainerName()).thenReturn(CONTAINER_NAME);
 
-        Mockito.doAnswer(invocation -> {
-            ByteArrayOutputStream outputStream = invocation.getArgument(0);
-            outputStream.write(IMAGE_DATA);
-            return null;
-        }).when(blobStorageService).getBlob(ArgumentMatchers.any(ByteArrayOutputStream.class), ArgumentMatchers.eq(CONTAINER_NAME), ArgumentMatchers.eq(IMAGE_ID.toString()));
+        Mockito.lenient().doAnswer(invocation -> {
+                    outputStream = invocation.getArgument(0);
+                    outputStream.writeBytes(IMAGE_DATA);
+                    return null;
+                }
+        ).when(blobStorageService).getBlob(
+                Mockito.any(outputStream.getClass()), Mockito.eq(CONTAINER_NAME), Mockito.eq(IMAGE_ID.toString()));
 
         // act
         byte[] downloadedImage = cameraService.handleDownloadImage(CAMERA_ID);
 
         // assert
         Assertions.assertThat(downloadedImage).isEqualTo(IMAGE_DATA);
-        Mockito.verify(blobStorageService).getBlob(ArgumentMatchers.any(ByteArrayOutputStream.class), ArgumentMatchers.eq(CONTAINER_NAME), ArgumentMatchers.eq(IMAGE_ID.toString()));
+        Mockito.verify(blobStorageService).getBlob(
+                Mockito.any(ByteArrayOutputStream.class), Mockito.eq(CONTAINER_NAME), Mockito.eq(IMAGE_ID.toString()));
     }
 
     @Test
