@@ -76,7 +76,7 @@ public class CameraServiceImpl implements CameraService {
     @Override
     public void handleUploadImage(UUID cameraId, UUID imageId, byte[] imageData) {
         Camera camera = getCameraById(cameraId);
-        validateCameraImageUpload(camera);
+        validateCameraImage(camera);
 
         log.info("Received file:{}", imageId);
         try {
@@ -99,7 +99,7 @@ public class CameraServiceImpl implements CameraService {
     @Override
     public byte[] handleDownloadImage(UUID cameraId) {
         Camera camera = getCameraById(cameraId);
-        validateCameraImageUpload(camera);
+        validateCameraImage(camera);
 
         try {
             if (camera.getImageId() == null) {
@@ -127,7 +127,7 @@ public class CameraServiceImpl implements CameraService {
      * @throws CameraNotFoundException       if the camera is not onboarded
      * @throws CameraNotInitializedException if the camera is not initialized
      */
-    private void validateCameraImageUpload(Camera camera) {
+    private void validateCameraImage(Camera camera) {
         if (camera.getOnboardedAt() == null || camera.getOnboardedAt().toString().isBlank()) {
             throw new CameraNotFoundException(String.format("Camera is not onboarded with id: %s", camera.getCamId()));
         } else if (camera.getInitializedAt() == null || camera.getInitializedAt().toString().isBlank()) {
