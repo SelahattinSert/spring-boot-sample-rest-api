@@ -7,7 +7,9 @@ import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -65,5 +67,16 @@ public class CameraRestController {
         cameraService.handleUploadImage(camera_id, imageId, Base64.getDecoder().decode(imageData));
 
         return ResponseEntity.ok().body("Uploaded");
+    }
+
+    @GetMapping(path = "/camera/{cameraId}/download_image", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<byte[]> downloadImage(@PathVariable UUID cameraId) {
+
+        byte[] imageData = cameraService.handleDownloadImage(cameraId);
+        Camera camera = cameraService.getCameraById(cameraId);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + camera.getImageId() + ".png")
+                .body(imageData);
     }
 }

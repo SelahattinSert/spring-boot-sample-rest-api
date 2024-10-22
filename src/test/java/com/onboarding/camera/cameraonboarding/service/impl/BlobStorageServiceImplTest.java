@@ -1,8 +1,14 @@
 package com.onboarding.camera.cameraonboarding.service.impl;
 
+import com.azure.core.util.Context;
 import com.azure.storage.blob.BlobAsyncClient;
+import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerAsyncClient;
+import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceAsyncClient;
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.models.BlobDownloadResponse;
+import com.azure.storage.blob.models.DownloadRetryOptions;
 import com.azure.storage.blob.models.ParallelTransferOptions;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +25,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 @ExtendWith(SpringExtension.class)
@@ -33,6 +41,15 @@ class BlobStorageServiceImplTest {
 
     @Mock
     private BlobAsyncClient blobAsyncClient;
+
+    @Mock
+    private BlobServiceClient blobServiceClient;
+
+    @Mock
+    private BlobContainerClient blobContainerClient;
+
+    @Mock
+    private BlobClient blobClient;
 
     @InjectMocks
     private BlobStorageServiceImpl blobStorageService;
@@ -54,6 +71,10 @@ class BlobStorageServiceImplTest {
                 .thenReturn(blobContainerAsyncClient);
         Mockito.when(blobContainerAsyncClient.getBlobAsyncClient(BLOB_NAME))
                 .thenReturn(blobAsyncClient);
+        Mockito.when(blobServiceClient.getBlobContainerClient(CONTAINER_NAME))
+                .thenReturn(blobContainerClient);
+        Mockito.when(blobContainerClient.getBlobClient(BLOB_NAME))
+                .thenReturn(blobClient);
     }
 
     @Test
@@ -112,5 +133,53 @@ class BlobStorageServiceImplTest {
         Assertions.assertThatThrownBy(() -> blobStorageService.uploadFile(WRONG_CONTAINER_NAME, BLOB_NAME, DATA))
                 .isInstanceOf(InternalError.class)
                 .hasMessageContaining("Blob container not found");
+    }
+
+    @Test
+    void expect_getBlob_withValidData_succeeds() {
+        // arrange
+        OutputStream outputStream = Mockito.mock(OutputStream.class);
+        BlobDownloadResponse mockResponse = Mockito.mock(BlobDownloadResponse.class);
+        Mockito.when(blobClient.downloadStreamWithResponse(outputStream, null, new DownloadRetryOptions(),
+                        null, false, null, Context.NONE))
+                .thenReturn(mockResponse);
+
+        // act
+        blobStorageService.getBlob(outputStream, CONTAINER_NAME, BLOB_NAME);
+
+        // assert
+        Mockito.verify(blobClient).downloadStreamWithResponse(Mockito.eq(outputStream), Mockito.any(), Mockito.any(DownloadRetryOptions.class),
+                Mockito.any(), Mockito.eq(false), Mockito.any(), Mockito.any());
+        Assertions.assertThat(mockResponse).isNotNull();
+    }
+
+    @Test
+    void expect_getBlob_withInvalidContainer_throwsException() {
+        // arrange
+        Mockito.when(blobServiceClient.getBlobContainerClient(WRONG_CONTAINER_NAME))
+                .thenReturn(blobContainerClient);
+        Mockito.when(blobContainerClient.getBlobClient(BLOB_NAME))
+                .thenThrow(new IllegalArgumentException("Blob container not found"));
+
+        OutputStream outputStream = new ByteArrayOutputStream();
+
+        // act & assert
+        Assertions.assertThatThrownBy(() -> blobStorageService.getBlob(outputStream, WRONG_CONTAINER_NAME, BLOB_NAME))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Blob container not found");
+    }
+
+    @Test
+    void expect_getBlob_withDownloadError_throwsException() {
+        // arrange
+        OutputStream outputStream = new ByteArrayOutputStream();
+        Mockito.doThrow(new RuntimeException("Download failed"))
+                .when(blobClient).downloadStreamWithResponse(Mockito.eq(outputStream), Mockito.any(), Mockito.any(DownloadRetryOptions.class),
+                        Mockito.any(), Mockito.eq(false), Mockito.any(), Mockito.any());
+
+        // act & assert
+        Assertions.assertThatThrownBy(() -> blobStorageService.getBlob(outputStream, CONTAINER_NAME, BLOB_NAME))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Download failed");
     }
 }

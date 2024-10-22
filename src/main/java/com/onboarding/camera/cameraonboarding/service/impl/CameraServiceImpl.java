@@ -6,6 +6,8 @@ import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedExceptio
 import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotInitializedException;
 import com.onboarding.camera.cameraonboarding.exception.ImageAlreadyUploadedException;
+import com.onboarding.camera.cameraonboarding.exception.ImageNotDownloadedException;
+import com.onboarding.camera.cameraonboarding.exception.ImageNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.ImageNotUploadedException;
 import com.onboarding.camera.cameraonboarding.repository.CameraRepository;
 import com.onboarding.camera.cameraonboarding.service.BlobStorageService;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.util.UUID;
 
 @Slf4j
@@ -39,7 +42,7 @@ public class CameraServiceImpl implements CameraService {
             return savedCamera;
         } catch (Exception ex) {
             log.error("Exception occurred while saving camera: {}", ex.getMessage());
-            throw new CameraNotCreatedException("Error occurred while saving camera: " + ex.getMessage());
+            throw new CameraNotCreatedException(String.format("Error occurred while saving camera: %s", ex.getMessage()));
         }
     }
 
@@ -56,7 +59,7 @@ public class CameraServiceImpl implements CameraService {
             log.info("Camera initialized with ID: {}", cameraId);
         } catch (Exception ex) {
             log.error("Exception occurred while initializing camera with ID: {}", cameraId, ex);
-            throw new CameraNotInitializedException("Error occurred while initializing camera: " + ex.getMessage());
+            throw new CameraNotInitializedException(String.format("Error occurred while initializing camera: %s", ex.getMessage()));
         }
     }
 
@@ -67,18 +70,18 @@ public class CameraServiceImpl implements CameraService {
         }
 
         return cameraRepository.findById(cameraId)
-                .orElseThrow(() -> new CameraNotFoundException("Camera not found with id: " + cameraId));
+                .orElseThrow(() -> new CameraNotFoundException(String.format("Camera not found with id: %s", cameraId)));
     }
 
     @Override
     public void handleUploadImage(UUID cameraId, UUID imageId, byte[] imageData) {
         Camera camera = getCameraById(cameraId);
-        validateCameraImageUpload(camera);
+        validateCameraImage(camera);
 
         log.info("Received file:{}", imageId);
         try {
             if (camera.getImageId() != null) {
-                throw new ImageAlreadyUploadedException("Camera already have image with id: " + camera.getImageId());
+                throw new ImageAlreadyUploadedException(String.format("Camera already have image with id: %s", camera.getImageId()));
             }
             camera.setImageId(imageId);
             log.info("Uploading image with ID: {}", imageId);
@@ -86,10 +89,34 @@ public class CameraServiceImpl implements CameraService {
             cameraRepository.save(camera);
         } catch (ImageAlreadyUploadedException ex) {
             log.error("Exception occurred while uploading image");
-            throw new ImageAlreadyUploadedException("Camera already have image with id: " + camera.getImageId());
+            throw new ImageAlreadyUploadedException(String.format("Camera already have image with id: %s", camera.getImageId()));
         } catch (Exception ex) {
             log.error("Exception occurred while uploading image:{}:ex:{}", imageId, ex.getMessage());
-            throw new ImageNotUploadedException("Error occurred while uploading image: " + ex.getMessage());
+            throw new ImageNotUploadedException(String.format("Error occurred while uploading image: %s", ex.getMessage()));
+        }
+    }
+
+    @Override
+    public byte[] handleDownloadImage(UUID cameraId) {
+        Camera camera = getCameraById(cameraId);
+        validateCameraImage(camera);
+
+        try {
+            if (camera.getImageId() == null) {
+                throw new ImageNotFoundException(String.format("Image is not found by given cameraId: %s", cameraId));
+            }
+
+            log.info("Downloading image with ID: {}", camera.getImageId());
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            blobStorageService.getBlob(outputStream, blobStorageService.getContainerName(), camera.getImageId().toString());
+
+            return outputStream.toByteArray();
+        } catch (ImageNotFoundException ex) {
+            log.error("Image is not found by given cameraId: '{}'", cameraId);
+            throw new ImageNotFoundException(String.format("Image is not found by given cameraId: %s", cameraId));
+        } catch (Exception ex) {
+            log.error("Exception occurred while downloading image, camera:{}:ex:{}", cameraId, ex.getMessage());
+            throw new ImageNotDownloadedException(String.format("Error occurred while downloading image: %s", ex.getMessage()));
         }
     }
 
@@ -100,11 +127,11 @@ public class CameraServiceImpl implements CameraService {
      * @throws CameraNotFoundException       if the camera is not onboarded
      * @throws CameraNotInitializedException if the camera is not initialized
      */
-    private void validateCameraImageUpload(Camera camera) {
+    private void validateCameraImage(Camera camera) {
         if (camera.getOnboardedAt() == null || camera.getOnboardedAt().toString().isBlank()) {
-            throw new CameraNotFoundException("Camera is not onboarded with id: " + camera.getCamId());
+            throw new CameraNotFoundException(String.format("Camera is not onboarded with id: %s", camera.getCamId()));
         } else if (camera.getInitializedAt() == null || camera.getInitializedAt().toString().isBlank()) {
-            throw new CameraNotInitializedException("Camera is not initialized with id: " + camera.getCamId());
+            throw new CameraNotInitializedException(String.format("Camera is not initialized with id: %s", camera.getCamId()));
         }
     }
 }
