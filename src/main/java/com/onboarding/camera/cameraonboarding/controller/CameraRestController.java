@@ -3,6 +3,7 @@ package com.onboarding.camera.cameraonboarding.controller;
 import com.onboarding.camera.cameraonboarding.converter.CameraDtoConverter;
 import com.onboarding.camera.cameraonboarding.dto.CameraDto;
 import com.onboarding.camera.cameraonboarding.dto.CameraResponse;
+import com.onboarding.camera.cameraonboarding.dto.LocationDto;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
 import jakarta.validation.Valid;
@@ -78,5 +79,16 @@ public class CameraRestController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + camera.getImageId() + ".png")
                 .body(imageData);
+    }
+
+    @PostMapping("/camera/{cameraId}/location")
+    public ResponseEntity<CameraResponse> addLocation(
+            @PathVariable UUID cameraId,
+            @Valid @RequestBody LocationDto locationDto) {
+
+        Camera updatedCamera = cameraService.handleAddLocation(cameraId, locationDto);
+        CameraResponse response = cameraDtoConverter.toCameraResponse(updatedCamera);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }
