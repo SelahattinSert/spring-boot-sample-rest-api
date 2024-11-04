@@ -19,8 +19,10 @@ import com.onboarding.camera.cameraonboarding.util.DateTimeFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -124,25 +126,21 @@ public class CameraServiceImpl implements CameraService {
     }
 
     @Override
+    @Transactional
     public Camera handleAddLocation(UUID cameraId, LocationDto locationDto) {
         Camera camera = getCameraById(cameraId);
 
         try {
-            Location location = camera.getLocation();
-            if (location != null) {
-                location.setLatitude(locationDto.getLatitude());
-                location.setLongitude(locationDto.getLongitude());
-                location.setAddress(locationDto.getAddress());
-            } else {
-                location = new Location();
-                location.setLatitude(locationDto.getLatitude());
-                location.setLongitude(locationDto.getLongitude());
-                location.setAddress(locationDto.getAddress());
+            Location location = Optional.ofNullable(camera.getLocation()).orElse(new Location());
+            location.setLatitude(locationDto.getLatitude());
+            location.setLongitude(locationDto.getLongitude());
+            location.setAddress(locationDto.getAddress());
 
-                location.setCamera(camera);
-                camera.setLocation(location);
-            }
+            location.setCamera(camera);
+            camera.setLocation(location);
+
             cameraRepository.save(camera);
+            log.info("Location added/updated successfully for Camera ID: {}", cameraId);
             return camera;
         } catch (Exception ex) {
             log.error("Exception occurred while adding location, camera:{}:ex:{}", cameraId, ex.getMessage());
