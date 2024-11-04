@@ -2,6 +2,7 @@ package com.onboarding.camera.cameraonboarding.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onboarding.camera.cameraonboarding.converter.CameraDtoConverter;
+import com.onboarding.camera.cameraonboarding.converter.LocationDtoConverter;
 import com.onboarding.camera.cameraonboarding.dto.CameraDto;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.exception.CameraAlreadyInitializedException;
@@ -36,7 +37,7 @@ import java.util.UUID;
 @WebMvcTest(controllers = CameraRestController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
-@Import({CameraDtoConverter.class, LocationDtgitoConverter.class})
+@Import({CameraDtoConverter.class, LocationDtoConverter.class})
 class CameraRestControllerTest {
 
     @Autowired
