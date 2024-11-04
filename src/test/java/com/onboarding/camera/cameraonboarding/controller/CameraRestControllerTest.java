@@ -36,7 +36,7 @@ import java.util.UUID;
 @WebMvcTest(controllers = CameraRestController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
-@Import(CameraDtoConverter.class)
+@Import({CameraDtoConverter.class, LocationDtgitoConverter.class})
 class CameraRestControllerTest {
 
     @Autowired
