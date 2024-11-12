@@ -15,7 +15,7 @@ import org.hibernate.annotations.UuidGenerator;
 import java.util.UUID;
 
 @Data
-@ToString
+@ToString(exclude = "camera")
 @Entity
 @Table(name = "location")
 public class Location {

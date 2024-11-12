@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@ToString
+@ToString(exclude = "location")
 @Entity
 @Table(name = "camera_metadata")
 public class Camera {
