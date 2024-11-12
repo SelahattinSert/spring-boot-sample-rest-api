@@ -1,6 +1,8 @@
 package com.onboarding.camera.cameraonboarding.service;
 
+import com.onboarding.camera.cameraonboarding.dto.LocationDto;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
+import com.onboarding.camera.cameraonboarding.entity.Location;
 import com.onboarding.camera.cameraonboarding.exception.CameraAlreadyInitializedException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
@@ -9,6 +11,7 @@ import com.onboarding.camera.cameraonboarding.exception.ImageAlreadyUploadedExce
 import com.onboarding.camera.cameraonboarding.exception.ImageNotDownloadedException;
 import com.onboarding.camera.cameraonboarding.exception.ImageNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.ImageNotUploadedException;
+import com.onboarding.camera.cameraonboarding.exception.LocationNotAddedException;
 import com.onboarding.camera.cameraonboarding.repository.CameraRepository;
 import com.onboarding.camera.cameraonboarding.service.impl.BlobStorageServiceImpl;
 import com.onboarding.camera.cameraonboarding.service.impl.CameraServiceImpl;
@@ -52,6 +55,8 @@ class CameraServiceImplTest {
 
     private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+    private LocationDto locationDto;
+
     private final String CAMERA_NAME = "Camera 1";
     private final String FIRMWARE_VERSION = "v1.0";
     private final UUID CAMERA_ID = UUID.randomUUID();
@@ -64,6 +69,9 @@ class CameraServiceImplTest {
     private final String CONTAINER_NAME = "test_container";
     private final UUID IMAGE_ID = UUID.randomUUID();
     private final UUID NULL_UUID = null;
+    private final Double LATITUDE = 51.232;
+    private final Double LONGITUDE = -51.232;
+    private final String ADDRESS = "long enough address";
 
     @BeforeEach
     void setUp() {
@@ -73,6 +81,7 @@ class CameraServiceImplTest {
         camera.setFirmwareVersion(FIRMWARE_VERSION);
         camera.setCreatedAt(CREATED_AT);
         camera.setOnboardedAt(ONBOARDED_AT);
+        locationDto = new LocationDto();
     }
 
     @Test
@@ -404,5 +413,58 @@ class CameraServiceImplTest {
                 .hasMessageContaining("Camera is not initialized with id: " + CAMERA_ID);
 
         Mockito.verify(blobStorageService, Mockito.never()).getBlob(Mockito.any(), Mockito.anyString(), Mockito.anyString());
+    }
+
+    @Test
+    void expect_handleAddLocation_withValidLocation_returnCamera() {
+        // arrange
+        locationDto.setLatitude(LATITUDE);
+        locationDto.setLongitude(LONGITUDE);
+        locationDto.setAddress(ADDRESS);
+        Mockito.when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
+
+        // act
+        Camera updatedCamera = cameraService.handleAddLocation(CAMERA_ID, locationDto);
+        Location location = updatedCamera.getLocation();
+
+        // assert
+        Assertions.assertThat(location).isNotNull();
+        Assertions.assertThat(location.getLatitude()).isNotNull();
+        Assertions.assertThat(location.getLatitude()).isEqualTo(LATITUDE);
+        Assertions.assertThat(location.getLongitude()).isNotNull();
+        Assertions.assertThat(location.getLongitude()).isEqualTo(LONGITUDE);
+        Assertions.assertThat(location.getAddress()).isNotNull();
+        Assertions.assertThat(location.getAddress()).isEqualTo(ADDRESS);
+
+        Mockito.verify(cameraRepository).save(camera);
+        Mockito.verify(cameraRepository).findById(CAMERA_ID);
+    }
+
+    @Test
+    void expect_handleAddLocation_withNonExistingCamera_throwsException() {
+        // arrange
+        Mockito.when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.empty());
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> cameraService.handleAddLocation(CAMERA_ID, locationDto))
+                .isInstanceOf(CameraNotFoundException.class)
+                .hasMessageContaining("Camera not found with id: " + CAMERA_ID);
+
+        Mockito.verify(cameraRepository).findById(CAMERA_ID);
+    }
+
+    @Test
+    void expect_handleAddLocation_withLocationNotAddedError_throwsException() {
+        // arrange
+        Mockito.when(cameraRepository.findById(CAMERA_ID)).thenReturn(Optional.of(camera));
+        Mockito.doThrow(new LocationNotAddedException("Error occurred while adding location"))
+                .when(cameraRepository).save(camera);
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> cameraService.handleAddLocation(CAMERA_ID, locationDto))
+                .isInstanceOf(LocationNotAddedException.class)
+                .hasMessageContaining("Error occurred while adding location");
+
+        Mockito.verify(cameraRepository).findById(CAMERA_ID);
     }
 }
