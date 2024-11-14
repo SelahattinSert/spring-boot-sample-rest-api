@@ -97,13 +97,24 @@ class CameraServiceImplTest {
         final Camera savedCamera = cameraService.handleSaveCamera(camera);
 
         // assert
-        Assertions.assertThat(savedCamera).isNotNull();
-        Assertions.assertThat(savedCamera.getCreatedAt()).isNotNull();
-        Assertions.assertThat(savedCamera.getCreatedAt()).isEqualTo(CREATED_AT);
-        Assertions.assertThat(savedCamera.getCameraName()).isNotNull();
-        Assertions.assertThat(savedCamera.getCameraName()).isEqualTo(CAMERA_NAME);
-        Assertions.assertThat(savedCamera.getFirmwareVersion()).isNotNull();
-        Assertions.assertThat(savedCamera.getFirmwareVersion()).isEqualTo(FIRMWARE_VERSION);
+        Assertions.assertThat(savedCamera)
+                .isNotNull()
+                .satisfies(cam -> {
+                    Assertions.assertThat(cam.getCreatedAt())
+                            .as("Check Created At")
+                            .isNotNull()
+                            .isEqualTo(CREATED_AT);
+
+                    Assertions.assertThat(cam.getCameraName())
+                            .as("Check Camera Name")
+                            .isNotNull()
+                            .isEqualTo(CAMERA_NAME);
+
+                    Assertions.assertThat(cam.getFirmwareVersion())
+                            .as("Check Fırmware Version")
+                            .isNotNull()
+                            .isEqualTo(FIRMWARE_VERSION);
+                });
 
         Mockito.verify(dateTimeFactory, Mockito.times(2)).now();
         Mockito.verify(cameraRepository).save(camera);
@@ -428,13 +439,24 @@ class CameraServiceImplTest {
         Location location = updatedCamera.getLocation();
 
         // assert
-        Assertions.assertThat(location).isNotNull();
-        Assertions.assertThat(location.getLatitude()).isNotNull();
-        Assertions.assertThat(location.getLatitude()).isEqualTo(LATITUDE);
-        Assertions.assertThat(location.getLongitude()).isNotNull();
-        Assertions.assertThat(location.getLongitude()).isEqualTo(LONGITUDE);
-        Assertions.assertThat(location.getAddress()).isNotNull();
-        Assertions.assertThat(location.getAddress()).isEqualTo(ADDRESS);
+        Assertions.assertThat(location)
+                .isNotNull()
+                .satisfies(loc -> {
+                    Assertions.assertThat(loc.getLatitude())
+                            .as("Check Latitude")
+                            .isNotNull()
+                            .isEqualTo(LATITUDE);
+
+                    Assertions.assertThat(loc.getLongitude())
+                            .as("Check Longitude")
+                            .isNotNull()
+                            .isEqualTo(LONGITUDE);
+
+                    Assertions.assertThat(loc.getAddress())
+                            .as("Check Address")
+                            .isNotNull()
+                            .isEqualTo(ADDRESS);
+                });
 
         Mockito.verify(cameraRepository).save(camera);
         Mockito.verify(cameraRepository).findById(CAMERA_ID);
