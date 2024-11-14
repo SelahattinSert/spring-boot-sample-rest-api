@@ -1,9 +1,13 @@
 package com.onboarding.camera.cameraonboarding.controller;
 
 import com.onboarding.camera.cameraonboarding.converter.CameraDtoConverter;
+import com.onboarding.camera.cameraonboarding.converter.LocationDtoConverter;
 import com.onboarding.camera.cameraonboarding.dto.CameraDto;
 import com.onboarding.camera.cameraonboarding.dto.CameraResponse;
+import com.onboarding.camera.cameraonboarding.dto.LocationDto;
+import com.onboarding.camera.cameraonboarding.dto.LocationResponse;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
+import com.onboarding.camera.cameraonboarding.entity.Location;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +35,8 @@ public class CameraRestController {
     private final CameraService cameraService;
 
     private final CameraDtoConverter cameraDtoConverter;
+
+    private final LocationDtoConverter locationDtoConverter;
 
     @PostMapping("/onboard")
     public ResponseEntity<CameraResponse> saveCamera(@Valid @RequestBody CameraDto cameraDto) {
@@ -78,5 +84,17 @@ public class CameraRestController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + camera.getImageId() + ".png")
                 .body(imageData);
+    }
+
+    @PostMapping("/camera/{cameraId}/location")
+    public ResponseEntity<LocationResponse> addLocation(
+            @PathVariable UUID cameraId,
+            @Valid @RequestBody LocationDto locationDto) {
+
+        Camera updatedCamera = cameraService.handleAddLocation(cameraId, locationDto);
+        Location cameraLocation = updatedCamera.getLocation();
+        LocationResponse response = locationDtoConverter.toLocationResponse(cameraLocation);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

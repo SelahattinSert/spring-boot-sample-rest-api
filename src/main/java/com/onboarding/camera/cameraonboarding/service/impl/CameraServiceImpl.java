@@ -1,6 +1,8 @@
 package com.onboarding.camera.cameraonboarding.service.impl;
 
+import com.onboarding.camera.cameraonboarding.dto.LocationDto;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
+import com.onboarding.camera.cameraonboarding.entity.Location;
 import com.onboarding.camera.cameraonboarding.exception.CameraAlreadyInitializedException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
@@ -9,6 +11,7 @@ import com.onboarding.camera.cameraonboarding.exception.ImageAlreadyUploadedExce
 import com.onboarding.camera.cameraonboarding.exception.ImageNotDownloadedException;
 import com.onboarding.camera.cameraonboarding.exception.ImageNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.ImageNotUploadedException;
+import com.onboarding.camera.cameraonboarding.exception.LocationNotAddedException;
 import com.onboarding.camera.cameraonboarding.repository.CameraRepository;
 import com.onboarding.camera.cameraonboarding.service.BlobStorageService;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
@@ -16,8 +19,10 @@ import com.onboarding.camera.cameraonboarding.util.DateTimeFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -117,6 +122,29 @@ public class CameraServiceImpl implements CameraService {
         } catch (Exception ex) {
             log.error("Exception occurred while downloading image, camera:{}:ex:{}", cameraId, ex.getMessage());
             throw new ImageNotDownloadedException(String.format("Error occurred while downloading image: %s", ex.getMessage()));
+        }
+    }
+
+    @Override
+    @Transactional
+    public Camera handleAddLocation(UUID cameraId, LocationDto locationDto) {
+        Camera camera = getCameraById(cameraId);
+
+        try {
+            Location location = Optional.ofNullable(camera.getLocation()).orElse(new Location());
+            location.setLatitude(locationDto.getLatitude());
+            location.setLongitude(locationDto.getLongitude());
+            location.setAddress(locationDto.getAddress());
+
+            location.setCamera(camera);
+            camera.setLocation(location);
+
+            cameraRepository.save(camera);
+            log.info("Location added/updated successfully for Camera ID: {}", cameraId);
+            return camera;
+        } catch (Exception ex) {
+            log.error("Exception occurred while adding location, camera:{}:ex:{}", cameraId, ex.getMessage());
+            throw new LocationNotAddedException(String.format("Error occurred while adding location: %s", ex.getMessage()));
         }
     }
 

@@ -9,6 +9,7 @@ import com.onboarding.camera.cameraonboarding.exception.ImageAlreadyUploadedExce
 import com.onboarding.camera.cameraonboarding.exception.ImageNotDownloadedException;
 import com.onboarding.camera.cameraonboarding.exception.ImageNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.ImageNotUploadedException;
+import com.onboarding.camera.cameraonboarding.exception.LocationNotAddedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -146,6 +147,18 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleImageNotDownloadedException(ImageNotDownloadedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
+
+        errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorResponse.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(LocationNotAddedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleLocationNotAddedException(LocationNotAddedException ex) {
         ErrorResponse errorResponse = new ErrorResponse();
 
         errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());

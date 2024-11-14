@@ -1,5 +1,6 @@
 package com.onboarding.camera.cameraonboarding.service;
 
+import com.onboarding.camera.cameraonboarding.dto.LocationDto;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.exception.CameraAlreadyInitializedException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotCreatedException;
@@ -8,6 +9,7 @@ import com.onboarding.camera.cameraonboarding.exception.CameraNotInitializedExce
 import com.onboarding.camera.cameraonboarding.exception.ImageNotDownloadedException;
 import com.onboarding.camera.cameraonboarding.exception.ImageNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.ImageNotUploadedException;
+import com.onboarding.camera.cameraonboarding.exception.LocationNotAddedException;
 
 import java.util.UUID;
 
@@ -70,4 +72,16 @@ public interface CameraService {
      */
 
     byte[] handleDownloadImage(UUID cameraId);
+
+    /**
+     * this method is used for add location information to camera
+     *
+     * @param cameraId    camera id
+     * @param locationDto camera location
+     * @return updated camera
+     * @throws CameraNotFoundException   if camera is not found with id
+     * @throws LocationNotAddedException if unexpected error occurs while adding location
+     */
+
+    Camera handleAddLocation(UUID cameraId, LocationDto locationDto);
 }

@@ -2,12 +2,16 @@ package com.onboarding.camera.cameraonboarding.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onboarding.camera.cameraonboarding.converter.CameraDtoConverter;
+import com.onboarding.camera.cameraonboarding.converter.LocationDtoConverter;
 import com.onboarding.camera.cameraonboarding.dto.CameraDto;
+import com.onboarding.camera.cameraonboarding.dto.LocationDto;
 import com.onboarding.camera.cameraonboarding.entity.Camera;
+import com.onboarding.camera.cameraonboarding.entity.Location;
 import com.onboarding.camera.cameraonboarding.exception.CameraAlreadyInitializedException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotInitializedException;
 import com.onboarding.camera.cameraonboarding.exception.ImageAlreadyUploadedException;
+import com.onboarding.camera.cameraonboarding.exception.LocationNotAddedException;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Assertions;
@@ -36,7 +40,7 @@ import java.util.UUID;
 @WebMvcTest(controllers = CameraRestController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
-@Import(CameraDtoConverter.class)
+@Import({CameraDtoConverter.class, LocationDtoConverter.class})
 class CameraRestControllerTest {
 
     @Autowired
@@ -52,12 +56,19 @@ class CameraRestControllerTest {
 
     private Camera camera;
 
+    private LocationDto locationDto;
+
+    private Location location;
+
     private final String CAMERA_NAME = "Camera 1";
     private final String FIRMWARE_VERSION = "v1.0";
     private final UUID CAMERA_ID = UUID.randomUUID();
     private final String INVALID_UUID = "invalid-uuid";
     private final UUID IMAGE_ID = UUID.randomUUID();
     private final String IMAGE_DATA = "iVBORw0KGgoAAAANSUhEUgAAAAIAAAAECAYAAACk7+45AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAXSURBVBhXY5STV/rPAARMIAIE0BkMDAAtLgFmLE0FhAAAAABJRU5ErkJggg==";
+    private final Double LATITUDE = 51.232;
+    private final Double LONGITUDE = -51.232;
+    private final String ADDRESS = "long enough address";
 
     @BeforeEach
     void setUp() {
@@ -65,6 +76,15 @@ class CameraRestControllerTest {
         cameraDto.setCameraName(CAMERA_NAME);
         cameraDto.setFirmwareVersion(FIRMWARE_VERSION);
         camera = new Camera();
+        locationDto = new LocationDto();
+        locationDto.setLatitude(LATITUDE);
+        locationDto.setLongitude(LONGITUDE);
+        locationDto.setAddress(ADDRESS);
+        location = new Location();
+        location.setLatitude(locationDto.getLatitude());
+        location.setLongitude(locationDto.getLongitude());
+        location.setAddress(locationDto.getAddress());
+
     }
 
     @Test
@@ -392,5 +412,128 @@ class CameraRestControllerTest {
         response.andExpect(MockMvcResultMatchers.status().isInternalServerError());
 
         Mockito.verify(cameraService).handleDownloadImage(CAMERA_ID);
+    }
+
+    @Test
+    void expect_handleAddLocation_withValidInput_returnCreated() throws Exception {
+        // arrange
+        camera.setLocation(location);
+        Mockito.when(cameraService.handleAddLocation(CAMERA_ID, locationDto))
+                .thenReturn(camera);
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/camera/{cameraId}/location", CAMERA_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(locationDto)));
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.latitude", CoreMatchers.is(locationDto.getLatitude())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.longitude", CoreMatchers.is(locationDto.getLongitude())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.address", CoreMatchers.is(locationDto.getAddress())));
+
+        Mockito.verify(cameraService).handleAddLocation(CAMERA_ID, locationDto);
+    }
+
+    @Test
+    void expect_handleAddLocation_withInvalidUUID_returnClientError() throws Exception {
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/camera/{cameraId}/location", INVALID_UUID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(locationDto)));
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().is4xxClientError());
+
+        Mockito.verify(cameraService, Mockito.never()).handleAddLocation(Mockito.any(), Mockito.any());
+    }
+
+    @Test
+    void expect_handleAddLocation_withInvalidLatitude_returnBadRequest() throws Exception {
+        // arrange
+        locationDto.setLatitude(1800.0);
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/camera/{cameraId}/location", CAMERA_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(locationDto)));
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        Mockito.verify(cameraService, Mockito.never()).handleAddLocation(Mockito.any(), Mockito.any());
+    }
+
+    @Test
+    void expect_handleAddLocation_withInvalidLongitude_returnBadRequest() throws Exception {
+        // arrange
+        locationDto.setLongitude(1800.0);
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/camera/{cameraId}/location", CAMERA_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(locationDto)));
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        Mockito.verify(cameraService, Mockito.never()).handleAddLocation(Mockito.any(), Mockito.any());
+    }
+
+    @Test
+    void expect_handleAddLocation_withBlankAddress_returnBadRequest() throws Exception {
+        // arrange
+        locationDto.setAddress("");
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/camera/{cameraId}/location", CAMERA_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(locationDto)));
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        Mockito.verify(cameraService, Mockito.never()).handleAddLocation(Mockito.any(), Mockito.any());
+    }
+
+    @Test
+    void expect_handleAddLocation_withCameraNotFound_returnNotFound() throws Exception {
+        // arrange
+        Mockito.doThrow(new CameraNotFoundException("Camera not found with id: " + CAMERA_ID))
+                .when(cameraService).handleAddLocation(CAMERA_ID, locationDto);
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/camera/{cameraId}/location", CAMERA_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(locationDto)));
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().isNotFound());
+
+        Mockito.verify(cameraService).handleAddLocation(ArgumentMatchers.eq(CAMERA_ID), ArgumentMatchers.eq(locationDto));
+    }
+
+    @Test
+    void expect_handleAddLocation_withLocationNotAddedException_returnInternalServerError() throws Exception {
+        // arrange
+        Mockito.doThrow(new LocationNotAddedException("Error occurred while adding location"))
+                .when(cameraService).handleAddLocation(CAMERA_ID, locationDto);
+
+        // act
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders
+                .post("/api/v1/camera/{cameraId}/location", CAMERA_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(locationDto)));
+
+        // assert
+        response.andExpect(MockMvcResultMatchers.status().isInternalServerError());
+
+        Mockito.verify(cameraService).handleAddLocation(ArgumentMatchers.eq(CAMERA_ID), ArgumentMatchers.eq(locationDto));
     }
 }
