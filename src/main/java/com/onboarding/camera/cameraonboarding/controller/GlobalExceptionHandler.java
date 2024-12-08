@@ -10,6 +10,10 @@ import com.onboarding.camera.cameraonboarding.exception.ImageNotDownloadedExcept
 import com.onboarding.camera.cameraonboarding.exception.ImageNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.ImageNotUploadedException;
 import com.onboarding.camera.cameraonboarding.exception.LocationNotAddedException;
+import com.onboarding.camera.cameraonboarding.exception.SensorMismatchException;
+import com.onboarding.camera.cameraonboarding.exception.SensorNotCreatedException;
+import com.onboarding.camera.cameraonboarding.exception.SensorNotFoundException;
+import com.onboarding.camera.cameraonboarding.exception.SensorNotUpdatedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -165,6 +169,54 @@ public class GlobalExceptionHandler {
         errorResponse.setMessage(ex.getMessage());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(SensorNotCreatedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleSensorNotCreatedException(SensorNotCreatedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
+
+        errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorResponse.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(SensorNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleSensorNotFoundException(SensorNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
+
+        errorResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
+        errorResponse.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(SensorNotUpdatedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleSensorNotUpdatedException(SensorNotUpdatedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
+
+        errorResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorResponse.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(SensorMismatchException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleSensorMismatchException(SensorMismatchException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
+
+        errorResponse.setStatusCode(HttpStatus.CONFLICT.value());
+        errorResponse.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 }
 
