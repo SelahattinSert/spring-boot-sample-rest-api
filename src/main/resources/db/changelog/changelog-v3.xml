@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="3" author="selahattin" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="sensor_metadata"/>
+            </not>
+        </preConditions>
+        <createTable tableName="sensor_metadata">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="camera_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="VARCHAR(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="data" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="sensor_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="sensor_metadata"
+                baseColumnNames="camera_id"
+                referencedTableName="camera_metadata"
+                referencedColumnNames="cam_id"
+                constraintName="fk_sensor_camera_id"/>
+    </changeSet>
+
+</databaseChangeLog>
