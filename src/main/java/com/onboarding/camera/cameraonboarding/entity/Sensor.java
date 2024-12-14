@@ -1,5 +1,6 @@
 package com.onboarding.camera.cameraonboarding.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.onboarding.camera.cameraonboarding.enums.SensorType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
@@ -9,19 +10,22 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "sensor_metadata")
+@ToString(exclude = "camera")
+@Table(name = "sensor_metadata", indexes = @Index(name = "idx_camera_id", columnList = "camera_id"))
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "sensor_type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Sensor {
@@ -34,6 +38,7 @@ public abstract class Sensor {
 
     @ManyToOne
     @JoinColumn(name = "camera_id", nullable = false)
+    @JsonBackReference
     private Camera camera;
 
     @Column(name = "name", nullable = false)
