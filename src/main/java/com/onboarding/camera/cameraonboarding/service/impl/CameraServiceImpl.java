@@ -70,10 +70,6 @@ public class CameraServiceImpl implements CameraService {
 
     public Camera getCameraById(UUID cameraId) {
 
-        if (cameraId == null) {
-            throw new IllegalArgumentException("Camera ID cannot be null");
-        }
-
         return cameraRepository.findById(cameraId)
                 .orElseThrow(() -> new CameraNotFoundException(String.format("Camera not found with id: %s", cameraId)));
     }
