@@ -52,7 +52,6 @@ public class LightSensorController {
 
     @PutMapping("/{sensorId}")
     public ResponseEntity<SensorResponse> updateLightSensor(
-            @PathVariable UUID cameraId,
             @PathVariable UUID sensorId,
             @Valid @RequestBody SensorDto sensorDto) {
 
@@ -64,7 +63,6 @@ public class LightSensorController {
 
     @DeleteMapping("/{sensorId}")
     public ResponseEntity<Void> deleteLightSensor(
-            @PathVariable UUID cameraId,
             @PathVariable UUID sensorId) {
 
         lightSensorService.handleDeleteSensor(sensorId);

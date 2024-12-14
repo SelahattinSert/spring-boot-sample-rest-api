@@ -51,7 +51,6 @@ public class TemperatureSensorController {
 
     @PutMapping("/{sensorId}")
     public ResponseEntity<SensorResponse> updateTemperatureSensor(
-            @PathVariable UUID cameraId,
             @PathVariable UUID sensorId,
             @Valid @RequestBody SensorDto sensorDto) {
 
@@ -63,7 +62,6 @@ public class TemperatureSensorController {
 
     @DeleteMapping("/{sensorId}")
     public ResponseEntity<Void> deleteTemperatureSensor(
-            @PathVariable UUID cameraId,
             @PathVariable UUID sensorId) {
 
         temperatureSensorService.handleDeleteSensor(sensorId);

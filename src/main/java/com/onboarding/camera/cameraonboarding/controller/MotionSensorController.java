@@ -52,7 +52,6 @@ public class MotionSensorController {
 
     @PutMapping("/{sensorId}")
     public ResponseEntity<SensorResponse> updateMotionSensor(
-            @PathVariable UUID cameraId,
             @PathVariable UUID sensorId,
             @Valid @RequestBody SensorDto sensorDto) {
 
@@ -64,7 +63,6 @@ public class MotionSensorController {
 
     @DeleteMapping("/{sensorId}")
     public ResponseEntity<Void> deleteMotionSensor(
-            @PathVariable UUID cameraId,
             @PathVariable UUID sensorId) {
 
         motionSensorService.handleDeleteSensor(sensorId);
