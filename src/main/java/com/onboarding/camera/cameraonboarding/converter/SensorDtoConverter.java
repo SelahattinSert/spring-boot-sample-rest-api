@@ -10,54 +10,46 @@ import com.onboarding.camera.cameraonboarding.enums.SensorType;
 import com.onboarding.camera.cameraonboarding.exception.SensorMismatchException;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Stream;
-
 @Component
 public class SensorDtoConverter {
 
     public MotionSensor toMotionEntity(SensorDto sensorDto) {
-        return Stream.of(sensorDto)
-                .filter(dto -> dto.getSensorType() == SensorType.MOTION)
-                .map(dto -> {
-                    MotionSensor sensorMetadata = new MotionSensor();
-                    sensorMetadata.setName(dto.getName());
-                    sensorMetadata.setVersion(dto.getVersion());
-                    sensorMetadata.setSensorType(dto.getSensorType());
-                    sensorMetadata.setData(dto.getData());
-                    return sensorMetadata;
-                })
-                .findFirst()
-                .orElseThrow(() -> new SensorMismatchException("Invalid sensor type for MotionSensor"));
+        if (sensorDto.getSensorType() != SensorType.MOTION) {
+            throw new SensorMismatchException("Invalid sensor type for MotionSensor");
+        }
+
+        MotionSensor sensorMetadata = new MotionSensor();
+        sensorMetadata.setName(sensorDto.getName());
+        sensorMetadata.setVersion(sensorDto.getVersion());
+        sensorMetadata.setSensorType(sensorDto.getSensorType());
+        sensorMetadata.setData(sensorDto.getData());
+        return sensorMetadata;
     }
 
     public LightSensor toLightEntity(SensorDto sensorDto) {
-        return Stream.of(sensorDto)
-                .filter(dto -> dto.getSensorType() == SensorType.LIGHT)
-                .map(dto -> {
-                    LightSensor sensorMetadata = new LightSensor();
-                    sensorMetadata.setName(dto.getName());
-                    sensorMetadata.setVersion(dto.getVersion());
-                    sensorMetadata.setSensorType(dto.getSensorType());
-                    sensorMetadata.setData(dto.getData());
-                    return sensorMetadata;
-                })
-                .findFirst()
-                .orElseThrow(() -> new SensorMismatchException("Invalid sensor type for LightSensor"));
+        if (sensorDto.getSensorType() != SensorType.LIGHT) {
+            throw new SensorMismatchException("Invalid sensor type for LightSensor");
+        }
+
+        LightSensor sensorMetadata = new LightSensor();
+        sensorMetadata.setName(sensorDto.getName());
+        sensorMetadata.setVersion(sensorDto.getVersion());
+        sensorMetadata.setSensorType(sensorDto.getSensorType());
+        sensorMetadata.setData(sensorDto.getData());
+        return sensorMetadata;
     }
 
     public TemperatureSensor toTemperatureEntity(SensorDto sensorDto) {
-        return Stream.of(sensorDto)
-                .filter(dto -> dto.getSensorType() == SensorType.TEMPERATURE)
-                .map(dto -> {
-                    TemperatureSensor sensorMetadata = new TemperatureSensor();
-                    sensorMetadata.setName(dto.getName());
-                    sensorMetadata.setVersion(dto.getVersion());
-                    sensorMetadata.setSensorType(dto.getSensorType());
-                    sensorMetadata.setData(dto.getData());
-                    return sensorMetadata;
-                })
-                .findFirst()
-                .orElseThrow(() -> new SensorMismatchException("Invalid sensor type for TemperatureSensor"));
+        if (sensorDto.getSensorType() != SensorType.TEMPERATURE) {
+            throw new SensorMismatchException("Invalid sensor type for TemperatureSensor");
+        }
+
+        TemperatureSensor sensorMetadata = new TemperatureSensor();
+        sensorMetadata.setName(sensorDto.getName());
+        sensorMetadata.setVersion(sensorDto.getVersion());
+        sensorMetadata.setSensorType(sensorDto.getSensorType());
+        sensorMetadata.setData(sensorDto.getData());
+        return sensorMetadata;
     }
 
     public SensorResponse toSensorResponse(Sensor sensor) {
