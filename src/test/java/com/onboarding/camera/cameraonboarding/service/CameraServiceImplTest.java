@@ -245,11 +245,11 @@ class CameraServiceImplTest {
     }
 
     @Test
-    void expect_getCameraById_withNullCameraId_toThrowIllegalArgumentException() {
+    void expect_getCameraById_withNonExistingUUID_toThrowCameraNotFoundException() {
 
         // act and assert
-        Assertions.assertThatThrownBy(() -> cameraService.getCameraById(null))
-                .isInstanceOf(IllegalArgumentException.class);
+        Assertions.assertThatThrownBy(() -> cameraService.getCameraById(NON_EXISTING_UUID))
+                .isInstanceOf(CameraNotFoundException.class);
 
         Mockito.verify(cameraRepository, Mockito.never()).findById(CAMERA_ID);
     }
