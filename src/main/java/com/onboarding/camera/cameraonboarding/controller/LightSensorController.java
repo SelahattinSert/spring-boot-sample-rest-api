@@ -53,19 +53,19 @@ public class LightSensorController {
     @PutMapping("/{sensorId}")
     public ResponseEntity<SensorResponse> updateLightSensor(
             @PathVariable UUID sensorId,
-            @Valid @RequestBody SensorDto sensorDto) {
+            @Valid @RequestBody SensorDto sensorDto, @PathVariable UUID cameraId) {
 
         LightSensor sensorMetadata = sensorDtoConverter.toLightEntity(sensorDto);
-        LightSensor updatedSensor = lightSensorService.handleUpdateSensor(sensorId, sensorMetadata);
+        LightSensor updatedSensor = lightSensorService.handleUpdateSensor(cameraId, sensorId, sensorMetadata);
         SensorResponse sensorResponse = sensorDtoConverter.toSensorResponse(updatedSensor);
         return ResponseEntity.ok(sensorResponse);
     }
 
     @DeleteMapping("/{sensorId}")
     public ResponseEntity<Void> deleteLightSensor(
-            @PathVariable UUID sensorId) {
+            @PathVariable UUID sensorId, @PathVariable UUID cameraId) {
 
-        lightSensorService.handleDeleteSensor(sensorId);
+        lightSensorService.handleDeleteSensor(cameraId, sensorId);
         return ResponseEntity.noContent().build();
     }
 }

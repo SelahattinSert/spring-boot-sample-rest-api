@@ -52,19 +52,19 @@ public class TemperatureSensorController {
     @PutMapping("/{sensorId}")
     public ResponseEntity<SensorResponse> updateTemperatureSensor(
             @PathVariable UUID sensorId,
-            @Valid @RequestBody SensorDto sensorDto) {
+            @Valid @RequestBody SensorDto sensorDto, @PathVariable UUID cameraId) {
 
         TemperatureSensor sensorMetadata = sensorDtoConverter.toTemperatureEntity(sensorDto);
-        TemperatureSensor updatedSensor = temperatureSensorService.handleUpdateSensor(sensorId, sensorMetadata);
+        TemperatureSensor updatedSensor = temperatureSensorService.handleUpdateSensor(cameraId, sensorId, sensorMetadata);
         SensorResponse sensorResponse = sensorDtoConverter.toSensorResponse(updatedSensor);
         return ResponseEntity.ok(sensorResponse);
     }
 
     @DeleteMapping("/{sensorId}")
     public ResponseEntity<Void> deleteTemperatureSensor(
-            @PathVariable UUID sensorId) {
+            @PathVariable UUID sensorId, @PathVariable UUID cameraId) {
 
-        temperatureSensorService.handleDeleteSensor(sensorId);
+        temperatureSensorService.handleDeleteSensor(cameraId, sensorId);
         return ResponseEntity.noContent().build();
     }
 }

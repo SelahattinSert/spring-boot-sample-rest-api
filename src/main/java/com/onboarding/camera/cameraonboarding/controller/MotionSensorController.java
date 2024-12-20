@@ -53,19 +53,19 @@ public class MotionSensorController {
     @PutMapping("/{sensorId}")
     public ResponseEntity<SensorResponse> updateMotionSensor(
             @PathVariable UUID sensorId,
-            @Valid @RequestBody SensorDto sensorDto) {
+            @Valid @RequestBody SensorDto sensorDto, @PathVariable UUID cameraId) {
 
         MotionSensor motionSensor = sensorDtoConverter.toMotionEntity(sensorDto);
-        MotionSensor updatedSensor = motionSensorService.handleUpdateSensor(sensorId, motionSensor);
+        MotionSensor updatedSensor = motionSensorService.handleUpdateSensor(cameraId, sensorId, motionSensor);
         SensorResponse sensorResponse = sensorDtoConverter.toSensorResponse(updatedSensor);
         return ResponseEntity.ok(sensorResponse);
     }
 
     @DeleteMapping("/{sensorId}")
     public ResponseEntity<Void> deleteMotionSensor(
-            @PathVariable UUID sensorId) {
+            @PathVariable UUID sensorId, @PathVariable UUID cameraId) {
 
-        motionSensorService.handleDeleteSensor(sensorId);
+        motionSensorService.handleDeleteSensor(cameraId, sensorId);
         return ResponseEntity.noContent().build();
     }
 }
