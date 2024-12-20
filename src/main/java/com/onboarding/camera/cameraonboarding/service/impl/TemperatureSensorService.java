@@ -2,6 +2,7 @@ package com.onboarding.camera.cameraonboarding.service.impl;
 
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.entity.TemperatureSensor;
+import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.SensorNotCreatedException;
 import com.onboarding.camera.cameraonboarding.exception.SensorNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.SensorNotUpdatedException;
@@ -33,6 +34,9 @@ public class TemperatureSensorService implements SensorService<TemperatureSensor
             TemperatureSensor createdSensor = temperatureSensorRepository.save(sensor);
             log.info("Creating sensor: {}", createdSensor);
             return createdSensor;
+        } catch (CameraNotFoundException ex) {
+            log.error("Camera not found, cameraId:{}", cameraId);
+            throw ex;
         } catch (Exception ex) {
             log.error("Failed to create sensor, camera:{}:ex:{}", cameraId, ex.getMessage());
             throw new SensorNotCreatedException(String.format("Failed to create sensor: %s", ex.getMessage()));
@@ -45,7 +49,10 @@ public class TemperatureSensorService implements SensorService<TemperatureSensor
             Camera camera = cameraService.getCameraById(cameraId);
             log.info("Getting sensors by camera id: {}", cameraId);
             return temperatureSensorRepository.findTemperatureSensorByCamera(camera);
-        } catch (SensorNotFoundException ex) {
+        } catch (CameraNotFoundException ex) {
+            log.error("Camera not found, cameraId:{}", cameraId);
+            throw ex;
+        } catch (Exception ex) {
             log.error("Exception occurred while getting sensors, cameraId:{}", cameraId);
             throw new SensorNotFoundException(String.format("Error occurred while getting sensors: %s", ex.getMessage()));
         }
@@ -53,14 +60,26 @@ public class TemperatureSensorService implements SensorService<TemperatureSensor
 
     @Override
     @Transactional
-    public TemperatureSensor handleUpdateSensor(UUID sensorId, TemperatureSensor sensor) {
+    public TemperatureSensor handleUpdateSensor(UUID cameraId, UUID sensorId, TemperatureSensor sensor) {
         try {
-            TemperatureSensor existingSensor = getSensorById(sensorId);
+            Camera camera = cameraService.getCameraById(cameraId);
+            TemperatureSensor existingSensor = camera.getSensors().stream()
+                    .filter(s -> s.getId().equals(sensorId) && s instanceof TemperatureSensor)
+                    .map(s -> (TemperatureSensor) s)
+                    .findFirst()
+                    .orElseThrow(() -> new SensorNotFoundException(String.format("Sensor not found with id: %s", sensorId)));
+
             existingSensor.setName(sensor.getName());
             existingSensor.setVersion(sensor.getVersion());
             existingSensor.setData(sensor.getData());
             log.info("Updating sensor: {}", existingSensor);
             return temperatureSensorRepository.save(existingSensor);
+        } catch (CameraNotFoundException ex) {
+            log.error("Camera not found, cameraId:{}", cameraId);
+            throw ex;
+        } catch (SensorNotFoundException ex) {
+            log.error("Sensor not found while updating, sensorId: {}", sensorId);
+            throw ex;
         } catch (Exception ex) {
             log.error("Exception occurred while updating sensor, sensorId:{}", sensorId);
             throw new SensorNotUpdatedException(String.format("Error occurred while updating sensors: %s", ex.getMessage()));
@@ -75,10 +94,24 @@ public class TemperatureSensorService implements SensorService<TemperatureSensor
     }
 
     @Override
-    public void handleDeleteSensor(UUID sensorId) {
+    public void handleDeleteSensor(UUID cameraId, UUID sensorId) {
         try {
-            log.info("Deleting sensor: {}", sensorId);
-            temperatureSensorRepository.deleteById(sensorId);
+            Camera camera = cameraService.getCameraById(cameraId);
+            TemperatureSensor sensor = camera.getSensors().stream()
+                    .filter(s -> s.getId().equals(sensorId) && s instanceof TemperatureSensor)
+                    .map(s -> (TemperatureSensor) s)
+                    .findFirst()
+                    .orElseThrow(() -> new SensorNotFoundException(String.format("Sensor not found with id: %s", sensorId)));
+
+            camera.getSensors().remove(sensor);
+            temperatureSensorRepository.delete(sensor);
+            log.info("Deleted sensor: {}", sensorId);
+        } catch (CameraNotFoundException ex) {
+            log.error("Camera not found, cameraId:{}", cameraId);
+            throw ex;
+        } catch (SensorNotFoundException ex) {
+            log.error("Sensor not found while deleting, sensorId: {}", sensorId);
+            throw ex;
         } catch (Exception ex) {
             log.error("Exception occurred while deleting sensor, sensorId:{}", sensorId);
             throw new SensorNotUpdatedException(String.format("Error occurred while deleting sensor: %s", ex.getMessage()));

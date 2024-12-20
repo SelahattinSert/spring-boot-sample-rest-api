@@ -33,12 +33,13 @@ public interface SensorService<T extends Sensor> {
     /**
      * this method is used for update sensor by sensor ID
      *
+     * @param cameraId camera id
      * @param sensorId sensor id
      * @param sensor   sensor
      * @return Sensor updated sensor
      * @throws SensorNotUpdatedException if unexpected error occurs while updating sensor
      */
-    T handleUpdateSensor(UUID sensorId, T sensor);
+    T handleUpdateSensor(UUID cameraId, UUID sensorId, T sensor);
 
     /**
      * this method is used for get sensor by sensor ID
@@ -52,8 +53,9 @@ public interface SensorService<T extends Sensor> {
     /**
      * this method is used for deleting sensor by sensor ID
      *
+     * @param cameraId sensor id
      * @param sensorId sensor id
      * @throws SensorNotUpdatedException if unexpected error occurs while deleting sensor
      */
-    void handleDeleteSensor(UUID sensorId);
+    void handleDeleteSensor(UUID cameraId, UUID sensorId);
 }
