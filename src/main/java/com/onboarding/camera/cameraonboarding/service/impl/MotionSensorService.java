@@ -2,6 +2,7 @@ package com.onboarding.camera.cameraonboarding.service.impl;
 
 import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.entity.MotionSensor;
+import com.onboarding.camera.cameraonboarding.enums.SensorType;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.SensorNotCreatedException;
 import com.onboarding.camera.cameraonboarding.exception.SensorNotFoundException;
@@ -64,7 +65,7 @@ public class MotionSensorService implements SensorService<MotionSensor> {
         try {
             Camera camera = cameraService.getCameraById(cameraId);
             MotionSensor existingSensor = camera.getSensors().stream()
-                    .filter(s -> s.getId().equals(sensorId) && s instanceof MotionSensor)
+                    .filter(s -> s.getId().equals(sensorId) && s.getSensorType().equals(SensorType.MOTION))
                     .map(s -> (MotionSensor) s)
                     .findFirst()
                     .orElseThrow(() -> new SensorNotFoundException(String.format("Sensor not found with id: %s", sensorId)));
@@ -98,7 +99,7 @@ public class MotionSensorService implements SensorService<MotionSensor> {
         try {
             Camera camera = cameraService.getCameraById(cameraId);
             MotionSensor sensor = camera.getSensors().stream()
-                    .filter(s -> s.getId().equals(sensorId) && s instanceof MotionSensor)
+                    .filter(s -> s.getId().equals(sensorId) && s.getSensorType().equals(SensorType.MOTION))
                     .map(s -> (MotionSensor) s)
                     .findFirst()
                     .orElseThrow(() -> new SensorNotFoundException(String.format("Sensor not found with id: %s", sensorId)));
