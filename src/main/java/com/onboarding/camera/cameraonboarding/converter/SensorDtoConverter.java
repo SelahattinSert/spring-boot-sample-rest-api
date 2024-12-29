@@ -8,12 +8,15 @@ import com.onboarding.camera.cameraonboarding.entity.Sensor;
 import com.onboarding.camera.cameraonboarding.entity.TemperatureSensor;
 import com.onboarding.camera.cameraonboarding.enums.SensorType;
 import com.onboarding.camera.cameraonboarding.exception.SensorMismatchException;
+import com.onboarding.camera.cameraonboarding.exception.SensorNotCreatedException;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SensorDtoConverter {
 
     public MotionSensor toMotionEntity(SensorDto sensorDto) {
+
+        validateSensorDto(sensorDto);
         if (sensorDto.getSensorType() != SensorType.MOTION) {
             throw new SensorMismatchException("Invalid sensor type for MotionSensor");
         }
@@ -27,6 +30,8 @@ public class SensorDtoConverter {
     }
 
     public LightSensor toLightEntity(SensorDto sensorDto) {
+
+        validateSensorDto(sensorDto);
         if (sensorDto.getSensorType() != SensorType.LIGHT) {
             throw new SensorMismatchException("Invalid sensor type for LightSensor");
         }
@@ -40,6 +45,8 @@ public class SensorDtoConverter {
     }
 
     public TemperatureSensor toTemperatureEntity(SensorDto sensorDto) {
+
+        validateSensorDto(sensorDto);
         if (sensorDto.getSensorType() != SensorType.TEMPERATURE) {
             throw new SensorMismatchException("Invalid sensor type for TemperatureSensor");
         }
@@ -60,5 +67,23 @@ public class SensorDtoConverter {
         response.setSensorType(sensor.getSensorType());
         response.setData(sensor.getData());
         return response;
+    }
+
+    /**
+     * Validates if the camera has been onboarded and initialized
+     *
+     * @param sensorDto the sensor dto to check
+     * @throws SensorNotCreatedException if the sensor name, version or type is null
+     */
+    private void validateSensorDto(SensorDto sensorDto) {
+        if (sensorDto.getName() == null || sensorDto.getName().isBlank()) {
+            throw new SensorNotCreatedException("Sensor name cannot be null");
+        }
+        if (sensorDto.getVersion() == null || sensorDto.getVersion().isBlank()) {
+            throw new SensorNotCreatedException("Sensor version cannot be null");
+        }
+        if (sensorDto.getSensorType() == null || sensorDto.getSensorType().toString().isBlank()) {
+            throw new SensorNotCreatedException("Sensor type cannot be null");
+        }
     }
 }
