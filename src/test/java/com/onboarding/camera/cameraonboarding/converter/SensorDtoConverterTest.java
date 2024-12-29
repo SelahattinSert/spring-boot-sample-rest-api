@@ -5,6 +5,8 @@ import com.onboarding.camera.cameraonboarding.dto.SensorResponse;
 import com.onboarding.camera.cameraonboarding.entity.Sensor;
 import com.onboarding.camera.cameraonboarding.entity.TemperatureSensor;
 import com.onboarding.camera.cameraonboarding.enums.SensorType;
+import com.onboarding.camera.cameraonboarding.exception.SensorNotCreatedException;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,5 +68,47 @@ class SensorDtoConverterTest {
         AssertionsForClassTypes.assertThat(response.getVersion()).isEqualTo(SENSOR_VERSION);
         AssertionsForClassTypes.assertThat(response.getSensorType()).isEqualTo(SENSOR_TYPE);
         AssertionsForClassTypes.assertThat(response.getData()).isEqualTo(SENSOR_DATA);
+    }
+
+    @Test
+    void expect_convert_withNullSensorName_throwsException() {
+        // arrange
+        SensorDto sensorDto = new SensorDto();
+        sensorDto.setName(null);
+
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> sensorDtoConverter.toLightEntity(sensorDto))
+                .isInstanceOf(SensorNotCreatedException.class)
+                .hasMessage("Sensor name cannot be null");
+    }
+
+    @Test
+    void expect_convert_withNullSensorVersion_throwsException() {
+        // arrange
+        SensorDto sensorDto = new SensorDto();
+        sensorDto.setName(SENSOR_NAME);
+        sensorDto.setVersion(null);
+
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> sensorDtoConverter.toLightEntity(sensorDto))
+                .isInstanceOf(SensorNotCreatedException.class)
+                .hasMessage("Sensor version cannot be null");
+    }
+
+    @Test
+    void expect_convert_withNullSensorType_throwsException() {
+        // arrange
+        SensorDto sensorDto = new SensorDto();
+        sensorDto.setName(SENSOR_NAME);
+        sensorDto.setVersion(SENSOR_VERSION);
+        sensorDto.setSensorType(null);
+
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> sensorDtoConverter.toLightEntity(sensorDto))
+                .isInstanceOf(SensorNotCreatedException.class)
+                .hasMessage("Sensor type cannot be null");
     }
 }
