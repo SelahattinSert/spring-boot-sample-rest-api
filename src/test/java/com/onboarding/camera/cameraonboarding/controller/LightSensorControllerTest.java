@@ -80,7 +80,7 @@ class LightSensorControllerTest {
         sensor.setId(SENSOR_ID);
         sensor.setName(SENSOR_NAME);
         sensor.setSensorType(SENSOR_TYPE);
-        BDDMockito.given(lightSensorService.handleCreateSensor(Mockito.eq(CAMERA_ID), ArgumentMatchers.any(LightSensor.class))).willReturn(sensor);
+        Mockito.when(lightSensorService.handleCreateSensor(Mockito.eq(CAMERA_ID), ArgumentMatchers.any(LightSensor.class))).thenReturn(sensor);
 
         // act
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/camera/{cameraId}/sensor/light", CAMERA_ID)
@@ -193,8 +193,8 @@ class LightSensorControllerTest {
         String updatedName = "Updated Name";
         sensor.setName(updatedName);
         sensor.setSensorType(SENSOR_TYPE);
-        BDDMockito.given(lightSensorService.handleUpdateSensor(Mockito.eq(CAMERA_ID), Mockito.eq(SENSOR_ID), ArgumentMatchers.any(LightSensor.class)))
-                .willReturn(sensor);
+        Mockito.when(lightSensorService.handleUpdateSensor(Mockito.eq(CAMERA_ID), Mockito.eq(SENSOR_ID), ArgumentMatchers.any(LightSensor.class)))
+                .thenReturn(sensor);
 
         // act
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/camera/{cameraId}/sensor/light/{sensorId}", CAMERA_ID, SENSOR_ID)

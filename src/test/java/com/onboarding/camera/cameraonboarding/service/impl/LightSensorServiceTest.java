@@ -4,7 +4,6 @@ import com.onboarding.camera.cameraonboarding.entity.Camera;
 import com.onboarding.camera.cameraonboarding.entity.LightSensor;
 import com.onboarding.camera.cameraonboarding.enums.SensorType;
 import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
-import com.onboarding.camera.cameraonboarding.exception.SensorNotCreatedException;
 import com.onboarding.camera.cameraonboarding.exception.SensorNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.SensorNotUpdatedException;
 import com.onboarding.camera.cameraonboarding.repository.LightSensorRepository;
@@ -46,6 +45,9 @@ class LightSensorServiceTest {
     private final SensorType SENSOR_TYPE = SensorType.LIGHT;
     private final UUID CAMERA_ID = UUID.randomUUID();
     private final UUID NON_EXISTING_CAM_ID = UUID.fromString("ef556dc0-0ddc-4f39-a96d-6886a54eee54");
+    private final String UPDATED_SENSOR_NAME = "Updated Light Sensor";
+    private final String SENSOR_VERSION = "V1.0";
+    private final String UPDATED_SENSOR_DATA = "Updated Sensor Data";
 
     @BeforeEach
     void setUp() {
@@ -66,19 +68,14 @@ class LightSensorServiceTest {
         LightSensor savedSensor = lightSensorService.handleCreateSensor(CAMERA_ID, sensor);
 
         // assert
-        Assertions.assertThat(savedSensor)
-                .isNotNull()
-                .satisfies(sensor -> {
-                    Assertions.assertThat(sensor.getName())
-                            .as("Check Sensor Name")
-                            .isNotNull()
-                            .isEqualTo(SENSOR_NAME);
-
-                    Assertions.assertThat(sensor.getSensorType())
-                            .as("Check Sensor Type")
-                            .isNotNull()
-                            .isEqualTo(SENSOR_TYPE);
-                });
+        Assertions.assertThat(savedSensor).isNotNull();
+        Assertions.assertThat(savedSensor).isEqualTo(sensor);
+        Assertions.assertThat(savedSensor.getId()).isNotNull();
+        Assertions.assertThat(savedSensor.getId()).isEqualTo(SENSOR_ID);
+        Assertions.assertThat(savedSensor.getName()).isNotNull();
+        Assertions.assertThat(savedSensor.getName()).isEqualTo(SENSOR_NAME);
+        Assertions.assertThat(savedSensor.getSensorType()).isNotNull();
+        Assertions.assertThat(savedSensor.getSensorType()).isEqualTo(SENSOR_TYPE);
 
         Mockito.verify(lightSensorRepository).save(sensor);
     }
@@ -98,40 +95,12 @@ class LightSensorServiceTest {
     }
 
     @Test
-    void expect_handleCreateSensor_withNullSensorName_throwsException() {
-
-        // arrange
-        sensor.setName(null);
-        Mockito.when(lightSensorRepository.save(sensor)).thenThrow(new SensorNotCreatedException("Sensor name cannot be null"));
-
-        // act and assert
-        Assertions.assertThatThrownBy(() -> lightSensorService.handleCreateSensor(CAMERA_ID, sensor))
-                .isInstanceOf(SensorNotCreatedException.class);
-
-        Mockito.verify(lightSensorRepository).save(sensor);
-    }
-
-    @Test
-    void expect_handleCreateSensor_withNullSensorType_throwsException() {
-
-        // arrange
-        sensor.setSensorType(null);
-        Mockito.when(lightSensorRepository.save(sensor)).thenThrow(new SensorNotCreatedException("Sensor type cannot be null"));
-
-        // act and assert
-        Assertions.assertThatThrownBy(() -> lightSensorService.handleCreateSensor(CAMERA_ID, sensor))
-                .isInstanceOf(SensorNotCreatedException.class);
-
-        Mockito.verify(lightSensorRepository).save(sensor);
-    }
-
-    @Test
     void expect_handleUpdateSensor_withValidData_returnsUpdatedSensor() {
         // arrange
         sensor.setCamera(camera);
-        sensor.setName("Updated Name");
-        sensor.setVersion("v1.1");
-        sensor.setData("Updated Data");
+        sensor.setName(UPDATED_SENSOR_NAME);
+        sensor.setVersion(SENSOR_VERSION);
+        sensor.setData(UPDATED_SENSOR_DATA);
         Mockito.when(cameraService.getCameraById(CAMERA_ID)).thenReturn(camera);
         Mockito.when(lightSensorRepository.save(sensor)).thenReturn(sensor);
         Mockito.when(camera.getSensors()).thenReturn(new ArrayList<>(List.of(sensor)));
@@ -140,29 +109,16 @@ class LightSensorServiceTest {
         LightSensor updatedSensor = lightSensorService.handleUpdateSensor(CAMERA_ID, SENSOR_ID, sensor);
 
         // assert
-        Assertions.assertThat(updatedSensor)
-                .isNotNull()
-                .satisfies(sensor -> {
-                    Assertions.assertThat(sensor.getName())
-                            .as("Check Sensor Name")
-                            .isNotNull()
-                            .isEqualTo("Updated Name");
-
-                    Assertions.assertThat(sensor.getVersion())
-                            .as("Check Sensor Version")
-                            .isNotNull()
-                            .isEqualTo("v1.1");
-
-                    Assertions.assertThat(sensor.getCamera())
-                            .as("Check Sensor Camera")
-                            .isNotNull()
-                            .isEqualTo(camera);
-
-                    Assertions.assertThat(sensor.getData())
-                            .as("Check Sensor Data")
-                            .isNotNull()
-                            .isEqualTo("Updated Data");
-                });
+        Assertions.assertThat(updatedSensor).isNotNull();
+        Assertions.assertThat(updatedSensor).isEqualTo(sensor);
+        Assertions.assertThat(updatedSensor.getName()).isNotNull();
+        Assertions.assertThat(updatedSensor.getName()).isEqualTo(UPDATED_SENSOR_NAME);
+        Assertions.assertThat(updatedSensor.getVersion()).isNotNull();
+        Assertions.assertThat(updatedSensor.getVersion()).isEqualTo(SENSOR_VERSION);
+        Assertions.assertThat(updatedSensor.getCamera()).isNotNull();
+        Assertions.assertThat(updatedSensor.getCamera()).isEqualTo(camera);
+        Assertions.assertThat(updatedSensor.getData()).isNotNull();
+        Assertions.assertThat(updatedSensor.getData()).isEqualTo(UPDATED_SENSOR_DATA);
 
         Mockito.verify(lightSensorRepository).save(sensor);
     }

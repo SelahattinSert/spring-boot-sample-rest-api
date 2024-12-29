@@ -59,7 +59,6 @@ class LightSensorRepositoryTest {
     }
 
     @Test
-    @Transactional
     public void expect_save_sensorWithNullName_throwsException() {
 
         // arrange
@@ -72,7 +71,6 @@ class LightSensorRepositoryTest {
     }
 
     @Test
-    @Transactional
     public void expect_save_sensorWithNullType_throwsException() {
 
         // arrange
@@ -188,7 +186,7 @@ class LightSensorRepositoryTest {
         // Assert
         Assertions.assertThat(sensors).hasSize(2);
         Assertions.assertThat(sensors).extracting(LightSensor::getName)
-                .containsExactlyInAnyOrder("Light Sensor 1", "Light Sensor 2");
+                .containsExactlyInAnyOrder(SENSOR_NAME, SENSOR_NAME_2);
     }
 
     @Test
