@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,8 +154,8 @@ class LightSensorControllerTest {
         sensor.setId(SENSOR_ID);
         sensor.setName(SENSOR_NAME);
         sensor.setSensorType(SENSOR_TYPE);
-        BDDMockito.given(lightSensorService.handleGetSensorsByCameraId(CAMERA_ID))
-                .willReturn(Collections.singletonList(sensor));
+        Mockito.when(lightSensorService.handleGetSensorsByCameraId(CAMERA_ID))
+                .thenReturn(Collections.singletonList(sensor));
 
         // act
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/camera/{cameraId}/sensor/light", CAMERA_ID)
