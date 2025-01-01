@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +42,6 @@ class LightSensorRepositoryTest {
     }
 
     @Test
-    @Transactional
     public void expect_save_sensorRepository_saveAll_returnsSavedSensor() {
 
         // act
@@ -127,8 +125,8 @@ class LightSensorRepositoryTest {
     }
 
     @Test
-    @Transactional
     public void expect_deleteCamera_removesAssociatedSensors() {
+
         // Arrange
         Camera camera = new Camera();
         camera.setCamId(CAMERA_ID);
@@ -146,11 +144,13 @@ class LightSensorRepositoryTest {
         sensor2.setSensorType(SENSOR_TYPE);
         sensor2.setCamera(camera);
 
+        camera.getSensors().add(sensor1);
+        camera.getSensors().add(sensor2);
+
         lightSensorRepository.save(sensor1);
         lightSensorRepository.save(sensor2);
 
         // Act
-        lightSensorRepository.deleteAll();
         cameraRepository.delete(camera);
 
         // Assert
@@ -158,7 +158,6 @@ class LightSensorRepositoryTest {
     }
 
     @Test
-    @Transactional
     public void expect_findLightSensorsByCamera_returnsLightSensors() {
         // Arrange
         Camera camera = new Camera();
@@ -190,7 +189,6 @@ class LightSensorRepositoryTest {
     }
 
     @Test
-    @Transactional
     public void expect_updateSensor_withValidSensor_returnsUpdatedSensor() {
         // Arrange
         LightSensor savedSensor = lightSensorRepository.save(lightSensor);
