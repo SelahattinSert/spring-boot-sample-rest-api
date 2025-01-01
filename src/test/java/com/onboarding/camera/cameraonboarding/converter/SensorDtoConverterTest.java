@@ -5,9 +5,9 @@ import com.onboarding.camera.cameraonboarding.dto.SensorResponse;
 import com.onboarding.camera.cameraonboarding.entity.Sensor;
 import com.onboarding.camera.cameraonboarding.entity.TemperatureSensor;
 import com.onboarding.camera.cameraonboarding.enums.SensorType;
+import com.onboarding.camera.cameraonboarding.exception.SensorMismatchException;
 import com.onboarding.camera.cameraonboarding.exception.SensorNotCreatedException;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,8 +20,9 @@ class SensorDtoConverterTest {
     private final UUID SENSOR_ID = UUID.randomUUID();
     private final String SENSOR_NAME = "Sensor 1";
     private final String SENSOR_VERSION = "v1.0";
-    private final SensorType SENSOR_TYPE = SensorType.LIGHT;
+    private final SensorType SENSOR_TYPE_LIGHT = SensorType.LIGHT;
     private final String SENSOR_DATA = "Sensor data";
+    private final SensorType SENSOR_TYPE_TEMPERATURE = SensorType.TEMPERATURE;
 
     @BeforeEach
     void setUp() {
@@ -34,18 +35,18 @@ class SensorDtoConverterTest {
         SensorDto sensorDto = new SensorDto();
         sensorDto.setName(SENSOR_NAME);
         sensorDto.setVersion(SENSOR_VERSION);
-        sensorDto.setSensorType(SENSOR_TYPE);
+        sensorDto.setSensorType(SENSOR_TYPE_LIGHT);
         sensorDto.setData(SENSOR_DATA);
 
         // act
         Sensor sensor = sensorDtoConverter.toLightEntity(sensorDto);
 
         // assert
-        AssertionsForClassTypes.assertThat(sensor).isNotNull();
-        AssertionsForClassTypes.assertThat(sensor.getName()).isEqualTo(SENSOR_NAME);
-        AssertionsForClassTypes.assertThat(sensor.getVersion()).isEqualTo(SENSOR_VERSION);
-        AssertionsForClassTypes.assertThat(sensor.getSensorType()).isEqualTo(SENSOR_TYPE);
-        AssertionsForClassTypes.assertThat(sensor.getData()).isEqualTo(SENSOR_DATA);
+        Assertions.assertThat(sensor).isNotNull();
+        Assertions.assertThat(sensor.getName()).isEqualTo(SENSOR_NAME);
+        Assertions.assertThat(sensor.getVersion()).isEqualTo(SENSOR_VERSION);
+        Assertions.assertThat(sensor.getSensorType()).isEqualTo(SENSOR_TYPE_LIGHT);
+        Assertions.assertThat(sensor.getData()).isEqualTo(SENSOR_DATA);
     }
 
     @Test
@@ -55,23 +56,23 @@ class SensorDtoConverterTest {
         sensor.setId(SENSOR_ID);
         sensor.setName(SENSOR_NAME);
         sensor.setVersion(SENSOR_VERSION);
-        sensor.setSensorType(SENSOR_TYPE);
+        sensor.setSensorType(SENSOR_TYPE_LIGHT);
         sensor.setData(SENSOR_DATA);
 
         // act
         SensorResponse response = sensorDtoConverter.toSensorResponse(sensor);
 
         // assert
-        AssertionsForClassTypes.assertThat(response).isNotNull();
-        AssertionsForClassTypes.assertThat(response.getId()).isEqualTo(SENSOR_ID);
-        AssertionsForClassTypes.assertThat(response.getName()).isEqualTo(SENSOR_NAME);
-        AssertionsForClassTypes.assertThat(response.getVersion()).isEqualTo(SENSOR_VERSION);
-        AssertionsForClassTypes.assertThat(response.getSensorType()).isEqualTo(SENSOR_TYPE);
-        AssertionsForClassTypes.assertThat(response.getData()).isEqualTo(SENSOR_DATA);
+        Assertions.assertThat(response).isNotNull();
+        Assertions.assertThat(response.getId()).isEqualTo(SENSOR_ID);
+        Assertions.assertThat(response.getName()).isEqualTo(SENSOR_NAME);
+        Assertions.assertThat(response.getVersion()).isEqualTo(SENSOR_VERSION);
+        Assertions.assertThat(response.getSensorType()).isEqualTo(SENSOR_TYPE_LIGHT);
+        Assertions.assertThat(response.getData()).isEqualTo(SENSOR_DATA);
     }
 
     @Test
-    void expect_convert_withNullSensorName_throwsException() {
+    void expect_convert_withNullSensorName_throwsSensorNotCreatedException() {
         // arrange
         SensorDto sensorDto = new SensorDto();
         sensorDto.setName(null);
@@ -84,7 +85,7 @@ class SensorDtoConverterTest {
     }
 
     @Test
-    void expect_convert_withNullSensorVersion_throwsException() {
+    void expect_convert_withNullSensorVersion_throwsSensorNotCreatedException() {
         // arrange
         SensorDto sensorDto = new SensorDto();
         sensorDto.setName(SENSOR_NAME);
@@ -98,7 +99,7 @@ class SensorDtoConverterTest {
     }
 
     @Test
-    void expect_convert_withNullSensorType_throwsException() {
+    void expect_convert_withNullSensorType_throwsSensorNotCreatedException() {
         // arrange
         SensorDto sensorDto = new SensorDto();
         sensorDto.setName(SENSOR_NAME);
@@ -110,5 +111,35 @@ class SensorDtoConverterTest {
         Assertions.assertThatThrownBy(() -> sensorDtoConverter.toLightEntity(sensorDto))
                 .isInstanceOf(SensorNotCreatedException.class)
                 .hasMessage("Sensor type cannot be null");
+    }
+
+    @Test
+    void expect_convertToLightEntity_withWrongSensorType_throwsSensorMismatchException() {
+        // arrange
+        SensorDto sensorDto = new SensorDto();
+        sensorDto.setName(SENSOR_NAME);
+        sensorDto.setVersion(SENSOR_VERSION);
+        sensorDto.setSensorType(SENSOR_TYPE_TEMPERATURE);
+
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> sensorDtoConverter.toLightEntity(sensorDto))
+                .isInstanceOf(SensorMismatchException.class)
+                .hasMessage("Invalid sensor type for LightSensor");
+    }
+
+    @Test
+    void expect_convertToTemperatureEntity_withWrongSensorType_throwsSensorMismatchException() {
+        // arrange
+        SensorDto sensorDto = new SensorDto();
+        sensorDto.setName(SENSOR_NAME);
+        sensorDto.setVersion(SENSOR_VERSION);
+        sensorDto.setSensorType(SENSOR_TYPE_LIGHT);
+
+
+        // act and assert
+        Assertions.assertThatThrownBy(() -> sensorDtoConverter.toTemperatureEntity(sensorDto))
+                .isInstanceOf(SensorMismatchException.class)
+                .hasMessage("Invalid sensor type for TemperatureSensor");
     }
 }
