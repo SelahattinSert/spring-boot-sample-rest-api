@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -13,6 +14,8 @@ import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -54,4 +57,8 @@ public class Camera {
     @OneToOne(mappedBy = "camera", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Location location;
+
+    @OneToMany(mappedBy = "camera", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Sensor> sensors = new ArrayList<>();
 }
