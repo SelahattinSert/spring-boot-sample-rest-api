@@ -5,6 +5,8 @@ import com.onboarding.camera.cameraonboarding.dto.SensorDto;
 import com.onboarding.camera.cameraonboarding.dto.SensorResponse;
 import com.onboarding.camera.cameraonboarding.entity.LightSensor;
 import com.onboarding.camera.cameraonboarding.service.impl.LightSensorService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("${api.version}/camera/{cameraId}/sensor/light")
 @RequiredArgsConstructor
+@Tag(name = "Light Sensor Controller")
 public class LightSensorController {
 
     private final LightSensorService lightSensorService;
@@ -31,6 +34,10 @@ public class LightSensorController {
     private final SensorDtoConverter sensorDtoConverter;
 
     @PostMapping
+    @Operation(
+            description = "Add light sensor to the related camera",
+            summary = "This is an endpoint for Add light sensor"
+    )
     public ResponseEntity<SensorResponse> addLightSensor(
             @PathVariable UUID cameraId,
             @Valid @RequestBody SensorDto sensorDto) {
@@ -43,6 +50,10 @@ public class LightSensorController {
     }
 
     @GetMapping
+    @Operation(
+            description = "Get all related light sensors with related camera",
+            summary = "This is an endpoint for Get light sensors"
+    )
     public ResponseEntity<List<LightSensor>> getLightSensors(
             @PathVariable UUID cameraId) {
 
@@ -51,6 +62,10 @@ public class LightSensorController {
     }
 
     @PutMapping("/{sensorId}")
+    @Operation(
+            description = "Update light sensor with related camera",
+            summary = "This is an endpoint for Update light sensor"
+    )
     public ResponseEntity<SensorResponse> updateLightSensor(
             @PathVariable UUID sensorId,
             @Valid @RequestBody SensorDto sensorDto, @PathVariable UUID cameraId) {
@@ -62,6 +77,10 @@ public class LightSensorController {
     }
 
     @DeleteMapping("/{sensorId}")
+    @Operation(
+            description = "Delete light sensor with related camera",
+            summary = "This is an endpoint for Delete light sensor"
+    )
     public ResponseEntity<Void> deleteLightSensor(
             @PathVariable UUID sensorId, @PathVariable UUID cameraId) {
 

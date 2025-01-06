@@ -5,6 +5,8 @@ import com.onboarding.camera.cameraonboarding.dto.SensorDto;
 import com.onboarding.camera.cameraonboarding.dto.SensorResponse;
 import com.onboarding.camera.cameraonboarding.entity.TemperatureSensor;
 import com.onboarding.camera.cameraonboarding.service.impl.TemperatureSensorService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("${api.version}/camera/{cameraId}/sensor/temperature")
 @RequiredArgsConstructor
+@Tag(name = "Temperature Sensor Controller")
 public class TemperatureSensorController {
 
     private final TemperatureSensorService temperatureSensorService;
@@ -31,6 +34,10 @@ public class TemperatureSensorController {
     private final SensorDtoConverter sensorDtoConverter;
 
     @PostMapping
+    @Operation(
+            description = "Add temperature sensor to the related camera",
+            summary = "This is an endpoint for Add temperature sensor"
+    )
     public ResponseEntity<SensorResponse> addTemperatureSensor(
             @PathVariable UUID cameraId,
             @Valid @RequestBody SensorDto sensorDto) {
@@ -42,6 +49,10 @@ public class TemperatureSensorController {
     }
 
     @GetMapping
+    @Operation(
+            description = "Get all related temperature sensors with related camera",
+            summary = "This is an endpoint for Get temperature sensors"
+    )
     public ResponseEntity<List<TemperatureSensor>> getTemperatureSensors(
             @PathVariable UUID cameraId) {
 
@@ -50,6 +61,10 @@ public class TemperatureSensorController {
     }
 
     @PutMapping("/{sensorId}")
+    @Operation(
+            description = "Update temperature sensor with related camera",
+            summary = "This is an endpoint for Update temperature sensor"
+    )
     public ResponseEntity<SensorResponse> updateTemperatureSensor(
             @PathVariable UUID sensorId,
             @Valid @RequestBody SensorDto sensorDto, @PathVariable UUID cameraId) {
@@ -61,6 +76,10 @@ public class TemperatureSensorController {
     }
 
     @DeleteMapping("/{sensorId}")
+    @Operation(
+            description = "Delete temperature sensor with related camera",
+            summary = "This is an endpoint for Delete temperature sensor"
+    )
     public ResponseEntity<Void> deleteTemperatureSensor(
             @PathVariable UUID sensorId, @PathVariable UUID cameraId) {
 

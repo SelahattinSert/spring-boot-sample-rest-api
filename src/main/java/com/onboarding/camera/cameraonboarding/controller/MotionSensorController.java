@@ -5,6 +5,8 @@ import com.onboarding.camera.cameraonboarding.dto.SensorDto;
 import com.onboarding.camera.cameraonboarding.dto.SensorResponse;
 import com.onboarding.camera.cameraonboarding.entity.MotionSensor;
 import com.onboarding.camera.cameraonboarding.service.impl.MotionSensorService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("${api.version}/camera/{cameraId}/sensor/motion")
 @RequiredArgsConstructor
+@Tag(name = "Motion Sensor Controller")
 public class MotionSensorController {
 
     private final MotionSensorService motionSensorService;
@@ -31,6 +34,10 @@ public class MotionSensorController {
     private final SensorDtoConverter sensorDtoConverter;
 
     @PostMapping
+    @Operation(
+            description = "Add motion sensor to the related camera",
+            summary = "This is an endpoint for Add motion sensor"
+    )
     public ResponseEntity<SensorResponse> addMotionSensor(
             @PathVariable UUID cameraId,
             @Valid @RequestBody SensorDto sensorDto) {
@@ -43,6 +50,10 @@ public class MotionSensorController {
     }
 
     @GetMapping
+    @Operation(
+            description = "Get all related motion sensors with related camera",
+            summary = "This is an endpoint for Get motion sensors"
+    )
     public ResponseEntity<List<MotionSensor>> getMotionSensors(
             @PathVariable UUID cameraId) {
 
@@ -51,6 +62,10 @@ public class MotionSensorController {
     }
 
     @PutMapping("/{sensorId}")
+    @Operation(
+            description = "Update motion sensor with related camera",
+            summary = "This is an endpoint for Update motion sensor"
+    )
     public ResponseEntity<SensorResponse> updateMotionSensor(
             @PathVariable UUID sensorId,
             @Valid @RequestBody SensorDto sensorDto, @PathVariable UUID cameraId) {
@@ -62,6 +77,10 @@ public class MotionSensorController {
     }
 
     @DeleteMapping("/{sensorId}")
+    @Operation(
+            description = "Delete motion sensor with related camera",
+            summary = "This is an endpoint for Delete motion sensor"
+    )
     public ResponseEntity<Void> deleteMotionSensor(
             @PathVariable UUID sensorId, @PathVariable UUID cameraId) {
 
