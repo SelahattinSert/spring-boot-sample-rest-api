@@ -4,8 +4,12 @@ import com.onboarding.camera.cameraonboarding.converter.SensorDtoConverter;
 import com.onboarding.camera.cameraonboarding.dto.SensorDto;
 import com.onboarding.camera.cameraonboarding.dto.SensorResponse;
 import com.onboarding.camera.cameraonboarding.entity.LightSensor;
+import com.onboarding.camera.cameraonboarding.entity.TemperatureSensor;
 import com.onboarding.camera.cameraonboarding.service.impl.LightSensorService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +40,28 @@ public class LightSensorController {
     @PostMapping
     @Operation(
             description = "Add light sensor to the related camera",
-            summary = "This is an endpoint for Add light sensor"
+            summary = "This is an endpoint for Add light sensor",
+            responses = {
+                    @ApiResponse(
+                            description = "Created sensor",
+                            responseCode = "201",
+                            content = @Content(
+                                    schema = @Schema(implementation = SensorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Camera not found",
+                            responseCode = "404"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor not created",
+                            responseCode = "500"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor type does not match",
+                            responseCode = "409"
+                    )
+            }
     )
     public ResponseEntity<SensorResponse> addLightSensor(
             @PathVariable UUID cameraId,
@@ -52,7 +77,24 @@ public class LightSensorController {
     @GetMapping
     @Operation(
             description = "Get all related light sensors with related camera",
-            summary = "This is an endpoint for Get light sensors"
+            summary = "This is an endpoint for Get light sensors",
+            responses = {
+                    @ApiResponse(
+                            description = "Get sensors",
+                            responseCode = "200",
+                            content = @Content(
+                                    schema = @Schema(implementation = TemperatureSensor.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Camera not found",
+                            responseCode = "404"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor not found",
+                            responseCode = "404"
+                    )
+            }
     )
     public ResponseEntity<List<LightSensor>> getLightSensors(
             @PathVariable UUID cameraId) {
@@ -64,7 +106,32 @@ public class LightSensorController {
     @PutMapping("/{sensorId}")
     @Operation(
             description = "Update light sensor with related camera",
-            summary = "This is an endpoint for Update light sensor"
+            summary = "This is an endpoint for Update light sensor",
+            responses = {
+                    @ApiResponse(
+                            description = "Sensor updated",
+                            responseCode = "200",
+                            content = @Content(
+                                    schema = @Schema(implementation = SensorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Camera not found",
+                            responseCode = "404"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor not found",
+                            responseCode = "404"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor type does not match",
+                            responseCode = "409"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor can not updated",
+                            responseCode = "500"
+                    )
+            }
     )
     public ResponseEntity<SensorResponse> updateLightSensor(
             @PathVariable UUID sensorId,
@@ -79,7 +146,25 @@ public class LightSensorController {
     @DeleteMapping("/{sensorId}")
     @Operation(
             description = "Delete light sensor with related camera",
-            summary = "This is an endpoint for Delete light sensor"
+            summary = "This is an endpoint for Delete light sensor",
+            responses = {
+                    @ApiResponse(
+                            description = "Sensor deleted",
+                            responseCode = "204"
+                    ),
+                    @ApiResponse(
+                            description = "Camera not found",
+                            responseCode = "404"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor not found",
+                            responseCode = "404"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor can not updated",
+                            responseCode = "500"
+                    )
+            }
     )
     public ResponseEntity<Void> deleteLightSensor(
             @PathVariable UUID sensorId, @PathVariable UUID cameraId) {

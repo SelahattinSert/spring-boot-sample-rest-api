@@ -4,8 +4,12 @@ import com.onboarding.camera.cameraonboarding.converter.SensorDtoConverter;
 import com.onboarding.camera.cameraonboarding.dto.SensorDto;
 import com.onboarding.camera.cameraonboarding.dto.SensorResponse;
 import com.onboarding.camera.cameraonboarding.entity.MotionSensor;
+import com.onboarding.camera.cameraonboarding.entity.TemperatureSensor;
 import com.onboarding.camera.cameraonboarding.service.impl.MotionSensorService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +40,28 @@ public class MotionSensorController {
     @PostMapping
     @Operation(
             description = "Add motion sensor to the related camera",
-            summary = "This is an endpoint for Add motion sensor"
+            summary = "This is an endpoint for Add motion sensor",
+            responses = {
+                    @ApiResponse(
+                            description = "Created sensor",
+                            responseCode = "201",
+                            content = @Content(
+                                    schema = @Schema(implementation = SensorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Camera not found",
+                            responseCode = "404"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor not created",
+                            responseCode = "500"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor type does not match",
+                            responseCode = "409"
+                    )
+            }
     )
     public ResponseEntity<SensorResponse> addMotionSensor(
             @PathVariable UUID cameraId,
@@ -52,7 +77,24 @@ public class MotionSensorController {
     @GetMapping
     @Operation(
             description = "Get all related motion sensors with related camera",
-            summary = "This is an endpoint for Get motion sensors"
+            summary = "This is an endpoint for Get motion sensors",
+            responses = {
+                    @ApiResponse(
+                            description = "Get sensors",
+                            responseCode = "200",
+                            content = @Content(
+                                    schema = @Schema(implementation = TemperatureSensor.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Camera not found",
+                            responseCode = "404"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor not found",
+                            responseCode = "404"
+                    )
+            }
     )
     public ResponseEntity<List<MotionSensor>> getMotionSensors(
             @PathVariable UUID cameraId) {
@@ -64,7 +106,32 @@ public class MotionSensorController {
     @PutMapping("/{sensorId}")
     @Operation(
             description = "Update motion sensor with related camera",
-            summary = "This is an endpoint for Update motion sensor"
+            summary = "This is an endpoint for Update motion sensor",
+            responses = {
+                    @ApiResponse(
+                            description = "Sensor updated",
+                            responseCode = "200",
+                            content = @Content(
+                                    schema = @Schema(implementation = SensorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            description = "Camera not found",
+                            responseCode = "404"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor not found",
+                            responseCode = "404"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor type does not match",
+                            responseCode = "409"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor can not updated",
+                            responseCode = "500"
+                    )
+            }
     )
     public ResponseEntity<SensorResponse> updateMotionSensor(
             @PathVariable UUID sensorId,
@@ -79,7 +146,25 @@ public class MotionSensorController {
     @DeleteMapping("/{sensorId}")
     @Operation(
             description = "Delete motion sensor with related camera",
-            summary = "This is an endpoint for Delete motion sensor"
+            summary = "This is an endpoint for Delete motion sensor",
+            responses = {
+                    @ApiResponse(
+                            description = "Sensor deleted",
+                            responseCode = "204"
+                    ),
+                    @ApiResponse(
+                            description = "Camera not found",
+                            responseCode = "404"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor not found",
+                            responseCode = "404"
+                    ),
+                    @ApiResponse(
+                            description = "Sensor can not updated",
+                            responseCode = "500"
+                    )
+            }
     )
     public ResponseEntity<Void> deleteMotionSensor(
             @PathVariable UUID sensorId, @PathVariable UUID cameraId) {
