@@ -57,6 +57,10 @@ public class CameraRestController {
                             )
                     ),
                     @ApiResponse(
+                            description = "Bad request, The request is invalid",
+                            responseCode = "400"
+                    ),
+                    @ApiResponse(
                             description = "Camera can not created",
                             responseCode = "500"
                     )
@@ -79,6 +83,10 @@ public class CameraRestController {
                     @ApiResponse(
                             description = "Initialized camera",
                             responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            description = "Bad request, The request is invalid",
+                            responseCode = "400"
                     ),
                     @ApiResponse(
                             description = "Camera already initialized",
@@ -110,6 +118,10 @@ public class CameraRestController {
                             )
                     ),
                     @ApiResponse(
+                            description = "Bad request, The request is invalid",
+                            responseCode = "400"
+                    ),
+                    @ApiResponse(
                             description = "Camera not found",
                             responseCode = "404"
                     )
@@ -131,6 +143,10 @@ public class CameraRestController {
                     @ApiResponse(
                             description = "Uploaded image",
                             responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            description = "Bad request, The request is invalid",
+                            responseCode = "400"
                     ),
                     @ApiResponse(
                             description = "Image already uploaded",
@@ -159,6 +175,10 @@ public class CameraRestController {
                     @ApiResponse(
                             description = "Downloaded image",
                             responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            description = "Bad request, The request is invalid",
+                            responseCode = "400"
                     ),
                     @ApiResponse(
                             description = "Camera not found",
@@ -199,6 +219,10 @@ public class CameraRestController {
                             content = @Content(
                                     schema = @Schema(implementation = LocationResponse.class)
                             )
+                    ),
+                    @ApiResponse(
+                            description = "Bad request, The request is invalid",
+                            responseCode = "400"
                     ),
                     @ApiResponse(
                             description = "Camera not found",

@@ -50,6 +50,10 @@ public class MotionSensorController {
                             )
                     ),
                     @ApiResponse(
+                            description = "Bad request, The request is invalid",
+                            responseCode = "400"
+                    ),
+                    @ApiResponse(
                             description = "Camera not found",
                             responseCode = "404"
                     ),
@@ -87,6 +91,10 @@ public class MotionSensorController {
                             )
                     ),
                     @ApiResponse(
+                            description = "Bad request, The request is invalid",
+                            responseCode = "400"
+                    ),
+                    @ApiResponse(
                             description = "Camera not found",
                             responseCode = "404"
                     ),
@@ -114,6 +122,10 @@ public class MotionSensorController {
                             content = @Content(
                                     schema = @Schema(implementation = SensorResponse.class)
                             )
+                    ),
+                    @ApiResponse(
+                            description = "Bad request, The request is invalid",
+                            responseCode = "400"
                     ),
                     @ApiResponse(
                             description = "Camera not found",
@@ -151,6 +163,10 @@ public class MotionSensorController {
                     @ApiResponse(
                             description = "Sensor deleted",
                             responseCode = "204"
+                    ),
+                    @ApiResponse(
+                            description = "Bad request, The request is invalid",
+                            responseCode = "400"
                     ),
                     @ApiResponse(
                             description = "Camera not found",

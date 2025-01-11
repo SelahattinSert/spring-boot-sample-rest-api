@@ -49,6 +49,10 @@ public class TemperatureSensorController {
                             )
                     ),
                     @ApiResponse(
+                            description = "Bad request, The request is invalid",
+                            responseCode = "400"
+                    ),
+                    @ApiResponse(
                             description = "Camera not found",
                             responseCode = "404"
                     ),
@@ -85,6 +89,10 @@ public class TemperatureSensorController {
                             )
                     ),
                     @ApiResponse(
+                            description = "Bad request, The request is invalid",
+                            responseCode = "400"
+                    ),
+                    @ApiResponse(
                             description = "Camera not found",
                             responseCode = "404"
                     ),
@@ -113,6 +121,10 @@ public class TemperatureSensorController {
                             content = @Content(
                                     schema = @Schema(implementation = SensorResponse.class)
                             )
+                    ),
+                    @ApiResponse(
+                            description = "Bad request, The request is invalid",
+                            responseCode = "400"
                     ),
                     @ApiResponse(
                             description = "Camera not found",
@@ -150,6 +162,10 @@ public class TemperatureSensorController {
                     @ApiResponse(
                             description = "Sensor deleted",
                             responseCode = "204"
+                    ),
+                    @ApiResponse(
+                            description = "Bad request, The request is invalid",
+                            responseCode = "400"
                     ),
                     @ApiResponse(
                             description = "Camera not found",
