@@ -86,3 +86,9 @@ This project integrates with Azure Blob Storage for handling image uploads relat
    azure.storage.connection-string=<your-storage-connection-string>
 
 Ensure that related dependencies are added to your pom.xml file
+
+### API Documentation
+
+The Swagger API documentation for the Camera Onboarding project can be accessed at:
+
+Local Environment: http://localhost:8080/swagger-ui.html
