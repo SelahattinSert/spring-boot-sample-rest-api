@@ -3,7 +3,7 @@ name: Post-Merge Version Update
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   update-version:
