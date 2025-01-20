@@ -32,7 +32,7 @@ jobs:
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git pull --rebase
           git add pom.xml
           git commit -m "Update project version to $NEW_VERSION"
+          git pull --rebase
           git push
