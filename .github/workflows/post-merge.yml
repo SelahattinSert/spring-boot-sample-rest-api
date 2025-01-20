@@ -25,6 +25,7 @@ jobs:
           export REVISION_ID=$(git rev-parse --short HEAD)
           export NEW_VERSION=$(date +%Y%m%d)-$REVISION_ID
           echo "Setting version to $NEW_VERSION"
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
           mvn versions:set -DnewVersion=$NEW_VERSION
           mvn versions:commit
 
@@ -33,6 +34,6 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git add pom.xml
-          git commit -m "Update project version to $NEW_VERSION"
+          git commit -m "Update project version to ${{ env.NEW_VERSION }}"
           git pull --rebase
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
