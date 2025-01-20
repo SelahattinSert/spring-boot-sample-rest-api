@@ -1,0 +1,38 @@
+name: Post-Merge Version Update
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set Up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Set new version
+        run: |
+          export REVISION_ID=$(git rev-parse --short HEAD)
+          export NEW_VERSION=$(date +%Y%m%d)-$REVISION_ID
+          echo "Setting version to $NEW_VERSION"
+          mvn versions:set -DnewVersion=$NEW_VERSION
+          mvn versions:commit
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git pull --rebase
+          git add pom.xml
+          git commit -m "Update project version to $NEW_VERSION"
+          git push
