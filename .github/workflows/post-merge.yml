@@ -35,4 +35,4 @@ jobs:
           git add pom.xml
           git commit -m "Update project version to $NEW_VERSION"
           git pull --rebase
-          git push
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
