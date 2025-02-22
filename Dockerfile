@@ -2,7 +2,7 @@
 FROM eclipse-temurin:21
 
 #
-ARG JAR_FILE=target/camera-onboarding-0.0.1-SNAPSHOT.jar
+ARG JAR_FILE=target/*.jar
 
 # Set the working directory inside the container
 WORKDIR /app
