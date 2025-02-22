@@ -1,5 +1,5 @@
 # Build Stage
-FROM --platform=linux/amd64 eclipse-temurin:21
+FROM eclipse-temurin:21
 
 #
 ARG JAR_FILE=target/camera-onboarding-0.0.1-SNAPSHOT.jar
