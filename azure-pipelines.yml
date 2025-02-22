@@ -25,10 +25,12 @@ stages:
           name: "Default"
         steps:
           - script: |
-              echo "Checking Docker service status..."
-              sudo systemctl status docker || sudo systemctl start docker
-              echo "Docker service started successfully."
-            displayName: "Ensure Docker Daemon is Running"
+              echo "Checking if Docker is running..."
+              docker info || (
+                echo "Docker is not running! Trying to start Docker..." 
+                start-process -FilePath "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+              )
+            displayName: "Ensure Docker Daemon is Running (Windows)"
             continueOnError: true
 
           - task: Docker@2
@@ -43,10 +45,11 @@ stages:
               command: build
               repository: $(imageRepository)
               dockerfile: $(dockerfilePath)
+              arguments: "--platform=linux/amd64"
               tags: |
                 $(buildVersion)
                 latest
-                
+
           - task: Docker@2
             displayName: Push Docker Image
             inputs:
@@ -55,3 +58,4 @@ stages:
               tags: |
                 $(buildVersion)
                 latest
+
