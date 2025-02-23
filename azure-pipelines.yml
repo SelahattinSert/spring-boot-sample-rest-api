@@ -9,11 +9,11 @@ resources:
   - repo: self
 
 variables:
-  dockerRegistryServiceConnection: '4c281479-6e31-4cb5-8e58-712d66f03a90'
-  imageRepository: 'cameraonboarding'
-  containerRegistry: 'acrcameraonboarding.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  buildVersion: $[format('{0:yyyyMMdd}-{1}', pipeline.startTime, variables['Build.SourceVersion'])]
+  dockerRegistryServiceConnection: $(DOCKER_REGISTRY_CONNECTION)
+  imageRepository: $(IMAGE_REPOSITORY)
+  containerRegistry: $(CONTAINER_REGISTRY)
+  dockerfilePath: $(DOCKERFILE_PATH)
+  buildVersion: $(BUILD_VERSION)
 
 stages:
   - stage: Build
@@ -57,7 +57,6 @@ stages:
               arguments: "--platform linux/amd64"
               tags: |
                 $(buildVersion)
-                latest
 
           - task: Docker@2
             displayName: Push Docker Image
