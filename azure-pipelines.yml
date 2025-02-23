@@ -9,11 +9,7 @@ resources:
   - repo: self
 
 variables:
-  dockerRegistryServiceConnection: $(DOCKER_REGISTRY_CONNECTION)
-  imageRepository: $(IMAGE_REPOSITORY)
-  containerRegistry: $(CONTAINER_REGISTRY)
-  dockerfilePath: $(DOCKERFILE_PATH)
-  buildVersion: $(BUILD_VERSION)
+  - group: camera-onboarding-variable-group
 
 stages:
   - stage: Build
@@ -46,24 +42,23 @@ stages:
             displayName: Login to ACR
             inputs:
               command: login
-              containerRegistry: $(dockerRegistryServiceConnection)
+              containerRegistry: $(DOCKER_REGISTRY_CONNECTION)
 
           - task: Docker@2
             displayName: Build Docker Image
             inputs:
               command: build
-              repository: $(imageRepository)
-              dockerfile: $(dockerfilePath)
+              repository: $(IMAGE_REPOSITORY)
+              dockerfile: $(DOCKERFILE_PATH)
               arguments: "--platform linux/amd64"
               tags: |
-                $(buildVersion)
+                $(BUILD_VERSION)
 
           - task: Docker@2
             displayName: Push Docker Image
             inputs:
               command: push
-              repository: $(imageRepository)
+              repository: $(IMAGE_REPOSITORY)
               tags: |
-                $(buildVersion)
-                latest
+                $(BUILD_VERSION)
 
