@@ -45,9 +45,10 @@ stages:
               containerRegistry: $(DOCKER_REGISTRY_CONNECTION)
 
           - script: |
-              echo "##[set-variable name=BUILD_VERSION]$(BUILD_VERSION)"
-              echo "::add-mask::$(BUILD_VERSION)"
-              displayName: "Set Secret Build Version"
+              echo "Setting BUILD_VERSION..."
+              echo "##vso[task.setvariable variable=BUILD_VERSION]$(date +'%Y%m%d')-$(Build.SourceVersionShort)"
+              echo "::add-mask::$(date +'%Y%m%d')-$(Build.SourceVersionShort)"
+            displayName: "Set Secret Build Version"
 
           - task: Docker@2
             displayName: Build Docker Image
