@@ -44,6 +44,11 @@ stages:
               command: login
               containerRegistry: $(DOCKER_REGISTRY_CONNECTION)
 
+          - script: |
+              echo "##[set-variable name=BUILD_VERSION]$(BUILD_VERSION)"
+              echo "::add-mask::$(BUILD_VERSION)"
+              displayName: "Set Secret Build Version"
+
           - task: Docker@2
             displayName: Build Docker Image
             inputs:
