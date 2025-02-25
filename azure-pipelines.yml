@@ -10,7 +10,9 @@ resources:
 
 variables:
   - group: camera-onboarding-variable-group
-    buildVersion: $[format('{0:yyyyMMdd}-{1}', pipeline.startTime, variables['Build.SourceVersion'])]
+
+  - name: buildVersion
+    value: $[format('{0:yyyyMMdd}-{1}', pipeline.startTime, variables['Build.SourceVersion'])]
 
 stages:
   - stage: Build
