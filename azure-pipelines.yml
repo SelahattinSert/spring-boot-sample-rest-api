@@ -10,6 +10,7 @@ resources:
 
 variables:
   - group: camera-onboarding-variable-group
+    buildVersion: $[format('{0:yyyyMMdd}-{1}', pipeline.startTime, variables['Build.SourceVersion'])]
 
 stages:
   - stage: Build
@@ -44,14 +45,6 @@ stages:
               command: login
               containerRegistry: $(DOCKER_REGISTRY_CONNECTION)
 
-          - script: |
-              echo "Setting BUILD_VERSION..."
-              set BUILD_VERSION=%DATE:~10,4%%DATE:~4,2%%DATE:~7,2%-%BUILD_SOURCEVERSION:~0,7%
-              echo BUILD_VERSION=%BUILD_VERSION%
-              echo "##vso[task.setvariable variable=BUILD_VERSION;isOutput=true]%BUILD_VERSION%"
-              echo "::add-mask::%BUILD_VERSION%"
-            displayName: "Set Secret Build Version"
-
           - task: Docker@2
             displayName: Build Docker Image
             inputs:
@@ -60,7 +53,7 @@ stages:
               dockerfile: $(DOCKERFILE_PATH)
               arguments: "--platform linux/amd64"
               tags: |
-                $(BUILD_VERSION)
+                $(buildVersion)
 
           - task: Docker@2
             displayName: Push Docker Image
@@ -68,5 +61,5 @@ stages:
               command: push
               repository: $(IMAGE_REPOSITORY)
               tags: |
-                $(BUILD_VERSION)
+                $(buildVersion)
 
