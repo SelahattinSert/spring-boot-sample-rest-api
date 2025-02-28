@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.onboarding.camera</groupId>
     <artifactId>camera-onboarding</artifactId>
-    <version>20250128-a772744</version>
+    <version>20250228-e2d11b5</version>
     <name>camera-onboarding</name>
     <description>REST API for Camera Onboarding</description>
 
