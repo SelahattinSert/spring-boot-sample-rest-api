@@ -1,0 +1,67 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+  - main
+
+resources:
+  - repo: self
+
+variables:
+  - group: camera-onboarding-variable-group
+
+  - name: buildVersion
+    value: $[format('{0:yyyyMMdd}-{1}', pipeline.startTime, substring(variables['Build.SourceVersion'], 0, 7))]
+
+stages:
+  - stage: Build
+    displayName: Build and push stage
+    jobs:
+      - job: Build
+        displayName: Build
+        pool:
+          name: "Default"
+        steps:
+          - script: |
+              echo "Checking if Docker is running..."
+              docker info || (
+                echo "Docker is not running! Trying to start Docker..." 
+                start-process -FilePath "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+              )
+            displayName: "Ensure Docker Daemon is Running (Windows)"
+            continueOnError: true
+
+          - task: Maven@4
+            displayName: Build Maven
+            inputs:
+              mavenPomFile: 'pom.xml'
+              goals: 'clean package'
+              mavenOptions: '-Xmx3072m'
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '21'
+
+          - task: Docker@2
+            displayName: Login to ACR
+            inputs:
+              command: login
+              containerRegistry: $(DOCKER_REGISTRY_CONNECTION)
+
+          - task: Docker@2
+            displayName: Build Docker Image
+            inputs:
+              command: build
+              repository: $(IMAGE_REPOSITORY)
+              dockerfile: $(DOCKERFILE_PATH)
+              arguments: "--platform linux/amd64"
+              tags: |
+                $(buildVersion)
+
+          - task: Docker@2
+            displayName: Push Docker Image
+            inputs:
+              command: push
+              repository: $(IMAGE_REPOSITORY)
+              tags: |
+                $(buildVersion)
+
