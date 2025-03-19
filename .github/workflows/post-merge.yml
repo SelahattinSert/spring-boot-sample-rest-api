@@ -8,10 +8,13 @@ on:
 jobs:
   update-version:
     runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Set Up Java
         uses: actions/setup-java@v3
@@ -29,11 +32,23 @@ jobs:
           mvn versions:set -DnewVersion=$NEW_VERSION
           mvn versions:commit
 
-      - name: Commit and push changes
+      - name: Create new branch and commit changes
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
+          git checkout -b update-version-${{ env.NEW_VERSION }}
           git add pom.xml
           git commit -m "Update project version to ${{ env.NEW_VERSION }}"
-          git pull --rebase
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
+
+      - name: Push changes to new branch
+        run: |
+          git push origin update-version-${{ env.NEW_VERSION }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Update project version to ${{ env.NEW_VERSION }}"
+          body: "Automated version update by GitHub Actions."
+          branch: update-version-${{ env.NEW_VERSION }}
+          base: main
