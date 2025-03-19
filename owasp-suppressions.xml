@@ -1,19 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!-- azure-identity-1.13.1 -->
+    <!-- com.azure.spring:spring-cloud-azure-starter@5.15.0 -->
     <suppress>
         <cve>CVE-2023-36415</cve>
         <cve>CVE-2024-35255</cve>
+    </suppress>
+    <!-- json-smart-2.5.1 -->
+    <!-- org.springframework.boot:spring-boot-starter-test@3.3.1 -->
+    <suppress>
         <cve>CVE-2024-57699</cve>
+    </suppress>
+    <!-- logback-core-1.5.6 -->
+    <!-- org.springframework.boot:spring-boot-starter-logging@3.3.1 -->
+    <suppress>
         <cve>CVE-2024-12798</cve>
         <cve>CVE-2024-12801</cve>
+    </suppress>
+    <!-- msal4j-1.16.1 -->
+    <!-- com.azure.spring:spring-cloud-azure-starter@5.15.0 -->
+    <suppress>
         <cve>CVE-2024-35255</cve>
+    </suppress>
+    <!-- netty-common-4.1.111.Final -->
+    <!-- com.azure:azure-storage-blob@12.27.1 -->
+    <suppress>
         <cve>CVE-2024-47535</cve>
+    </suppress>
+    <!-- netty-handler-4.1.111.Final -->
+    <!-- com.azure:azure-storage-blob@12.27.1 -->
+    <suppress>
         <cve>CVE-2025-24970</cve>
+    </suppress>
+    <!-- spring-cloud-azure-starter-storage-queue-5.15.0 -->
+    <!-- com.azure.spring:spring-cloud-azure-starter-storage@5.15.0 -->
+    <suppress>
         <cve>CVE-2022-30187</cve>
+    </suppress>
+    <!-- spring-core-6.1.10 -->
+    <!-- org.springframework.boot:spring-boot-starter-test@3.3.1 -->
+    <suppress>
+        <cve>CVE-2024-38820</cve>
+    </suppress>
+    <!-- spring-web-6.1.10 -->
+    <!-- org.springframework.boot:spring-boot-starter-web@3.3.1 -->
+    <suppress>
         <cve>CVE-2024-38809</cve>
         <cve>CVE-2024-38820</cve>
+    </suppress>
+    <!-- spring-webmvc-6.1.10 -->
+    <!-- org.springframework.boot:spring-boot-starter-web@3.3.1 -->
+    <suppress>
         <cve>CVE-2024-38816</cve>
         <cve>CVE-2024-38820</cve>
+    </suppress>
+    <!-- swagger-ui-5.17.14 (DOMPurify@3.1.4) -->
+    <!-- org.springdoc:springdoc-openapi-starter-webmvc-ui@2.6.0 -->
+    <suppress>
         <cve>CVE-2025-26791</cve>
+    </suppress>
+    <!-- tomcat-embed-core-10.1.25 -->
+    <!-- org.springframework.boot:spring-boot-starter-web@3.3.1 -->
+    <suppress>
+        <cve>CVE-2025-24813</cve>
     </suppress>
 </suppressions>
