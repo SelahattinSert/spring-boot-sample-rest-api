@@ -172,6 +172,24 @@
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>2.18.0</version>
             </plugin>
+
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>12.1.0</version>
+                <configuration>
+                    <suppressionFile>${project.basedir}/owasp-suppressions.xml</suppressionFile>
+                    <knownExploitedEnabled>false</knownExploitedEnabled>
+                    <failBuildOnCVSS>0</failBuildOnCVSS>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
