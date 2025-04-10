@@ -36,6 +36,7 @@
     <!-- com.azure.spring:spring-cloud-azure-starter-storage@5.15.0 -->
     <suppress>
         <cve>CVE-2022-30187</cve>
+        <cve>CVE-2025-25193</cve>
     </suppress>
     <!-- spring-core-6.1.10 -->
     <!-- org.springframework.boot:spring-boot-starter-test@3.3.1 -->
