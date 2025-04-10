@@ -92,3 +92,50 @@ Ensure that related dependencies are added to your pom.xml file
 The Swagger API documentation for the Camera Onboarding project can be accessed at:
 
 Local Environment: http://localhost:8080/swagger-ui.html
+
+## Deployment Instructions
+
+### Prerequisites
+
+-Kubernetes cluster with kubectl configured
+
+-Docker image is already built and pushed to Azure Container Registry (ACR)
+
+-Secret values are defined in .env file
+
+### 1-Create Secret
+
+Create a secret using your .env file:
+
+   ```sh
+    kubectl create secret generic camera-onboarding-secrets \
+    --from-env-file=camera.env \
+    -n default
+```
+
+### 2-Deploy Resources
+
+   ```sh
+    kubectl apply -k k8s/
+```
+
+### Check Deployment
+
+To verify that the app is running:
+
+```sh
+kubectl get pods
+kubectl get svc
+```
+
+To view logs:
+
+```sh
+kubectl logs <pod-name>
+```
+
+To access the app (on localhost if using Minikube):
+
+```sh
+minikube service camera-onboarding-service
+```
