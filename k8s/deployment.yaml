@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: camera-onboarding
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: camera-onboarding
+    spec:
+      containers:
+        - name: camera-onboarding
+          image: acrcameraonboarding.azurecr.io/cameraonboarding:20250228-e2d11b5
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: camera-onboarding-secrets
+      imagePullSecrets:
+        - name: acr-secret
