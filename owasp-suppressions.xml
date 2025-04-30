@@ -65,4 +65,8 @@
     <suppress>
         <cve>CVE-2025-24813</cve>
     </suppress>
+    <!-- spring-boot-starter-actuator -->
+    <suppress>
+        <cve>CVE-2025-22235</cve>
+    </suppress>
 </suppressions>
