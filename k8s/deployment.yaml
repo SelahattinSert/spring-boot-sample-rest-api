@@ -2,8 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: camera-onboarding
+  namespace: default
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: camera-onboarding
   template:
     metadata:
       labels:
@@ -11,11 +15,34 @@ spec:
     spec:
       containers:
         - name: camera-onboarding
-          image: acrcameraonboarding.azurecr.io/cameraonboarding:20250228-e2d11b5
+          image: acrcameraonboarding.azurecr.io/cameraonboarding:20250427-e34a6c5
+          resources:
+            requests:
+              cpu: "275m"
+              memory: "550Mi"
+            limits:
+              cpu: "275m"
+              memory: "550Mi"
           ports:
             - containerPort: 8080
           envFrom:
             - secretRef:
                 name: camera-onboarding-secrets
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
       imagePullSecrets:
         - name: acr-secret
