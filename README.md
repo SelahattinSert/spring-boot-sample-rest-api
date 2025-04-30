@@ -116,7 +116,7 @@ Create a secret using your .env file:
 ### 2-Deploy Resources
 
    ```sh
-    kubectl apply -k k8s/
+    kustomize build k8s/ | kubectl apply -f -
 ```
 
 ### Check Deployment
