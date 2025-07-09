@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: camera-onboarding
-  namespace: default
 spec:
   replicas: 1
   selector:
@@ -15,7 +14,7 @@ spec:
     spec:
       containers:
         - name: camera-onboarding
-          image: acrcameraonboarding.azurecr.io/cameraonboarding:20250427-e34a6c5
+          image: mrsert/camera-onboarding:62417cc
           resources:
             requests:
               cpu: "275m"
