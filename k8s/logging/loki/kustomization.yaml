@@ -1,5 +1,0 @@
-# k8s/logging/loki/kustomization.yaml
-resources:
-  - configmap.yaml
-  - deployment.yaml
-  - service.yaml

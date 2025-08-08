@@ -6,6 +6,11 @@
         <cve>CVE-2023-36415</cve>
         <cve>CVE-2024-35255</cve>
     </suppress>
+    <!-- commons-lang3-3.14.0.jar -->
+    <!-- org.liquibase:liquibase-core@4.27.0 -->
+    <suppress>
+        <cve>CVE-2025-48924</cve>
+    </suppress>
     <!-- json-smart-2.5.1 -->
     <!-- org.springframework.boot:spring-boot-starter-test@3.3.1 -->
     <suppress>
@@ -31,6 +36,15 @@
     <!-- com.azure:azure-storage-blob@12.27.1 -->
     <suppress>
         <cve>CVE-2025-24970</cve>
+    </suppress>
+    <!-- nimbus-jose-jwt-9.37.3.jar (shaded: com.google.code.gson:gson:2.10.1) -->
+    <suppress>
+        <cve>CVE-2025-53864</cve>
+    </suppress>
+    <!-- reactor-netty-http-1.1.20.jar -->
+    <!-- com.azure:azure-storage-blob@12.27.1 -->
+    <suppress>
+        <cve>CVE-2025-22227</cve>
     </suppress>
     <!-- spring-cloud-azure-starter-storage-queue-5.15.0 -->
     <!-- com.azure.spring:spring-cloud-azure-starter-storage@5.15.0 -->
@@ -72,6 +86,7 @@
         <cve>CVE-2024-50379</cve>
         <cve>CVE-2024-52316</cve>
         <cve>CVE-2024-54677</cve>
+        <cve>CVE-2024-56337</cve>
         <cve>CVE-2025-24813</cve>
         <cve>CVE-2025-31650</cve>
         <cve>CVE-2025-31651</cve>
@@ -79,6 +94,8 @@
         <cve>CVE-2025-48988</cve>
         <cve>CVE-2025-49124</cve>
         <cve>CVE-2025-49125</cve>
+        <cve>CVE-2025-52520</cve>
+        <cve>CVE-2025-53506</cve>
     </suppress>
     <!-- spring-boot-starter-actuator -->
     <suppress>
