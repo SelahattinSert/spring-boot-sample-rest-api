@@ -40,6 +40,10 @@ spec:
               mountPath: /var/lib/grafana
             - name: datasources
               mountPath: /etc/grafana/provisioning/datasources
+            - name: dashboard-providers
+              mountPath: /etc/grafana/provisioning/dashboards
+            - name: spring-boot-dashboards
+              mountPath: /var/lib/grafana/dashboards
           resources:
             requests:
               cpu: 100m
@@ -66,3 +70,9 @@ spec:
         - name: datasources
           configMap:
             name: grafana-datasources
+        - name: dashboard-providers
+          configMap:
+            name: grafana-dashboard-providers
+        - name: spring-boot-dashboards
+          configMap:
+            name: grafana-spring-boot-dashboard
