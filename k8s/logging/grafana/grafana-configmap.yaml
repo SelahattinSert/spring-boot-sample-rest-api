@@ -11,5 +11,13 @@ data:
         type: loki
         access: proxy
         url: http://loki:3100
+        isDefault: false
+        editable: true
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus-service:9090
         isDefault: true
         editable: true
+        readOnly: false
+        version: 1

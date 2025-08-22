@@ -1,9 +1,12 @@
 # k8s/logging/kustomization.yaml
 resources:
+  - logging-namespace.yaml
   - grafana/grafana-configmap.yaml
   - grafana/grafana-deployment.yaml
   - grafana/grafana-pvc.yaml
   - grafana/grafana-service.yaml
+  - grafana/dashboard.yaml
+  - grafana/dashboard-providers.yaml
   - loki/loki-configmap.yaml
   - loki/loki-deployment.yaml
   - loki/loki-pvc.yaml
@@ -11,4 +14,3 @@ resources:
   - promtail/promtail-configmap.yaml
   - promtail/promtail-daemonset.yaml
   - promtail/promtail-rbac.yaml
-  - logging-namespace.yaml

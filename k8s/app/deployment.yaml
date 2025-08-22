@@ -11,10 +11,14 @@ spec:
     metadata:
       labels:
         app: camera-onboarding
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       containers:
         - name: camera-onboarding
-          image: mrsert/camera-onboarding:62417cc
+          image: mrsert/camera-onboarding:monitoring
           resources:
             requests:
               cpu: "275m"
