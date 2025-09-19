@@ -169,3 +169,106 @@ data:
         "to": "now"},
       "refresh": "5s"
     }
+  custom-app-dashboard.json: |
+    {
+      "id": null,
+      "title": "Custom Application Metrics",
+      "tags": [
+        "spring-boot",
+        "app-metrics"],
+      "style": "dark",
+      "timezone": "browser",
+      "panels": [
+        {
+          "id": 1,
+          "title": "Request Latency (P95)",
+          "type": "timeseries",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"},
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{kubernetes_namespace=\"app\"}[2m])))",
+              "legendFormat": "P95 (http_server_requests)",
+              "refId": "A"
+            },
+            {
+              "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{kubernetes_namespace=\"app\"}[2m])))",
+              "legendFormat": "P95 (http_request_duration)",
+              "refId": "B"
+            }
+          ],
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 0},
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "min": 0}}
+        },
+        {
+          "id": 2,
+          "title": "Successful Requests (5m)",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"},
+          "targets": [
+            {
+              "expr": "sum(increase(http_server_requests_seconds_count{kubernetes_namespace=\"app\", status=~\"2..\"}[5m]))",
+              "legendFormat": "Successful"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 8}
+        },
+        {
+          "id": 3,
+          "title": "Failed Requests (5m)",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sum(increase(http_server_requests_seconds_count{kubernetes_namespace=\"app\", status=~\"[45]..\"}[5m]))",
+              "legendFormat": "Failed"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 8}
+        },
+        {
+          "id": 4,
+          "title": "DEBUG PANEL: Available HTTP Metrics",
+          "type": "table",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"},
+          "targets": [
+            {
+              "expr": "group by (__name__) ({__name__=~\".*http.*request.*\", kubernetes_namespace=\"app\"})",
+              "format": "table"
+            }
+          ],
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 14}
+        }
+      ],
+      "time": {
+        "from": "now-15m",
+        "to": "now"},
+      "refresh": "5s"
+    }
