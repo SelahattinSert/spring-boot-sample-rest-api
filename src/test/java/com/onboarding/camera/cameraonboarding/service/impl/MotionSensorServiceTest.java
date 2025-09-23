@@ -8,6 +8,7 @@ import com.onboarding.camera.cameraonboarding.exception.SensorNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.SensorNotUpdatedException;
 import com.onboarding.camera.cameraonboarding.repository.MotionSensorRepository;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
+import com.onboarding.camera.cameraonboarding.service.MetricsService;
 import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,9 @@ class MotionSensorServiceTest {
 
     @Mock
     private Camera camera;
+
+    @Mock
+    private MetricsService metricsService;
 
     @InjectMocks
     private MotionSensorService motionSensorService;

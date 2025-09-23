@@ -45,6 +45,9 @@ class CameraServiceImplTest {
     @Mock
     private BlobStorageServiceImpl blobStorageService;
 
+    @Mock
+    private MetricsService metricsService;
+
     @InjectMocks
     private CameraServiceImpl cameraService;
 
