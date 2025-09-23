@@ -25,7 +25,8 @@ data:
           "type": "timeseries",
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"},
+            "uid": "Prometheus"
+          },
           "targets": [
             {
               "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{kubernetes_namespace=\"app\"}[2m])) by (le))",
@@ -47,13 +48,15 @@ data:
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 0},
+            "y": 0
+          },
           "fieldConfig": {
             "defaults": {
               "unit": "s",
               "min": 0,
               "color": {
-                "mode": "palette-classic"}
+                "mode": "palette-classic"
+              }
             }
           },
           "options": {
@@ -61,7 +64,9 @@ data:
               "displayMode": "table",
               "values": [
                 "last",
-                "max"]}
+                "max"
+              ]
+            }
           }
         },
         {
@@ -70,7 +75,8 @@ data:
           "type": "timeseries",
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"},
+            "uid": "Prometheus"
+          },
           "targets": [
             {
               "expr": "sum(rate(http_server_requests_seconds_count{kubernetes_namespace=\"app\"}[1m]))",
@@ -82,7 +88,8 @@ data:
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 8},
+            "y": 8
+          },
           "fieldConfig": {
             "defaults": {
               "unit": "reqps",
@@ -98,7 +105,8 @@ data:
           "type": "stat",
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"},
+            "uid": "Prometheus"
+          },
           "targets": [
             {
               "expr": "sum(increase(http_server_requests_seconds_count{kubernetes_namespace=\"app\", status=~\"2..\"}[5m]))",
@@ -109,16 +117,19 @@ data:
             "h": 6,
             "w": 8,
             "x": 0,
-            "y": 14},
+            "y": 14
+          },
           "fieldConfig": {
             "defaults": {
               "color": {
-                "mode": "thresholds"},
+                "mode": "thresholds"
+              },
               "thresholds": {
                 "steps": [
                   {
                     "color": "green",
-                    "value": null}
+                    "value": null
+                  }
                 ]
               }
             }
@@ -130,7 +141,8 @@ data:
           "type": "stat",
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"},
+            "uid": "Prometheus"
+          },
           "targets": [
             {
               "expr": "sum(increase(http_server_requests_seconds_count{kubernetes_namespace=\"app\", status=~\"[45]..\"}[5m]))",
@@ -141,19 +153,23 @@ data:
             "h": 6,
             "w": 8,
             "x": 8,
-            "y": 14},
+            "y": 14
+          },
           "fieldConfig": {
             "defaults": {
               "color": {
-                "mode": "thresholds"},
+                "mode": "thresholds"
+              },
               "thresholds": {
                 "steps": [
                   {
                     "color": "green",
-                    "value": null},
+                    "value": null
+                  },
                   {
                     "color": "red",
-                    "value": 1}
+                    "value": 1
+                  }
                 ]
               }
             }
@@ -165,7 +181,8 @@ data:
           "type": "stat",
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"},
+            "uid": "Prometheus"
+          },
           "targets": [
             {
               "expr": "(sum(rate(http_server_requests_seconds_count{kubernetes_namespace=\"app\", status=~\"2..\"}[5m])) / sum(rate(http_server_requests_seconds_count{kubernetes_namespace=\"app\"}[5m]))) * 100",
@@ -176,12 +193,14 @@ data:
             "h": 6,
             "w": 8,
             "x": 16,
-            "y": 14},
+            "y": 14
+          },
           "fieldConfig": {
             "defaults": {
               "unit": "percent",
               "color": {
-                "mode": "thresholds"},
+                "mode": "thresholds"
+              },
               "thresholds": {
                 "steps": [
                   {
@@ -190,10 +209,12 @@ data:
                   },
                   {
                     "color": "yellow",
-                    "value": 90},
+                    "value": 90
+                  },
                   {
                     "color": "green",
-                    "value": 95}
+                    "value": 95
+                  }
                 ]
               }
             }
@@ -205,7 +226,8 @@ data:
           "type": "timeseries",
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"},
+            "uid": "Prometheus"
+          },
           "targets": [
             {
               "expr": "sum by (status) (rate(http_server_requests_seconds_count{kubernetes_namespace=\"app\"}[1m]))",
@@ -216,12 +238,14 @@ data:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 20},
+            "y": 20
+          },
           "fieldConfig": {
             "defaults": {
               "unit": "reqps",
               "color": {
-                "mode": "palette-classic"}
+                "mode": "palette-classic"
+              }
             }
           }
         },
@@ -231,7 +255,8 @@ data:
           "type": "table",
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"},
+            "uid": "Prometheus"
+          },
           "targets": [
             {
               "expr": "group by (__name__) ({__name__=~\".*http.*request.*\", kubernetes_namespace=\"app\"})",
@@ -242,11 +267,1077 @@ data:
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 20}
+            "y": 20
+          }
+        },
+        {
+          "id": 8,
+          "title": "Camera Onboarding Success",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "camera_onboarding_success_total",
+              "legendFormat": "Success"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 0,
+            "y": 28
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 9,
+          "title": "Camera Onboarding Failure",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "camera_onboarding_failure_total",
+              "legendFormat": "Failure"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 8,
+            "y": 28
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 10,
+          "title": "Camera Initialization Success",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "camera_initialization_success_total",
+              "legendFormat": "Success"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 16,
+            "y": 28
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 11,
+          "title": "Camera Initialization Failure",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "camera_initialization_failure_total",
+              "legendFormat": "Failure"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 0,
+            "y": 34
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 12,
+          "title": "Image Upload Success",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "image_upload_success_total",
+              "legendFormat": "Success"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 8,
+            "y": 34
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 13,
+          "title": "Image Upload Failure",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "image_upload_failure_total",
+              "legendFormat": "Failure"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 16,
+            "y": 34
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 14,
+          "title": "Image Download Success",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "image_download_success_total",
+              "legendFormat": "Success"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 0,
+            "y": 40
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 15,
+          "title": "Image Download Failure",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "image_download_failure_total",
+              "legendFormat": "Failure"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 8,
+            "y": 40
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 16,
+          "title": "Location Add Success",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "location_add_success_total",
+              "legendFormat": "Success"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 16,
+            "y": 40
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 17,
+          "title": "Location Add Failure",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "location_add_failure_total",
+              "legendFormat": "Failure"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 0,
+            "y": 46
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 18,
+          "title": "Light Sensor Create Success",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_create_success_total{sensor_type=\"LIGHT\"}",
+              "legendFormat": "Success"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 8,
+            "y": 46
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 19,
+          "title": "Light Sensor Create Failure",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_create_failure_total{sensor_type=\"LIGHT\"}",
+              "legendFormat": "Failure"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 16,
+            "y": 46
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 20,
+          "title": "Motion Sensor Create Success",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_create_success_total{sensor_type=\"MOTION\"}",
+              "legendFormat": "Success"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 0,
+            "y": 52
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 21,
+          "title": "Motion Sensor Create Failure",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_create_failure_total{sensor_type=\"MOTION\"}",
+              "legendFormat": "Failure"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 8,
+            "y": 52
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 22,
+          "title": "Temperature Sensor Create Success",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_create_success_total{sensor_type=\"TEMPERATURE\"}",
+              "legendFormat": "Success"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 16,
+            "y": 52
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 23,
+          "title": "Temperature Sensor Create Failure",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_create_failure_total{sensor_type=\"TEMPERATURE\"}",
+              "legendFormat": "Failure"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 0,
+            "y": 58
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 24,
+          "title": "Light Sensor Update Success",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_update_success_total{sensor_type=\"LIGHT\"}",
+              "legendFormat": "Success"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 8,
+            "y": 58
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 25,
+          "title": "Light Sensor Update Failure",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_update_failure_total{sensor_type=\"LIGHT\"}",
+              "legendFormat": "Failure"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 16,
+            "y": 58
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 26,
+          "title": "Motion Sensor Update Success",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_update_success_total{sensor_type=\"MOTION\"}",
+              "legendFormat": "Success"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 0,
+            "y": 64
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 27,
+          "title": "Motion Sensor Update Failure",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_update_failure_total{sensor_type=\"MOTION\"}",
+              "legendFormat": "Failure"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 8,
+            "y": 64
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 28,
+          "title": "Temperature Sensor Update Success",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_update_success_total{sensor_type=\"TEMPERATURE\"}",
+              "legendFormat": "Success"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 16,
+            "y": 64
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 29,
+          "title": "Temperature Sensor Update Failure",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_update_failure_total{sensor_type=\"TEMPERATURE\"}",
+              "legendFormat": "Failure"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 0,
+            "y": 70
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 30,
+          "title": "Light Sensor Delete Success",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_delete_success_total{sensor_type=\"LIGHT\"}",
+              "legendFormat": "Success"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 8,
+            "y": 70
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 31,
+          "title": "Light Sensor Delete Failure",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_delete_failure_total{sensor_type=\"LIGHT\"}",
+              "legendFormat": "Failure"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 16,
+            "y": 70
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 32,
+          "title": "Motion Sensor Delete Success",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_delete_success_total{sensor_type=\"MOTION\"}",
+              "legendFormat": "Success"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 0,
+            "y": 76
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 33,
+          "title": "Motion Sensor Delete Failure",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_delete_failure_total{sensor_type=\"MOTION\"}",
+              "legendFormat": "Failure"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 8,
+            "y": 76
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 34,
+          "title": "Temperature Sensor Delete Success",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_delete_success_total{sensor_type=\"TEMPERATURE\"}",
+              "legendFormat": "Success"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 16,
+            "y": 76
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 35,
+          "title": "Temperature Sensor Delete Failure",
+          "type": "stat",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "targets": [
+            {
+              "expr": "sensor_delete_failure_total{sensor_type=\"TEMPERATURE\"}",
+              "legendFormat": "Failure"
+            }
+          ],
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 0,
+            "y": 82
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          }
         }
       ],
       "time": {
         "from": "now-15m",
-        "to": "now"},
+        "to": "now"
+      },
       "refresh": "5s"
     }
