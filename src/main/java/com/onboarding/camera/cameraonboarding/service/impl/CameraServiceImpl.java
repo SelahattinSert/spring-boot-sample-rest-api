@@ -15,7 +15,9 @@ import com.onboarding.camera.cameraonboarding.exception.LocationNotAddedExceptio
 import com.onboarding.camera.cameraonboarding.repository.CameraRepository;
 import com.onboarding.camera.cameraonboarding.service.BlobStorageService;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
+import com.onboarding.camera.cameraonboarding.service.MetricsService;
 import com.onboarding.camera.cameraonboarding.util.DateTimeFactory;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,7 +38,10 @@ public class CameraServiceImpl implements CameraService {
 
     private final BlobStorageService blobStorageService;
 
+    private final MetricsService metricsService;
+
     @Override
+    @Timed("camera.onboarding")
     public Camera handleSaveCamera(Camera camera) {
 
         try {
@@ -44,14 +49,17 @@ public class CameraServiceImpl implements CameraService {
             camera.setOnboardedAt(dateTimeFactory.now());
             Camera savedCamera = cameraRepository.save(camera);
             log.info("Camera saved with ID: {}", savedCamera.getCamId());
+            metricsService.incrementCameraOnboardingSuccess();
             return savedCamera;
         } catch (Exception ex) {
             log.error("Exception occurred while saving camera: {}", ex.getMessage());
+            metricsService.incrementCameraOnboardingFailure();
             throw new CameraNotCreatedException(String.format("Error occurred while saving camera: %s", ex.getMessage()));
         }
     }
 
     @Override
+    @Timed("camera.initialization")
     public void handleInitializeCamera(UUID cameraId) {
         Camera camera = getCameraById(cameraId);
         if (camera.getInitializedAt() != null && !camera.getInitializedAt().toString().isBlank()) {
@@ -62,8 +70,10 @@ public class CameraServiceImpl implements CameraService {
             camera.setInitializedAt(dateTimeFactory.now());
             cameraRepository.save(camera);
             log.info("Camera initialized with ID: {}", cameraId);
+            metricsService.incrementCameraInitializationSuccess();
         } catch (Exception ex) {
             log.error("Exception occurred while initializing camera with ID: {}", cameraId, ex);
+            metricsService.incrementCameraInitializationFailure();
             throw new CameraNotInitializedException(String.format("Error occurred while initializing camera: %s", ex.getMessage()));
         }
     }
@@ -75,6 +85,7 @@ public class CameraServiceImpl implements CameraService {
     }
 
     @Override
+    @Timed("image.upload")
     public void handleUploadImage(UUID cameraId, UUID imageId, byte[] imageData) {
         Camera camera = getCameraById(cameraId);
         validateCameraImage(camera);
@@ -88,16 +99,20 @@ public class CameraServiceImpl implements CameraService {
             log.info("Uploading image with ID: {}", imageId);
             blobStorageService.uploadFile(blobStorageService.getContainerName(), imageId.toString(), imageData);
             cameraRepository.save(camera);
+            metricsService.incrementImageUploadSuccess();
         } catch (ImageAlreadyUploadedException ex) {
             log.error("Exception occurred while uploading image");
+            metricsService.incrementImageUploadFailure();
             throw new ImageAlreadyUploadedException(String.format("Camera already have image with id: %s", camera.getImageId()));
         } catch (Exception ex) {
             log.error("Exception occurred while uploading image:{}:ex:{}", imageId, ex.getMessage());
+            metricsService.incrementImageUploadFailure();
             throw new ImageNotUploadedException(String.format("Error occurred while uploading image: %s", ex.getMessage()));
         }
     }
 
     @Override
+    @Timed("image.download")
     public byte[] handleDownloadImage(UUID cameraId) {
         Camera camera = getCameraById(cameraId);
         validateCameraImage(camera);
@@ -111,18 +126,22 @@ public class CameraServiceImpl implements CameraService {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             blobStorageService.getBlob(outputStream, blobStorageService.getContainerName(), camera.getImageId().toString());
 
+            metricsService.incrementImageDownloadSuccess();
             return outputStream.toByteArray();
         } catch (ImageNotFoundException ex) {
             log.error("Image is not found by given cameraId: '{}'", cameraId);
+            metricsService.incrementImageDownloadFailure();
             throw new ImageNotFoundException(String.format("Image is not found by given cameraId: %s", cameraId));
         } catch (Exception ex) {
             log.error("Exception occurred while downloading image, camera:{}:ex:{}", cameraId, ex.getMessage());
+            metricsService.incrementImageDownloadFailure();
             throw new ImageNotDownloadedException(String.format("Error occurred while downloading image: %s", ex.getMessage()));
         }
     }
 
     @Override
     @Transactional
+    @Timed("location.add")
     public Camera handleAddLocation(UUID cameraId, LocationDto locationDto) {
         Camera camera = getCameraById(cameraId);
 
@@ -137,9 +156,11 @@ public class CameraServiceImpl implements CameraService {
 
             cameraRepository.save(camera);
             log.info("Location added/updated successfully for Camera ID: {}", cameraId);
+            metricsService.incrementLocationAddSuccess();
             return camera;
         } catch (Exception ex) {
             log.error("Exception occurred while adding location, camera:{}:ex:{}", cameraId, ex.getMessage());
+            metricsService.incrementLocationAddFailure();
             throw new LocationNotAddedException(String.format("Error occurred while adding location: %s", ex.getMessage()));
         }
     }
