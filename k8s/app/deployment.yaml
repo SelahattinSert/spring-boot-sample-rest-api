@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: camera-onboarding
-          image: mrsert/camera-onboarding:metrics-v2
+          image: mrsert/camera-onboarding:metrics-v3
           resources:
             requests:
               cpu: "275m"
