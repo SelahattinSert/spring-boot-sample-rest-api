@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: camera-onboarding
-          image: mrsert/camera-onboarding:monitoring
+          image: mrsert/camera-onboarding:metrics-v3
           resources:
             requests:
               cpu: "275m"
@@ -31,11 +31,12 @@ spec:
           envFrom:
             - secretRef:
                 name: camera-onboarding-secrets
+          
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: 8080
-            initialDelaySeconds: 30
+            initialDelaySeconds: 180
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 6
@@ -43,7 +44,7 @@ spec:
             httpGet:
               path: /actuator/health/readiness
               port: 8080
-            initialDelaySeconds: 15
+            initialDelaySeconds: 180
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 6

@@ -7,6 +7,7 @@ import com.onboarding.camera.cameraonboarding.exception.CameraNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.SensorNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.SensorNotUpdatedException;
 import com.onboarding.camera.cameraonboarding.repository.TemperatureSensorRepository;
+import com.onboarding.camera.cameraonboarding.service.CameraMetricService;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
 import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
@@ -33,6 +34,9 @@ class TemperatureSensorServiceTest {
 
     @Mock
     private Camera camera;
+
+    @Mock
+    private CameraMetricService cameraMetricService;
 
     @InjectMocks
     private TemperatureSensorService temperatureSensorService;
