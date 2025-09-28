@@ -1,6 +1,6 @@
 package com.onboarding.camera.cameraonboarding.service;
 
-public interface MetricsService {
+public interface CameraMetricService {
 
     /**
      * Increments the counter for successful camera onboarding.

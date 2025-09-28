@@ -8,8 +8,8 @@ import com.onboarding.camera.cameraonboarding.exception.SensorNotCreatedExceptio
 import com.onboarding.camera.cameraonboarding.exception.SensorNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.SensorNotUpdatedException;
 import com.onboarding.camera.cameraonboarding.repository.MotionSensorRepository;
+import com.onboarding.camera.cameraonboarding.service.CameraMetricService;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
-import com.onboarding.camera.cameraonboarding.service.MetricsService;
 import com.onboarding.camera.cameraonboarding.service.SensorService;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class MotionSensorService implements SensorService<MotionSensor> {
 
     private final CameraService cameraService;
 
-    private final MetricsService metricsService;
+    private final CameraMetricService cameraMetricService;
 
     @Override
     @Transactional
@@ -39,15 +39,15 @@ public class MotionSensorService implements SensorService<MotionSensor> {
             sensor.setCamera(cameraService.getCameraById(cameraId));
             MotionSensor createdSensor = motionSensorRepository.save(sensor);
             log.info("Creating sensor: {}", createdSensor);
-            metricsService.incrementSensorCreateSuccess(SensorType.MOTION.name());
+            cameraMetricService.incrementSensorCreateSuccess(SensorType.MOTION.name());
             return createdSensor;
         } catch (CameraNotFoundException ex) {
             log.error("Camera not found, cameraId:{}", cameraId);
-            metricsService.incrementSensorCreateFailure(SensorType.MOTION.name());
+            cameraMetricService.incrementSensorCreateFailure(SensorType.MOTION.name());
             throw ex;
         } catch (Exception ex) {
             log.error("Failed to create sensor, camera:{}:ex:{}", cameraId, ex.getMessage());
-            metricsService.incrementSensorCreateFailure(SensorType.MOTION.name());
+            cameraMetricService.incrementSensorCreateFailure(SensorType.MOTION.name());
             throw new SensorNotCreatedException(String.format("Failed to create sensor: %s", ex.getMessage()));
         }
     }
@@ -83,19 +83,19 @@ public class MotionSensorService implements SensorService<MotionSensor> {
             existingSensor.setVersion(sensor.getVersion());
             existingSensor.setData(sensor.getData());
             log.info("Updating sensor: {}", existingSensor);
-            metricsService.incrementSensorUpdateSuccess(SensorType.MOTION.name());
+            cameraMetricService.incrementSensorUpdateSuccess(SensorType.MOTION.name());
             return motionSensorRepository.save(existingSensor);
         } catch (CameraNotFoundException ex) {
             log.error("Camera not found, cameraId:{}", cameraId);
-            metricsService.incrementSensorUpdateFailure(SensorType.MOTION.name());
+            cameraMetricService.incrementSensorUpdateFailure(SensorType.MOTION.name());
             throw ex;
         } catch (SensorNotFoundException ex) {
             log.error("Sensor not found while updating, sensorId: {}", sensorId);
-            metricsService.incrementSensorUpdateFailure(SensorType.MOTION.name());
+            cameraMetricService.incrementSensorUpdateFailure(SensorType.MOTION.name());
             throw ex;
         } catch (Exception ex) {
             log.error("Exception occurred while updating sensor, sensorId:{}", sensorId);
-            metricsService.incrementSensorUpdateFailure(SensorType.MOTION.name());
+            cameraMetricService.incrementSensorUpdateFailure(SensorType.MOTION.name());
             throw new SensorNotUpdatedException(String.format("Error occurred while updating sensors: %s", ex.getMessage()));
         }
     }
@@ -121,18 +121,18 @@ public class MotionSensorService implements SensorService<MotionSensor> {
             camera.getSensors().remove(sensor);
             motionSensorRepository.delete(sensor);
             log.info("Deleted sensor: {}", sensorId);
-            metricsService.incrementSensorDeleteSuccess(SensorType.MOTION.name());
+            cameraMetricService.incrementSensorDeleteSuccess(SensorType.MOTION.name());
         } catch (CameraNotFoundException ex) {
             log.error("Camera not found, cameraId:{}", cameraId);
-            metricsService.incrementSensorDeleteFailure(SensorType.MOTION.name());
+            cameraMetricService.incrementSensorDeleteFailure(SensorType.MOTION.name());
             throw ex;
         } catch (SensorNotFoundException ex) {
             log.error("Sensor not found while deleting, sensorId: {}", sensorId);
-            metricsService.incrementSensorDeleteFailure(SensorType.MOTION.name());
+            cameraMetricService.incrementSensorDeleteFailure(SensorType.MOTION.name());
             throw ex;
         } catch (Exception ex) {
             log.error("Exception occurred while deleting sensor, sensorId:{}", sensorId);
-            metricsService.incrementSensorDeleteFailure(SensorType.MOTION.name());
+            cameraMetricService.incrementSensorDeleteFailure(SensorType.MOTION.name());
             throw new SensorNotUpdatedException(String.format("Error occurred while deleting sensor: %s", ex.getMessage()));
         }
     }

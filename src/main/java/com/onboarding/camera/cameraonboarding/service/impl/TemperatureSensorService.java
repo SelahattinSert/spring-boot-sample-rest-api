@@ -8,8 +8,8 @@ import com.onboarding.camera.cameraonboarding.exception.SensorNotCreatedExceptio
 import com.onboarding.camera.cameraonboarding.exception.SensorNotFoundException;
 import com.onboarding.camera.cameraonboarding.exception.SensorNotUpdatedException;
 import com.onboarding.camera.cameraonboarding.repository.TemperatureSensorRepository;
+import com.onboarding.camera.cameraonboarding.service.CameraMetricService;
 import com.onboarding.camera.cameraonboarding.service.CameraService;
-import com.onboarding.camera.cameraonboarding.service.MetricsService;
 import com.onboarding.camera.cameraonboarding.service.SensorService;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class TemperatureSensorService implements SensorService<TemperatureSensor
 
     private final CameraService cameraService;
 
-    private final MetricsService metricsService;
+    private final CameraMetricService cameraMetricService;
 
     @Override
     @Transactional
@@ -39,15 +39,15 @@ public class TemperatureSensorService implements SensorService<TemperatureSensor
             sensor.setCamera(cameraService.getCameraById(cameraId));
             TemperatureSensor createdSensor = temperatureSensorRepository.save(sensor);
             log.info("Creating sensor: {}", createdSensor);
-            metricsService.incrementSensorCreateSuccess(SensorType.TEMPERATURE.name());
+            cameraMetricService.incrementSensorCreateSuccess(SensorType.TEMPERATURE.name());
             return createdSensor;
         } catch (CameraNotFoundException ex) {
             log.error("Camera not found, cameraId:{}", cameraId);
-            metricsService.incrementSensorCreateFailure(SensorType.TEMPERATURE.name());
+            cameraMetricService.incrementSensorCreateFailure(SensorType.TEMPERATURE.name());
             throw ex;
         } catch (Exception ex) {
             log.error("Failed to create sensor, camera:{}:ex:{}", cameraId, ex.getMessage());
-            metricsService.incrementSensorCreateFailure(SensorType.TEMPERATURE.name());
+            cameraMetricService.incrementSensorCreateFailure(SensorType.TEMPERATURE.name());
             throw new SensorNotCreatedException(String.format("Failed to create sensor: %s", ex.getMessage()));
         }
     }
@@ -83,19 +83,19 @@ public class TemperatureSensorService implements SensorService<TemperatureSensor
             existingSensor.setVersion(sensor.getVersion());
             existingSensor.setData(sensor.getData());
             log.info("Updating sensor: {}", existingSensor);
-            metricsService.incrementSensorUpdateSuccess(SensorType.TEMPERATURE.name());
+            cameraMetricService.incrementSensorUpdateSuccess(SensorType.TEMPERATURE.name());
             return temperatureSensorRepository.save(existingSensor);
         } catch (CameraNotFoundException ex) {
             log.error("Camera not found, cameraId:{}", cameraId);
-            metricsService.incrementSensorUpdateFailure(SensorType.TEMPERATURE.name());
+            cameraMetricService.incrementSensorUpdateFailure(SensorType.TEMPERATURE.name());
             throw ex;
         } catch (SensorNotFoundException ex) {
             log.error("Sensor not found while updating, sensorId: {}", sensorId);
-            metricsService.incrementSensorUpdateFailure(SensorType.TEMPERATURE.name());
+            cameraMetricService.incrementSensorUpdateFailure(SensorType.TEMPERATURE.name());
             throw ex;
         } catch (Exception ex) {
             log.error("Exception occurred while updating sensor, sensorId:{}", sensorId);
-            metricsService.incrementSensorUpdateFailure(SensorType.TEMPERATURE.name());
+            cameraMetricService.incrementSensorUpdateFailure(SensorType.TEMPERATURE.name());
             throw new SensorNotUpdatedException(String.format("Error occurred while updating sensors: %s", ex.getMessage()));
         }
     }
@@ -121,18 +121,18 @@ public class TemperatureSensorService implements SensorService<TemperatureSensor
             camera.getSensors().remove(sensor);
             temperatureSensorRepository.delete(sensor);
             log.info("Deleted sensor: {}", sensorId);
-            metricsService.incrementSensorDeleteSuccess(SensorType.TEMPERATURE.name());
+            cameraMetricService.incrementSensorDeleteSuccess(SensorType.TEMPERATURE.name());
         } catch (CameraNotFoundException ex) {
             log.error("Camera not found, cameraId:{}", cameraId);
-            metricsService.incrementSensorDeleteFailure(SensorType.TEMPERATURE.name());
+            cameraMetricService.incrementSensorDeleteFailure(SensorType.TEMPERATURE.name());
             throw ex;
         } catch (SensorNotFoundException ex) {
             log.error("Sensor not found while deleting, sensorId: {}", sensorId);
-            metricsService.incrementSensorDeleteFailure(SensorType.TEMPERATURE.name());
+            cameraMetricService.incrementSensorDeleteFailure(SensorType.TEMPERATURE.name());
             throw ex;
         } catch (Exception ex) {
             log.error("Exception occurred while deleting sensor, sensorId:{}", sensorId);
-            metricsService.incrementSensorDeleteFailure(SensorType.TEMPERATURE.name());
+            cameraMetricService.incrementSensorDeleteFailure(SensorType.TEMPERATURE.name());
             throw new SensorNotUpdatedException(String.format("Error occurred while deleting sensor: %s", ex.getMessage()));
         }
     }

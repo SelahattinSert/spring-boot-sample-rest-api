@@ -1,6 +1,6 @@
 package com.onboarding.camera.cameraonboarding.service.impl;
 
-import com.onboarding.camera.cameraonboarding.service.MetricsService;
+import com.onboarding.camera.cameraonboarding.service.CameraMetricService;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class MetricsServiceImpl implements MetricsService {
+public class CameraMetricServiceImpl implements CameraMetricService {
 
     private final MeterRegistry meterRegistry;
 
