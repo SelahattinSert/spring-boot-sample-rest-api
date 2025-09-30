@@ -129,10 +129,8 @@ class TemperatureSensorRepositoryTest {
 
         // Arrange
         Camera camera = new Camera();
-        camera.setCamId(CAMERA_ID);
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
-        camera = cameraRepository.save(camera);
 
         TemperatureSensor sensor1 = new TemperatureSensor();
         sensor1.setName(SENSOR_NAME);
@@ -147,37 +145,40 @@ class TemperatureSensorRepositoryTest {
         camera.getSensors().add(sensor1);
         camera.getSensors().add(sensor2);
 
-        temperatureSensorRepository.save(sensor1);
-        temperatureSensorRepository.save(sensor2);
+        Camera savedCamera = cameraRepository.save(camera);
+        UUID savedCameraId = savedCamera.getCamId();
+
 
         // Act
-        cameraRepository.delete(camera);
+        cameraRepository.deleteById(savedCameraId);
 
         // Assert
-        Assertions.assertThat(temperatureSensorRepository.findTemperatureSensorByCamera(camera)).isEmpty();
+        Assertions.assertThat(temperatureSensorRepository.findById(sensor1.getId())).isEmpty();
+        Assertions.assertThat(temperatureSensorRepository.findById(sensor2.getId())).isEmpty();
+        Assertions.assertThat(cameraRepository.findById(savedCameraId)).isEmpty();
     }
 
     @Test
     public void expect_findTemperatureSensorsByCamera_returnsTemperatureSensors() {
         // Arrange
         Camera camera = new Camera();
-        camera.setCamId(CAMERA_ID);
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
-        Camera savedCamera = cameraRepository.save(camera);
 
         TemperatureSensor sensor1 = new TemperatureSensor();
         sensor1.setName(SENSOR_NAME);
         sensor1.setSensorType(SENSOR_TYPE);
-        sensor1.setCamera(savedCamera);
+        sensor1.setCamera(camera);
 
         TemperatureSensor sensor2 = new TemperatureSensor();
         sensor2.setName(SENSOR_NAME_2);
         sensor2.setSensorType(SENSOR_TYPE);
-        sensor2.setCamera(savedCamera);
+        sensor2.setCamera(camera);
 
-        temperatureSensorRepository.save(sensor1);
-        temperatureSensorRepository.save(sensor2);
+        camera.getSensors().add(sensor1);
+        camera.getSensors().add(sensor2);
+
+        Camera savedCamera = cameraRepository.save(camera);
 
         // Act
         List<TemperatureSensor> sensors = temperatureSensorRepository.findTemperatureSensorByCamera(savedCamera);

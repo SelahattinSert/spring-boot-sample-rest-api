@@ -129,10 +129,8 @@ class MotionSensorRepositoryTest {
 
         // Arrange
         Camera camera = new Camera();
-        camera.setCamId(CAMERA_ID);
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
-        camera = cameraRepository.save(camera);
 
         MotionSensor sensor1 = new MotionSensor();
         sensor1.setName(SENSOR_NAME);
@@ -147,37 +145,40 @@ class MotionSensorRepositoryTest {
         camera.getSensors().add(sensor1);
         camera.getSensors().add(sensor2);
 
-        motionSensorRepository.save(sensor1);
-        motionSensorRepository.save(sensor2);
+        Camera savedCamera = cameraRepository.save(camera);
+        UUID savedCameraId = savedCamera.getCamId();
+
 
         // Act
-        cameraRepository.delete(camera);
+        cameraRepository.deleteById(savedCameraId);
 
         // Assert
-        Assertions.assertThat(motionSensorRepository.findMotionSensorByCamera(camera)).isEmpty();
+        Assertions.assertThat(motionSensorRepository.findById(sensor1.getId())).isEmpty();
+        Assertions.assertThat(motionSensorRepository.findById(sensor2.getId())).isEmpty();
+        Assertions.assertThat(cameraRepository.findById(savedCameraId)).isEmpty();
     }
 
     @Test
     public void expect_findMotionSensorsByCamera_returnsMotionSensors() {
         // Arrange
         Camera camera = new Camera();
-        camera.setCamId(CAMERA_ID);
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
-        Camera savedCamera = cameraRepository.save(camera);
 
         MotionSensor sensor1 = new MotionSensor();
         sensor1.setName(SENSOR_NAME);
         sensor1.setSensorType(SENSOR_TYPE);
-        sensor1.setCamera(savedCamera);
+        sensor1.setCamera(camera);
 
         MotionSensor sensor2 = new MotionSensor();
         sensor2.setName(SENSOR_NAME_2);
         sensor2.setSensorType(SENSOR_TYPE);
-        sensor2.setCamera(savedCamera);
+        sensor2.setCamera(camera);
 
-        motionSensorRepository.save(sensor1);
-        motionSensorRepository.save(sensor2);
+        camera.getSensors().add(sensor1);
+        camera.getSensors().add(sensor2);
+
+        Camera savedCamera = cameraRepository.save(camera);
 
         // Act
         List<MotionSensor> sensors = motionSensorRepository.findMotionSensorByCamera(savedCamera);
