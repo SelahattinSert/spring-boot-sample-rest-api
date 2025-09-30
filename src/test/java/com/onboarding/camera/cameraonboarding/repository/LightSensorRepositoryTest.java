@@ -129,10 +129,8 @@ class LightSensorRepositoryTest {
 
         // Arrange
         Camera camera = new Camera();
-        camera.setCamId(CAMERA_ID);
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
-        camera = cameraRepository.save(camera);
 
         LightSensor sensor1 = new LightSensor();
         sensor1.setName(SENSOR_NAME);
@@ -147,37 +145,40 @@ class LightSensorRepositoryTest {
         camera.getSensors().add(sensor1);
         camera.getSensors().add(sensor2);
 
-        lightSensorRepository.save(sensor1);
-        lightSensorRepository.save(sensor2);
+        Camera savedCamera = cameraRepository.save(camera);
+        UUID savedCameraId = savedCamera.getCamId();
+
 
         // Act
-        cameraRepository.delete(camera);
+        cameraRepository.deleteById(savedCameraId);
 
         // Assert
-        Assertions.assertThat(lightSensorRepository.findLightSensorByCamera(camera)).isEmpty();
+        Assertions.assertThat(lightSensorRepository.findById(sensor1.getId())).isEmpty();
+        Assertions.assertThat(lightSensorRepository.findById(sensor2.getId())).isEmpty();
+        Assertions.assertThat(cameraRepository.findById(savedCameraId)).isEmpty();
     }
 
     @Test
     public void expect_findLightSensorsByCamera_returnsLightSensors() {
         // Arrange
         Camera camera = new Camera();
-        camera.setCamId(CAMERA_ID);
         camera.setCameraName(CAMERA_NAME);
         camera.setFirmwareVersion(FIRMWARE_VERSION);
-        Camera savedCamera = cameraRepository.save(camera);
 
         LightSensor sensor1 = new LightSensor();
         sensor1.setName(SENSOR_NAME);
         sensor1.setSensorType(SENSOR_TYPE);
-        sensor1.setCamera(savedCamera);
+        sensor1.setCamera(camera);
 
         LightSensor sensor2 = new LightSensor();
         sensor2.setName(SENSOR_NAME_2);
         sensor2.setSensorType(SENSOR_TYPE);
-        sensor2.setCamera(savedCamera);
+        sensor2.setCamera(camera);
 
-        lightSensorRepository.save(sensor1);
-        lightSensorRepository.save(sensor2);
+        camera.getSensors().add(sensor1);
+        camera.getSensors().add(sensor2);
+
+        Camera savedCamera = cameraRepository.save(camera);
 
         // Act
         List<LightSensor> sensors = lightSensorRepository.findLightSensorByCamera(savedCamera);
