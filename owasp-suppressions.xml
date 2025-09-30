@@ -13,45 +13,10 @@
     <suppress>
         <cve>CVE-2025-48924</cve>
     </suppress>
-    <!-- netty-transport-4.1.111.Final.jar -->
-    <suppress>
-        <cve>CVE-2025-55163</cve>
-        <cve>CVE-2025-58056</cve>
-        <cve>CVE-2025-58057</cve>
-    </suppress>
-    <!-- netty-handler-4.1.111.Final -->
-    <!-- com.azure:azure-storage-blob@12.27.1 -->
-    <suppress>
-        <cve>CVE-2025-24970</cve>
-    </suppress>
     <!-- spring-cloud-azure-starter-storage-queue-5.18.0 -->
     <!-- com.azure.spring:spring-cloud-azure-starter-storage@5.18.0 -->
     <suppress>
         <cve>CVE-2022-30187</cve>
         <cve>CVE-2025-25193</cve>
-    </suppress>
-    <!-- swagger-ui-5.17.14 (DOMPurify@3.1.4) -->
-    <!-- org.springdoc:springdoc-openapi-starter-webmvc-ui@2.6.0 -->
-    <suppress>
-        <cve>CVE-2025-26791</cve>
-    </suppress>
-    <!-- tomcat-embed-core-10.1.25.jar -->
-    <!-- org.springframework.boot:spring-boot-starter-web@3.3.8 -->
-    <suppress>
-        <cve>CVE-2024-50379</cve>
-        <cve>CVE-2024-52316</cve>
-        <cve>CVE-2024-54677</cve>
-        <cve>CVE-2024-56337</cve>
-        <cve>CVE-2025-24813</cve>
-        <cve>CVE-2025-31650</cve>
-        <cve>CVE-2025-31651</cve>
-        <cve>CVE-2025-46701</cve>
-        <cve>CVE-2025-48988</cve>
-        <cve>CVE-2025-49124</cve>
-        <cve>CVE-2025-49125</cve>
-        <cve>CVE-2025-52520</cve>
-        <cve>CVE-2025-53506</cve>
-        <cve>CVE-2025-55668</cve>
-        <cve>CVE-2025-48989</cve>
     </suppress>
 </suppressions>
