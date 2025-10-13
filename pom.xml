@@ -93,7 +93,7 @@
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <version>13.2.0.jre11</version>
+            <version>13.2.1.jre11</version>
             <scope>compile</scope>
         </dependency>
 
@@ -159,7 +159,7 @@
             <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
-                <version>4.33.0</version>
+                <version>5.0.1</version>
             </plugin>
 
             <plugin>
