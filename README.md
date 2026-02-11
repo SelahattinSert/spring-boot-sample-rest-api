@@ -169,3 +169,4 @@ To verify that the app is running:
 kubectl get pods
 kubectl get svc
 ```
+
