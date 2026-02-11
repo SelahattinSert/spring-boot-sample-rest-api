@@ -5,13 +5,10 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write
-
 jobs:
   update-version:
     runs-on: ubuntu-latest
-    if: github.actor != 'github-actions[bot]'
+    if: github.actor != 'github-actions[bot]' && !contains(github.event.head_commit.message, 'chore: release version')
 
     steps:
       - name: Checkout repository
@@ -31,27 +28,36 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
 
-      - name: Calculate and Set New Version
+      - name: Calculate New Version
         run: |
           export REVISION_ID=$(git rev-parse --short HEAD)
           export NEW_VERSION=$(date +%Y%m%d)-$REVISION_ID
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-          
-          echo "Setting version to $NEW_VERSION"
-          mvn versions:set -DnewVersion=$NEW_VERSION -DgenerateBackupPoms=false
+
+      - name: Update Version in POM
+        run: |
+          echo "Setting version to ${{ env.NEW_VERSION }}"
+          mvn versions:set -DnewVersion=${{ env.NEW_VERSION }} -DgenerateBackupPoms=false
           mvn versions:commit
 
-      - name: Commit and Push Changes
+      - name: Create Branch and Commit
         run: |
+          git checkout -b update-version-${{ env.NEW_VERSION }}
           git add pom.xml
           
-          # Check if there are changes to commit
           if git status --porcelain | grep .; then
-            git commit -m "chore: release version ${{ env.NEW_VERSION }} [skip ci]"
-            git tag v${{ env.NEW_VERSION }}
-            
-            git push origin main
-            git push origin v${{ env.NEW_VERSION }}
+            git commit -m "chore: release version ${{ env.NEW_VERSION }}"
+            git push origin update-version-${{ env.NEW_VERSION }}
           else
-            echo "No changes to commit. Version might already be updated."
+            echo "No changes to commit."
+            exit 0
           fi
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "chore: release version ${{ env.NEW_VERSION }}"
+          body: "Automated version update by GitHub Actions."
+          branch: update-version-${{ env.NEW_VERSION }}
+          base: main
