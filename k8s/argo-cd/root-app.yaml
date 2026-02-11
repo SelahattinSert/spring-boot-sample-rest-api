@@ -13,7 +13,7 @@ spec:
     path: k8s/argo-cd
     directory:
       recurse: true
-      exclude: 'root-app.yaml' # Infinite loop'u önlemek için kendisini hariç tutuyoruz
+      exclude: 'root-app.yaml'
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
